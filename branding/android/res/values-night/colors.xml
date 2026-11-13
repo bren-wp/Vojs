@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="vojs_primary">#7868FF</color>
+    <color name="vojs_primary_dark">#5145CB</color>
+    <color name="vojs_accent">#FF7C91</color>
+    <color name="vojs_ink">#20213B</color>
+    <color name="vojs_surface">#F4F2FF</color>
+    <color name="vojs_splash_background">#20213B</color>
+</resources>

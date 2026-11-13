@@ -1,0 +1,12 @@
+VOJS — Android brending paket
+
+android/res/          Kopiraj u app/src/main/res Android projekta.
+  mipmap-*/           Ikone pokretača (klasična, okrugla, prilagodljiva: prednji sloj, pozadina, monokromatska).
+  drawable-*/         splash_icon.png (početni zaslon Android 12+) i ic_stat_vojs.png (ikona obavijesti).
+  values/             Boje i tema početnog zaslona (Theme.Vojs.Splash). values-night: tamni početni zaslon.
+pocetni-zaslon/       Prikaz početnog zaslona, svijetli i tamni (1080x2400).
+google-play/          Ikona 512x512, istaknuta grafika 1024x500, snimke zaslona 1080x1920.
+logotip/              Simbol (SVG i PNG), logotip za svijetlu i tamnu podlogu, monokromatski simbol.
+VOJS-smjernice-vizualnog-identiteta.pdf
+
+Snimke zaslona su konceptualni prikaz. Prije objave na Google Playu zamijeni ih stvarnim snimkama aplikacije.

@@ -1,0 +1,8 @@
+{
+  "original_web_zip_sha256": "fd1b4cf8be72081794973e8e8c3851b4fb92b3cc21db69ddae9e038e724b0387",
+  "original_branding_zip_sha256": "229c13f9eef4a358fbc7ffad5e8d06c34d0e8ca6d901e21d76394f6784c9764b",
+  "web_files": 87,
+  "branding_files": 55,
+  "android_resources_copied": 37,
+  "deploy_pages": false
+}
