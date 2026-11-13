@@ -28,12 +28,27 @@ def bounds_of(label):
     adb("shell", "uiautomator", "dump", "/sdcard/window.xml", timeout=40)
     ui = adb("shell", "cat", "/sdcard/window.xml").stdout.decode("utf-8")
     root = ET.fromstring(ui)
+    matches = []
+    query = label.casefold()
     for node in root.iter("node"):
-        if label.casefold() in (node.attrib.get("text","")+" "+node.attrib.get("content-desc","")).casefold():
-            bounds = re.findall(r"\d+", node.attrib.get("bounds",""))
-            if len(bounds)==4:
-                a,b,c,d = [int(x) for x in bounds]
-                return ((a+c)//2,(b+d)//2)
+        raw_text = node.attrib.get("text", "").strip()
+        raw_description = node.attrib.get("content-desc", "").strip()
+        content = (raw_text + " " + raw_description).casefold()
+        if query not in content:
+            continue
+        bounds = re.findall(r"\\d+", node.attrib.get("bounds", ""))
+        if len(bounds) != 4:
+            continue
+        a, b, c, d = (int(x) for x in bounds)
+        exact = raw_text.casefold() == query or raw_description.casefold() == query
+        clickable = node.attrib.get("clickable") == "true"
+        suffix = raw_text.casefold().endswith(query)
+        priority = (100 if exact else 0) + (40 if clickable else 0) + (15 if suffix else 0)
+        matches.append((priority, (a+c)//2, (b+d)//2, raw_text))
+    if matches:
+        winner = max(matches, key=lambda row: row[0])
+        print("UI match", repr(label), "->", repr(winner[3]), "score", winner[0], flush=True)
+        return (winner[1], winner[2])
     return None
 
 def tap(label):
@@ -44,6 +59,20 @@ def tap(label):
     adb("shell","input","tap",str(pos[0]),str(pos[1]))
     time.sleep(3)
     return True
+
+def fail(reason):
+    print("TEST FAILED:", reason, flush=True)
+    try:
+        adb("shell", "uiautomator", "dump", "/sdcard/window.xml", timeout=40)
+        current = adb("shell", "cat", "/sdcard/window.xml").stdout.decode("utf-8")
+        (OUT / "debug-ui-hierarchy.xml").write_text(current, encoding="utf-8")
+        print("UI hierarchy:", current[:14000], flush=True)
+        log = adb("logcat", "-d", "-s", "AndroidRuntime:E", "*:S").stdout.decode("utf-8")
+        (OUT / "debug-android-crashes.log").write_text(log[-25000:], encoding="utf-8")
+        screenshot("debug-failed-control.png", "Diagnostic screenshot on failed control")
+    except Exception as exception:
+        print("Could not capture diagnostics:", repr(exception), flush=True)
+    raise RuntimeError(reason)
 
 adb("wait-for-device", timeout=120)
 adb("shell","pm","grant","com.brendigo.vojs","android.permission.RECORD_AUDIO")
@@ -81,32 +110,32 @@ if not wait_ui("Započni snimanje"):
 if tap("Započni snimanje") and bounds_of("Završi snimanje") is not None:
     screenshot("02-recording.png","Recording")
     if not tap("Pauziraj") or not bounds_of("Nastavi snimanje"):
-        raise RuntimeError("Pause control failed")
+        fail("Pause control failed")
     screenshot("06-paused.png","Recording paused")
     if not tap("Nastavi snimanje"):
-        raise RuntimeError("Resume control failed")
+        fail("Resume control failed")
     time.sleep(4)
     if tap("Završi snimanje") and bounds_of("Podijeli glasovnu poruku") is not None:
         screenshot("03-ready.png","Recorded audio / ready to share")
         if not tap("Preslušaj") or not bounds_of("Zaustavi"):
-            raise RuntimeError("Audio playback control failed")
+            fail("Audio playback control failed")
         if not tap("Zaustavi"):
-            raise RuntimeError("Stop playback failed")
+            fail("Stop playback failed")
         if tap("Podijeli glasovnu poruku"):
             screenshot("04-android-share.png","Android native Sharesheet")
             adb("shell", "input", "keyevent", "4")
             time.sleep(2)
             if not (tap("Postavke aplikacije") or tap("VOJS ⚙")):
-                raise RuntimeError("Settings control failed")
+                fail("Settings control failed")
             screenshot("05-settings.png", "Native settings and theme controls")
             if not tap("Tamna tema"):
-                raise RuntimeError("Dark theme option failed")
+                fail("Dark theme option failed")
             screenshot("07-settings-dark.png", "Native dark theme settings")
             adb("shell", "input", "keyevent", "4")
             time.sleep(2)
             screenshot("08-dark-ready.png", "Native dark theme ready screen")
             if not tap("Snimi novu poruku"):
-                raise RuntimeError("Start new message failed")
+                fail("Start new message failed")
             screenshot("09-dark-home.png", "Native dark mode home")
 
 (OUT/"manifest.json").write_text(json.dumps({
@@ -116,4 +145,4 @@ if tap("Započni snimanje") and bounds_of("Završi snimanje") is not None:
     "screenshots": saved
 },ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
 if len(saved) < 9:
-    raise RuntimeError(f"Expected 9 functional screens, captured {len(saved)}")
+    fail(f"Expected 9 functional screens, captured {len(saved)}")
