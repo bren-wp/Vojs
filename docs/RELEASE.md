@@ -21,3 +21,7 @@ Početna verzija weba ne uključuje svih 13 izvornih HTML stranica; izvorna web-
 
 ## Privatnost
 Snimanje ne koristi VOJS server. FileProvider privremeno izlaže privatni cache za ACTION_SEND. Dijeljenim sadržajem upravlja odabrana vanjska aplikacija.
+
+## Google Play API kompatibilnost (2026)
+
+Od 31. kolovoza 2026. nova Android telefonska izdanja i ažuriranja trebaju ciljati API 36. Trenutačna konfiguracija je `compileSdk = 36`, `targetSdk = 36`, AGP 8.10.1 i Gradle 8.11.1. CI instalira platforms;android-36. `minSdk = 24` je zadržan. Provjeriti na fizičkim uređajima i Android 16, naročito edge-to-edge prikaz, dopuštenje za mikrofon, dijeljenje URI-ja i rad s predmemorijom. Produkcijski potpisani AAB i dalje zahtijeva VOJS signing secrets.

@@ -46,7 +46,6 @@ Snimke su **izvorni Android emulator screenshotovi**, snimljeni tijekom automati
 - **✈️ Offline** — snimanje i preslušavanje ne zahtijevaju internet.
 - **💬 Tvoj izbor primatelja** — Android nudi kompatibilne aplikacije poput Bluetootha, Quick Sharea, poruka, WhatsAppa ili Vibera (ovisno o instaliranim aplikacijama).
 - **🎨 BRENDIGO identitet** — glavna boja `#7868FF`, tamna `#5145CB` i naglasak `#FF7C91`.
-- **📱 Nativno** — Kotlin + Jetpack Compose; najmanje Android 7.0 (API 24).
 
 ## 🔐 Privatnost bez skrivenih obećanja
 
@@ -69,8 +68,6 @@ Svaka uspješna Android build objava na `main` grani automatski stvara novo verz
 Kad su konfigurirane tajne `VOJS_KEYSTORE_BASE64`, `VOJS_STORE_PASSWORD`, `VOJS_KEY_ALIAS`, `VOJS_KEY_PASSWORD`, workflow potpisuje produkcijski APK/AAB. Za stabilna ažuriranja potrebno je čuvati isti produkcijski ključ. Debug APK iz odvojenih CI pokretanja može imati različit certifikat i nije namijenjen za produkcijske nadogradnje.
 
 ## 🛠️ Razvoj i izgradnja
-
-Android Studio, Java 17, Android SDK 35 i Gradle 8.10.2:
 
 ```bash
 gradle :app:assembleDebug :app:assembleRelease :app:bundleRelease
