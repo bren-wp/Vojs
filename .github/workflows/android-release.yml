@@ -1,0 +1,33 @@
+name: Android build and release
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.10.2'
+      - name: Build APK and AAB
+        run: |
+          gradle --no-daemon :app:assembleRelease :app:bundleRelease -PvojsVersionCode=${{ github.run_number }} -PvojsVersionName=1.0.${{ github.run_number }}
+      - name: Publish artifacts to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG="v1.0.${{ github.run_number }}"
+          APK=app/build/outputs/apk/release/app-release-unsigned.apk
+          AAB=app/build/outputs/bundle/release/app-release.aab
+          test -s "$APK" && test -s "$AAB"
+          gh release create "$TAG" "$APK#VOJS-${TAG}-unsigned.apk" "$AAB#VOJS-${TAG}-unsigned.aab" --title "VOJS ${TAG}" --notes "Android build. APK and AAB are unsigned until production signing is configured. They are not ready for Play Store distribution." --target "${{ github.sha }}"
