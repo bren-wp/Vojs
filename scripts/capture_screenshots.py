@@ -81,7 +81,7 @@ def capture_branded_splash(name, mode):
     for attempt in range(3):
         for frame in range(9):
             data = adb("exec-out", "screencap", "-p", timeout=15).stdout
-            if not data.startswith(b"\\x89PNG\\r\\n\\x1a\\n"):
+            if not data.startswith(b"\x89PNG\r\n\x1a\n"):
                 continue
             image = Image.open(BytesIO(data)).convert("RGB")
             if image.size != expected.size:
