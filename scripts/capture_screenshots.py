@@ -61,21 +61,21 @@ def tap(label):
     return True
 
 def recover_launcher_anr():
-    # Emulator infrastructure issue, not a VOJS app exception.
-    # Google Pixel Launcher may hang while the emulator is booting,
-    # covering the foreground app with an OS-controlled ANR dialog.
-    if not bounds_of("Pixel Launcher isn't responding"):
-        return False
-    print("Recovering Pixel Launcher ANR overlay", flush=True)
-    if bounds_of("Close app"):
-        tap("Close app")
-    elif bounds_of("Wait"):
-        tap("Wait")
-    else:
-        return False
-    time.sleep(1)
-    adb("shell", "am", "start", "-n", "com.brendigo.vojs/.MainActivity")
-    return True
+    """Dismiss only system-launcher ANRs, not actual VOJS crashes."""
+    for package in ("Quickstep", "Pixel Launcher"):
+        if not bounds_of(f"{package} isn't responding"):
+            continue
+        print("Recovering system launcher ANR:", package, flush=True)
+        if bounds_of("Close app"):
+            tap("Close app")
+        elif bounds_of("Wait"):
+            tap("Wait")
+        else:
+            return False
+        time.sleep(1)
+        adb("shell", "am", "start", "-n", "com.brendigo.vojs/.MainActivity")
+        return True
+    return False
 
 
 def fail(reason):
@@ -95,9 +95,18 @@ def fail(reason):
 adb("wait-for-device", timeout=120)
 adb("shell","pm","grant","com.brendigo.vojs","android.permission.RECORD_AUDIO")
 adb("shell","am","force-stop","com.brendigo.vojs")
+# Quickstep can ANR while the emulator is still booting. Stop unneeded home
+# processes before focusing the application; do not suppress VOJS ANRs.
+for launcher in ("com.android.launcher3", "com.google.android.apps.nexuslauncher"):
+    try:
+        adb("shell", "am", "force-stop", launcher, timeout=10)
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
+        pass
 adb("shell","am","start","-n","com.brendigo.vojs/.MainActivity")
 # Real screenshot of the native full-frame VOJS splash, while it is visible.
-time.sleep(1.35)
+time.sleep(1.1)
+if recover_launcher_anr():
+    time.sleep(0.8)
 screenshot("00-splash-light.png", "Original VOJS splash - light")
 time.sleep(2.5)
 # Older emulator images may display Android's immersive tutorial left
@@ -130,7 +139,7 @@ def wait_ui(label, timeout_s=9):
     screenshot("debug-missing-control.png","Diagnostic screenshot when control is unavailable")
     return False
 
-if not wait_ui("Započni snimanje", 20):
+if not wait_ui("Započni snimanje", 30):
     raise RuntimeError("Home did not render native start-recording button")
 if tap("Započni snimanje") and wait_ui("Završi snimanje", 12):
     screenshot("02-recording.png","Recording")
@@ -165,7 +174,9 @@ if tap("Započni snimanje") and wait_ui("Završi snimanje", 12):
             # Confirm dark theme persisted across a fresh app launch.
             adb("shell", "am", "force-stop", "com.brendigo.vojs")
             adb("shell", "am", "start", "-n", "com.brendigo.vojs/.MainActivity")
-            time.sleep(1.35)
+            time.sleep(1.1)
+            if recover_launcher_anr():
+                time.sleep(0.8)
             screenshot("10-splash-dark.png", "Original VOJS splash - dark")
 
 # A successful UI flow must also be free of app-process Java crashes.

@@ -125,6 +125,10 @@ Izvorni dizajn je dostavljen u `VOJS-Android-brending-1.0.0.zip`. Nativni zaslon
 
 **Cijeli izvorni web i brending već su u repozitoriju** u [source-archives/](source-archives/). Automatski [import-original-assets.yml](.github/workflows/import-original-assets.yml) provjerava SHA256 te izdvaja 87 web i 55 brending datoteka na `main` bez web deploya. Prava radna web prezentacija ostaje u `website/` i **ne objavljuje se automatski**.
 
+## Stabilnost emulator testova
+
+Android emulator može tijekom pokretanja prikazati sistemsku poruku "Quickstep isn't responding" ili "Pixel Launcher isn't responding". Taj dijalog prekriva VOJS, ali ne dokazuje rušenje VOJS aplikacije. Test zaustavlja nepotrebni launcher i po potrebi oporavlja isključivo takve sistemske dijaloge; VOJS ANR i dalje se smatra greškom. Snimke se smiju objaviti tek nakon uspješne provjere.
+
 ## 🧪 Kontrola izvornog vizualnog identiteta
 
 Android koristi **originalne logotipe** iz `branding/logotip/` u svijetloj i tamnoj temi. Oni se kopiraju pri svakom Gradle buildu. Iz aplikacije su uklonjeni marketinški potpisi i tehničke poruke. Stvarne snimke Android zaslona ostaju u `docs/screenshots/` i obnavljaju se emulator workflowom. 0 % pikselnog odstupanja još nije potvrđeno usporednim mjerenjem.
