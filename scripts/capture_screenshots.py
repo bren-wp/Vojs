@@ -52,20 +52,40 @@ time.sleep(7)
 screenshot("01-home.png","Home / idle")
 if tap("Započni snimanje") and bounds_of("Završi snimanje") is not None:
     screenshot("02-recording.png","Recording")
+    if not tap("Pauziraj") or not bounds_of("Nastavi snimanje"):
+        raise RuntimeError("Pause control failed")
+    screenshot("06-paused.png","Recording paused")
+    if not tap("Nastavi snimanje"):
+        raise RuntimeError("Resume control failed")
     time.sleep(4)
     if tap("Završi snimanje") and bounds_of("Podijeli glasovnu poruku") is not None:
         screenshot("03-ready.png","Recorded audio / ready to share")
+        if not tap("Preslušaj") or not bounds_of("Zaustavi"):
+            raise RuntimeError("Audio playback control failed")
+        if not tap("Zaustavi"):
+            raise RuntimeError("Stop playback failed")
         if tap("Podijeli glasovnu poruku"):
             screenshot("04-android-share.png","Android native Sharesheet")
             adb("shell", "input", "keyevent", "4")
             time.sleep(2)
-            if tap("Postavke aplikacije"):
-                screenshot("05-settings.png", "Native settings and theme controls")
+            if not (tap("Postavke aplikacije") or tap("VOJS ⚙")):
+                raise RuntimeError("Settings control failed")
+            screenshot("05-settings.png", "Native settings and theme controls")
+            if not tap("Tamna tema"):
+                raise RuntimeError("Dark theme option failed")
+            screenshot("07-settings-dark.png", "Native dark theme settings")
+            adb("shell", "input", "keyevent", "4")
+            time.sleep(2)
+            screenshot("08-dark-ready.png", "Native dark theme ready screen")
+            if not tap("Snimi novu poruku"):
+                raise RuntimeError("Start new message failed")
+            screenshot("09-dark-home.png", "Native dark mode home")
+
 (OUT/"manifest.json").write_text(json.dumps({
     "source": "Android emulator; real adb screencap screenshots",
     "device": "Pixel 6 profile, Android API 35 emulator",
     "captured_at_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
     "screenshots": saved
 },ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
-if len(saved) < 4:
-    raise RuntimeError(f"Expected at least 4 functional screens, captured {len(saved)}")
+if len(saved) < 9:
+    raise RuntimeError(f"Expected 9 functional screens, captured {len(saved)}")

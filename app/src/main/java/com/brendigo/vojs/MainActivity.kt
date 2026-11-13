@@ -9,6 +9,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -26,6 +27,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -33,6 +36,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import kotlinx.coroutines.delay
 import kotlin.math.abs
 import kotlin.math.sin
@@ -60,6 +65,18 @@ class MainActivity : ComponentActivity() {
                 else -> isSystemInDarkTheme()
             }
             var showSettings by remember { mutableStateOf(false) }
+            var brandedSplash by remember { mutableStateOf(true) }
+            LaunchedEffect(Unit) {
+                delay(700)
+                brandedSplash = false
+            }
+            SideEffect {
+                val insets = WindowCompat.getInsetsController(window, window.decorView)
+                insets.isAppearanceLightStatusBars = !dark
+                insets.isAppearanceLightNavigationBars = !dark
+                if (brandedSplash) insets.hide(WindowInsetsCompat.Type.systemBars())
+                else insets.show(WindowInsetsCompat.Type.systemBars())
+            }
             val permissionRequest = rememberLauncherForActivityResult(
                 ActivityResultContracts.RequestPermission()
             ) { allowed ->
@@ -92,6 +109,16 @@ class MainActivity : ComponentActivity() {
                     else permissionRequest.launch(Manifest.permission.RECORD_AUDIO)
                     Unit
                 }
+                if (brandedSplash) {
+                    Image(
+                        painter = painterResource(
+                            if (dark) R.drawable.vojs_splash_dark else R.drawable.vojs_splash_light
+                        ),
+                        contentDescription = "VOJS · Reci to glasom",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
                 VoiceScreen(
                     recorder = voice,
                     dark = dark,
@@ -140,6 +167,7 @@ class MainActivity : ComponentActivity() {
                                 fontSize = 12.sp, color = secondary)
                         }
                     }
+                }
                 }
             }
         }
@@ -260,7 +288,10 @@ private fun VoiceScreen(
                         Text("●", fontSize = 45.sp, color = Paper)
                     }
                     Spacer(Modifier.height(13.dp))
-                    Text("dotakni za početak snimanja", color = secondary, fontSize = 14.sp)
+                    TextButton(onClick = onRecord) {
+                        Text("Započni snimanje", color = secondary,
+                            fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                    }
                 }
                 RecordingStage.RECORDING -> {
                     Button(
@@ -273,7 +304,10 @@ private fun VoiceScreen(
                         Text("■", fontSize = 35.sp, color = Paper)
                     }
                     Spacer(Modifier.height(10.dp))
-                    Text("dotakni za kraj snimanja", color = secondary, fontSize = 14.sp)
+                    TextButton(onClick = recorder::finish) {
+                        Text("Završi snimanje", color = secondary,
+                            fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                    }
                     Spacer(Modifier.height(7.dp))
                     TextButton(onClick = recorder::togglePause) {
                         Text(if (recorder.paused) "▶ Nastavi snimanje" else "Ⅱ Pauziraj",
