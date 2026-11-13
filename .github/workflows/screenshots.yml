@@ -18,6 +18,8 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -65,5 +67,7 @@ jobs:
           git add docs/screenshots/
           if ! git diff --cached --quiet; then
             git commit -m "docs: add genuine Android emulator screenshots [skip ci]"
-            git push
+            git fetch origin main
+            git rebase origin/main
+            git push origin HEAD:main
           fi

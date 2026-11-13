@@ -91,10 +91,14 @@ jobs:
           fi
           AAB="app/build/outputs/bundle/release/app-release.aab"
           test -s "$DEBUG" && test -s "$APK" && test -s "$AAB"
+          mkdir -p dist
+          cp "$DEBUG" "dist/VOJS-$TAG-debug.apk"
+          cp "$APK" "dist/$APK_NAME"
+          cp "$AAB" "dist/$AAB_NAME"
           gh release create "$TAG" \
-            "$DEBUG#VOJS-$TAG-debug.apk" \
-            "$APK#$APK_NAME" \
-            "$AAB#$AAB_NAME" \
+            "dist/VOJS-$TAG-debug.apk" \
+            "dist/$APK_NAME" \
+            "dist/$AAB_NAME" \
             --title "VOJS $TAG" \
             --notes "$NOTE" \
             --target "${{ github.sha }}"
