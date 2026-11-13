@@ -9,6 +9,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+  actions: write
 concurrency:
   group: vojs-original-assets-main
   cancel-in-progress: false
@@ -36,6 +37,7 @@ jobs:
           test "$(find original-web/public_html -type f | wc -l)" -eq 87
           test "$(find branding -type f ! -path 'branding/simbol.svg' | wc -l)" -eq 55
       - name: Commit original files to repo, without website deployment
+        id: commit
         shell: bash
         run: |
           set -euo pipefail
@@ -47,4 +49,14 @@ jobs:
             git fetch origin main
             git rebase origin/main
             git push origin HEAD:main
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
           fi
+      - name: Build native APK/AAB and refresh genuine screenshots after asset import
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run android-release.yml --ref main
+          gh workflow run screenshots.yml --ref main

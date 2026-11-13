@@ -319,23 +319,31 @@ private fun VoiceWaveform(
                 else "Valni prikaz glasovne poruke"
         }
     ) {
-        val count = 43
+        // Original VOJS concept has 22 separated rounded waveform bars.
+        val reference = floatArrayOf(
+            .28f, .46f, .63f, .42f, .76f, 1.00f, .56f, .78f,
+            1.00f, .60f, .48f, .91f, .66f, .98f, .40f, .62f,
+            .87f, .56f, .95f, .64f, .30f, .74f
+        )
+        val count = reference.size
         val step = size.width / (count + 1)
         val mid = size.height / 2f
-        val cap = 4.5.dp.toPx()
+        val cap = 5.dp.toPx()
         for (i in 0 until count) {
-            val envelope = (0.23f + 0.77f *
-                abs(sin((i + 0.8) * 0.53)).toFloat())
-            val sample = values.getOrNull(i)?.coerceIn(0.09f, 1f) ?: envelope
-            val height = if (active) {
-                (0.12f + sample * envelope * 0.88f) * size.height * 0.75f
-            } else {
-                (0.22f + envelope * 0.78f) * size.height * 0.78f
-            }
+            val amplitudeIndex = i * (values.size - 1).coerceAtLeast(0) / (count - 1)
+            val measured = (values.getOrNull(amplitudeIndex) ?: 0.12f)
+                .coerceIn(0.09f, 1f)
+            // Preserve the reference contour at low volumes while reacting
+            // to actual microphone amplitude instead of drawing flat bars.
+            val dynamicScale = if (active) 0.72f + 0.28f * measured else 1f
+            val height = (.18f + reference[i] * .82f) *
+                size.height * .83f * dynamicScale
             val x = (i + 1) * step
-            drawLine(color, Offset(x, mid - height / 2f),
+            drawLine(
+                color, Offset(x, mid - height / 2f),
                 Offset(x, mid + height / 2f),
-                strokeWidth = cap, cap = StrokeCap.Round)
+                strokeWidth = cap, cap = StrokeCap.Round
+            )
         }
     }
 }
