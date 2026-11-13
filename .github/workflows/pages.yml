@@ -1,24 +1,46 @@
-name: Publish website
+name: Publish VOJS website
+
 on:
   push:
     branches: [main]
-    paths: ['website/**', '.github/workflows/pages.yml']
+    paths:
+      - 'website/**'
+      - '.github/workflows/pages.yml'
   workflow_dispatch:
+
 permissions:
   contents: read
   pages: write
   id-token: write
-concurrency:
-  group: pages
-  cancel-in-progress: true
+
 jobs:
   deploy:
-    environment: github-pages
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - name: Website artifact (always available)
+        uses: actions/upload-artifact@v4
+        with:
+          name: vojs-website
+          path: website/
+          if-no-files-found: error
+      - name: Determine whether GitHub Pages is enabled
+        id: pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          if gh api "repos/${{ github.repository }}/pages" >/dev/null 2>&1; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Enable Settings > Pages > Source: GitHub Actions to deploy. The static website artifact was uploaded successfully."
+          fi
+      - if: steps.pages.outputs.enabled == 'true'
+        uses: actions/configure-pages@v5
+      - if: steps.pages.outputs.enabled == 'true'
+        uses: actions/upload-pages-artifact@v3
         with:
           path: website
-      - uses: actions/deploy-pages@v4
+      - if: steps.pages.outputs.enabled == 'true'
+        uses: actions/deploy-pages@v4

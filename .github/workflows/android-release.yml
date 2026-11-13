@@ -1,33 +1,100 @@
 name: Android build and release
+
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "docs/screenshots/**"
   workflow_dispatch:
+
 permissions:
   contents: write
+
+concurrency:
+  group: vojs-release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   android:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
-      - uses: android-actions/setup-android@v3
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.10.2'
-      - name: Build APK and AAB
+      - name: Prepare Android SDK 35
+        shell: bash
         run: |
-          gradle --no-daemon :app:assembleRelease :app:bundleRelease -PvojsVersionCode=${{ github.run_number }} -PvojsVersionName=1.0.${{ github.run_number }}
-      - name: Publish artifacts to release
+          set -euo pipefail
+          : "${ANDROID_HOME:=/usr/local/lib/android/sdk}"
+          echo "ANDROID_HOME=$ANDROID_HOME" >> "$GITHUB_ENV"
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          if [ ! -x "$SDKMANAGER" ]; then
+            SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -Vr | head -1)"
+          fi
+          test -x "$SDKMANAGER"
+          "$SDKMANAGER" --install "platforms;android-35" "build-tools;35.0.0"
+      - name: Prepare optional production key
+        env:
+          VOJS_KEYSTORE_BASE64: ${{ secrets.VOJS_KEYSTORE_BASE64 }}
+          VOJS_STORE_PASSWORD: ${{ secrets.VOJS_STORE_PASSWORD }}
+          VOJS_KEY_ALIAS: ${{ secrets.VOJS_KEY_ALIAS }}
+          VOJS_KEY_PASSWORD: ${{ secrets.VOJS_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          if [[ -n "$VOJS_KEYSTORE_BASE64" && -n "$VOJS_STORE_PASSWORD" && -n "$VOJS_KEY_ALIAS" && -n "$VOJS_KEY_PASSWORD" ]]; then
+            printf '%s' "$VOJS_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/vojs-release.jks"
+            echo "VOJS_KEYSTORE_PATH=$RUNNER_TEMP/vojs-release.jks" >> "$GITHUB_ENV"
+            echo "VOJS_STORE_PASSWORD=$VOJS_STORE_PASSWORD" >> "$GITHUB_ENV"
+            echo "VOJS_KEY_ALIAS=$VOJS_KEY_ALIAS" >> "$GITHUB_ENV"
+            echo "VOJS_KEY_PASSWORD=$VOJS_KEY_PASSWORD" >> "$GITHUB_ENV"
+            echo "SIGNING_READY=true" >> "$GITHUB_ENV"
+          else
+            echo "SIGNING_READY=false" >> "$GITHUB_ENV"
+          fi
+      - name: Build debug APK, release APK and release AAB
+        run: |
+          gradle --no-daemon --stacktrace :app:assembleDebug :app:assembleRelease :app:bundleRelease \
+            -PvojsVersionCode=${{ github.run_number }} \
+            -PvojsVersionName=1.0.${{ github.run_number }}
+      - name: Archive all build outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: vojs-android-build-${{ github.run_number }}
+          path: |
+            app/build/outputs/apk/debug/*.apk
+            app/build/outputs/apk/release/*.apk
+            app/build/outputs/bundle/release/*.aab
+          if-no-files-found: error
+      - name: Publish versioned GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
+        shell: bash
         run: |
           set -euo pipefail
           TAG="v1.0.${{ github.run_number }}"
-          APK=app/build/outputs/apk/release/app-release-unsigned.apk
-          AAB=app/build/outputs/bundle/release/app-release.aab
-          test -s "$APK" && test -s "$AAB"
-          gh release create "$TAG" "$APK#VOJS-${TAG}-unsigned.apk" "$AAB#VOJS-${TAG}-unsigned.aab" --title "VOJS ${TAG}" --notes "Android build. APK and AAB are unsigned until production signing is configured. They are not ready for Play Store distribution." --target "${{ github.sha }}"
+          DEBUG="app/build/outputs/apk/debug/app-debug.apk"
+          if [[ "$SIGNING_READY" == "true" ]]; then
+            APK="app/build/outputs/apk/release/app-release.apk"
+            APK_NAME="VOJS-$TAG-release.apk"
+            AAB_NAME="VOJS-$TAG-release.aab"
+            NOTE="Production signing secrets provided. APK/AAB are signed; verify release certificates and Play requirements before publishing."
+          else
+            APK="app/build/outputs/apk/release/app-release-unsigned.apk"
+            APK_NAME="VOJS-$TAG-unsigned.apk"
+            AAB_NAME="VOJS-$TAG-unsigned.aab"
+            NOTE="Debug APK is installable for testing. Release APK and AAB are UNSIGNED and NOT ready for Google Play. Configure VOJS_* signing secrets for production."
+          fi
+          AAB="app/build/outputs/bundle/release/app-release.aab"
+          test -s "$DEBUG" && test -s "$APK" && test -s "$AAB"
+          gh release create "$TAG" \
+            "$DEBUG#VOJS-$TAG-debug.apk" \
+            "$APK#$APK_NAME" \
+            "$AAB#$AAB_NAME" \
+            --title "VOJS $TAG" \
+            --notes "$NOTE" \
+            --target "${{ github.sha }}"
