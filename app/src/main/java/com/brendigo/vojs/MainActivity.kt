@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.layout.ContentScale
@@ -159,14 +160,10 @@ class MainActivity : ComponentActivity() {
                             Text("Privatnost", fontWeight = FontWeight.SemiBold)
                             Spacer(Modifier.height(8.dp))
                             Text(
-                                "Snimke se ne šalju na VOJS server. Privremene M4A datoteke " +
-                                "koriste se za Android dijeljenje i čiste pri sljedećem " +
-                                "pokretanju kada su starije od 24 sata.",
+                                "Snimke se privremeno čuvaju na uređaju radi dijeljenja. " +
+                                "Odabrana aplikacija može spremiti svoju kopiju.",
                                 color = secondary, fontSize = 13.sp, lineHeight = 19.sp
                             )
-                            Spacer(Modifier.height(12.dp))
-                            Text("VOJS · BRENDIGO · brendigo.com",
-                                fontSize = 12.sp, color = secondary)
                         }
                     }
                 }
@@ -216,17 +213,27 @@ private fun VoiceScreen(
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.weight(1f)
                 )
-                TextButton(onClick = onSettings, modifier = Modifier
-                    .semantics { contentDescription = "Postavke aplikacije" }) {
-                    Text("VOJS ⚙", fontWeight = FontWeight.ExtraBold, color = Violet)
+                Image(
+                    painter = painterResource(
+                        if (dark) R.drawable.vojs_logo_dark else R.drawable.vojs_logo_light
+                    ),
+                    contentDescription = "VOJS",
+                    modifier = Modifier.width(102.dp).height(40.dp),
+                    contentScale = ContentScale.Fit
+                )
+                TextButton(onClick = onSettings,
+                    modifier = Modifier.semantics {
+                        contentDescription = "Postavke aplikacije"
+                    }) {
+                    Text("⚙", fontSize = 21.sp, color = Violet)
                 }
             }
             Spacer(Modifier.height(if (compact) 20.dp else 40.dp))
             Text(
                 when (stage) {
-                    RecordingStage.IDLE -> "Tvoj glas. Tvoja poruka."
+                    RecordingStage.IDLE -> "Dodirni gumb za snimanje"
                     RecordingStage.RECORDING ->
-                        if (recorder.paused) "Snimanje je pauzirano" else "Snimanje je u tijeku"
+                        if (recorder.paused) "Snimanje je pauzirano" else ""
                     RecordingStage.READY -> "Preslušaj pa podijeli"
                 },
                 color = secondary, fontSize = 15.sp, textAlign = TextAlign.Center
@@ -280,14 +287,15 @@ private fun VoiceScreen(
         ) {
             when (stage) {
                 RecordingStage.IDLE -> {
-                    Button(
-                        onClick = onRecord,
-                        shape = CircleShape,
-                        modifier = Modifier.size(if (compact) 94.dp else 112.dp)
+                    Box(
+                        modifier = Modifier
+                            .size(if (compact) 94.dp else 112.dp)
+                            .background(Brush.linearGradient(listOf(Violet, VioletDark)), CircleShape)
+                            .clickable(onClick = onRecord)
                             .semantics { contentDescription = "Započni snimanje" },
-                        colors = ButtonDefaults.buttonColors(containerColor = Violet)
+                        contentAlignment = Alignment.Center
                     ) {
-                        Text("●", fontSize = 45.sp, color = Paper)
+                        Box(Modifier.size(32.dp).background(Paper, CircleShape))
                     }
                     Spacer(Modifier.height(13.dp))
                     TextButton(onClick = onRecord) {
@@ -296,14 +304,16 @@ private fun VoiceScreen(
                     }
                 }
                 RecordingStage.RECORDING -> {
-                    Button(
-                        onClick = recorder::finish,
-                        shape = CircleShape,
-                        modifier = Modifier.size(if (compact) 94.dp else 112.dp)
+                    Box(
+                        modifier = Modifier
+                            .size(if (compact) 94.dp else 112.dp)
+                            .background(Brush.linearGradient(listOf(Violet, VioletDark)), CircleShape)
+                            .clickable(onClick = recorder::finish)
                             .semantics { contentDescription = "Završi snimanje" },
-                        colors = ButtonDefaults.buttonColors(containerColor = Violet)
+                        contentAlignment = Alignment.Center
                     ) {
-                        Text("■", fontSize = 35.sp, color = Paper)
+                        Box(Modifier.width(29.dp).height(40.dp)
+                            .background(Paper, RoundedCornerShape(22.dp)))
                     }
                     Spacer(Modifier.height(10.dp))
                     TextButton(onClick = recorder::finish) {
@@ -332,13 +342,7 @@ private fun VoiceScreen(
                     }
                 }
             }
-            Spacer(Modifier.height(if (compact) 11.dp else 16.dp))
-            Text(
-                "Bez računa  •  Bez VOJS servera",
-                fontSize = 11.sp, color = secondary, textAlign = TextAlign.Center
-            )
-            Text("BRENDIGO · brendigo.com", fontSize = 11.sp,
-                color = VioletDark, textAlign = TextAlign.Center)
+            Spacer(Modifier.height(if (compact) 8.dp else 14.dp))
         }
     }
 }

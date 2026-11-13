@@ -9,3 +9,7 @@ local.properties
 *.apk
 *.aab
 .DS_Store
+
+# Copied from original tracked artwork at build time
+/app/src/main/res/drawable-nodpi/vojs_logo_light.png
+/app/src/main/res/drawable-nodpi/vojs_logo_dark.png

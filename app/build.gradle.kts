@@ -50,3 +50,15 @@ dependencies {
     implementation("androidx.core:core-ktx:1.15.0")
     implementation("androidx.core:core-splashscreen:1.0.1")
 }
+
+/** The exact original PNG wordmarks are versioned in branding/logotip. */
+val syncVojsLogos = tasks.register<Copy>("syncVojsLogos") {
+    from(rootProject.file("branding/logotip/logotip-svijetla-podloga.png")) {
+        rename { "vojs_logo_light.png" }
+    }
+    from(rootProject.file("branding/logotip/logotip-bijeli-prozirni.png")) {
+        rename { "vojs_logo_dark.png" }
+    }
+    into(layout.projectDirectory.dir("src/main/res/drawable-nodpi"))
+}
+tasks.named("preBuild").configure { dependsOn(syncVojsLogos) }
