@@ -60,6 +60,24 @@ def tap(label):
     time.sleep(0.8)
     return True
 
+def recover_launcher_anr():
+    # Emulator infrastructure issue, not a VOJS app exception.
+    # Google Pixel Launcher may hang while the emulator is booting,
+    # covering the foreground app with an OS-controlled ANR dialog.
+    if not bounds_of("Pixel Launcher isn't responding"):
+        return False
+    print("Recovering Pixel Launcher ANR overlay", flush=True)
+    if bounds_of("Close app"):
+        tap("Close app")
+    elif bounds_of("Wait"):
+        tap("Wait")
+    else:
+        return False
+    time.sleep(1)
+    adb("shell", "am", "start", "-n", "com.brendigo.vojs/.MainActivity")
+    return True
+
+
 def fail(reason):
     print("TEST FAILED:", reason, flush=True)
     try:
@@ -93,6 +111,8 @@ def wait_ui(label, timeout_s=9):
     for second in range(timeout_s):
         if bounds_of(label):
             return True
+        if recover_launcher_anr():
+            continue
         if bounds_of("Viewing full screen") and bounds_of("Got it"):
             tap("Got it")
         time.sleep(1)
@@ -110,7 +130,7 @@ def wait_ui(label, timeout_s=9):
     screenshot("debug-missing-control.png","Diagnostic screenshot when control is unavailable")
     return False
 
-if not wait_ui("Započni snimanje"):
+if not wait_ui("Započni snimanje", 20):
     raise RuntimeError("Home did not render native start-recording button")
 if tap("Započni snimanje") and wait_ui("Završi snimanje", 12):
     screenshot("02-recording.png","Recording")
