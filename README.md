@@ -79,6 +79,7 @@ Postavke, pauza i oba načina prikaza dokumentirani su stvarnim snimkama u gornj
 - **🔒 Privatno na uređaju** — nema VOJS clouda, baze podataka ni korisničkih računa.
 - **✈️ Offline** — snimanje i preslušavanje ne zahtijevaju internet.
 - **💬 Tvoj izbor primatelja** — Android nudi kompatibilne aplikacije poput Bluetootha, Quick Sharea, poruka, WhatsAppa ili Vibera (ovisno o instaliranim aplikacijama).
+- **🟣 Izvorni gumb za dijeljenje** — ljubičasti vodoravni gradijent kao u VOJS grafičkom konceptu, uz izvorni Android Sharesheet.
 - **🎨 BRENDIGO identitet** — glavna boja `#7868FF`, tamna `#5145CB` i naglasak `#FF7C91`.
 
 ## 🔐 Privatnost bez skrivenih obećanja
