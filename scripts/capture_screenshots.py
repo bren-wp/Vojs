@@ -68,7 +68,7 @@ if tap("Započni snimanje") and bounds_of("Završi snimanje") is not None:
             screenshot("04-android-share.png","Android native Sharesheet")
             adb("shell", "input", "keyevent", "4")
             time.sleep(2)
-            if not tap("Postavke aplikacije"):
+            if not (tap("Postavke aplikacije") or tap("VOJS ⚙")):
                 raise RuntimeError("Settings control failed")
             screenshot("05-settings.png", "Native settings and theme controls")
             if not tap("Tamna tema"):
