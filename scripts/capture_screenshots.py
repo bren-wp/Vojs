@@ -47,9 +47,32 @@ def tap(label):
 
 adb("wait-for-device", timeout=120)
 adb("shell","pm","grant","com.brendigo.vojs","android.permission.RECORD_AUDIO")
+adb("shell","am","force-stop","com.brendigo.vojs")
 adb("shell","am","start","-n","com.brendigo.vojs/.MainActivity")
 time.sleep(7)
 screenshot("01-home.png","Home / idle")
+
+def wait_ui(label, timeout_s=30):
+    for second in range(timeout_s):
+        if bounds_of(label):
+            return True
+        time.sleep(1)
+    print("Timed out waiting for", repr(label), flush=True)
+    try:
+        adb("shell", "uiautomator", "dump", "/sdcard/window.xml", timeout=40)
+        current = adb("shell", "cat", "/sdcard/window.xml").stdout.decode("utf-8")
+        (OUT / "debug-ui-hierarchy.xml").write_text(current, encoding="utf-8")
+        print("UI hierarchy:", current[:14000], flush=True)
+        log = adb("logcat", "-d", "-s", "AndroidRuntime:E", "*:S").stdout.decode("utf-8")
+        (OUT / "debug-android-crashes.log").write_text(log[-25000:], encoding="utf-8")
+        print("Recent app crashes:", log[-6000:], flush=True)
+    except Exception as problem:
+        print("Debug collection failed:", problem, flush=True)
+    screenshot("debug-missing-control.png","Diagnostic screenshot when control is unavailable")
+    return False
+
+if not wait_ui("Započni snimanje"):
+    raise RuntimeError("Home did not render native start-recording button")
 if tap("Započni snimanje") and bounds_of("Završi snimanje") is not None:
     screenshot("02-recording.png","Recording")
     if not tap("Pauziraj") or not bounds_of("Nastavi snimanje"):
