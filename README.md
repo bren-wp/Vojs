@@ -61,6 +61,12 @@ Svih devet snimki dolazi iz **stvarnog izvođenja Android aplikacije na emulator
 
 📷 [Pogledaj sve stvarne snimke zaslona](docs/screenshots/) · [Automatsko testiranje zaslona](https://github.com/bren-wp/Vojs/actions/workflows/screenshots.yml)
 
+## 🎯 Mjerljiva 1:1 kalibracija
+
+Automatski test uspoređuje stvarnu snimku zaslona za snimanje s izvornim VOJS konceptom iz `branding/google-play/snimke-zaslona/`. Budući da koncept prikazuje ekran unutar okvira telefona, slika se najprije normalizira na odgovarajući sadržaj zaslona, a zatim se računaju odstupanja po područjima (zaglavlje, valni oblik, vrijeme, kontrole). Dinamičko vrijeme i podaci mikrofona prirodno utječu na pikselnu razliku.
+
+[Izvještaj mjerenja](docs/screenshots/recording-pixel-audit.json) stvara se iz **stvarnog emulator-testiranja** i nije zamjena za ručnu provjeru svih zaslona. Cilj je postupno smanjivati odstupanje; 0 % zasad nije dokazano.
+
 ## 🎛️ Postavke i tamna tema
 
 Aplikacija podržava svijetlu, tamnu i automatsku temu, pristupačne kontrole za snimanje, pauziranje, nastavak, reprodukciju i izravno dijeljenje. Prikazi su snimljeni stvarnim Android emulatorom, ne generirani.
