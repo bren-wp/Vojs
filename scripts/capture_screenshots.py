@@ -140,6 +140,13 @@ if tap("Započni snimanje") and wait_ui("Završi snimanje", 12):
                 fail("Start new message failed")
             screenshot("09-dark-home.png", "Native dark mode home")
 
+# A successful UI flow must also be free of app-process Java crashes.
+crashes = adb("logcat", "-d", "-s", "AndroidRuntime:E", "*:S").stdout.decode(
+    "utf-8", errors="replace"
+)
+if re.search(r"FATAL EXCEPTION[\s\S]{0,800}Process: com\.brendigo\.vojs", crashes):
+    fail("VOJS encountered a fatal exception during smoke tests")
+
 (OUT/"manifest.json").write_text(json.dumps({
     "source": "Android emulator; real adb screencap screenshots",
     "device": "Pixel 6 profile, Android API 35 emulator",

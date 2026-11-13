@@ -26,14 +26,23 @@ Neke poruke zaslužuju se čuti. VOJS omogućuje da u nekoliko dodira snimiš gl
 
 ## 📱 Stvarni zasloni aplikacije
 
-Snimke su **izvorni Android emulator screenshotovi**, snimljeni tijekom automatiziranog izvođenja aplikacije na Android API 35 uređaju Pixel 6 profila. Nisu konceptualni mockupovi.
+Svih devet snimki dolazi iz **stvarnog izvođenja Android aplikacije na emulatoru Pixel 6 (API 35)**, tijekom automatiziranih provjera funkcija. Nisu marketinški mockupovi; snimke uključuju i izvorni VOJS logotip.
 
 <table>
   <tr>
-    <td width="25%" align="center"><img src="docs/screenshots/01-home.png" alt="VOJS — početni zaslon" width="210"/><br/><strong>Početni zaslon</strong></td>
-    <td width="25%" align="center"><img src="docs/screenshots/02-recording.png" alt="VOJS — snimanje glasovne poruke" width="210"/><br/><strong>Snimanje</strong></td>
-    <td width="25%" align="center"><img src="docs/screenshots/03-ready.png" alt="VOJS — poruka spremna za dijeljenje" width="210"/><br/><strong>Preslušaj i podijeli</strong></td>
-    <td width="25%" align="center"><img src="docs/screenshots/04-android-share.png" alt="VOJS — Androidov izbornik dijeljenja" width="210"/><br/><strong>Podijeli</strong></td>
+    <td width="33%" align="center"><img src="docs/screenshots/01-home.png" alt="Početni zaslon — stvarna Android snimka" width="220"/><br/><strong>Početni zaslon</strong></td>
+    <td width="33%" align="center"><img src="docs/screenshots/02-recording.png" alt="Snimanje — stvarna Android snimka" width="220"/><br/><strong>Snimanje</strong></td>
+    <td width="33%" align="center"><img src="docs/screenshots/03-ready.png" alt="Poruka spremna — stvarna Android snimka" width="220"/><br/><strong>Poruka spremna</strong></td>
+  </tr>
+  <tr>
+    <td width="33%" align="center"><img src="docs/screenshots/04-android-share.png" alt="Android dijeljenje — stvarna Android snimka" width="220"/><br/><strong>Android dijeljenje</strong></td>
+    <td width="33%" align="center"><img src="docs/screenshots/05-settings.png" alt="Postavke — stvarna Android snimka" width="220"/><br/><strong>Postavke</strong></td>
+    <td width="33%" align="center"><img src="docs/screenshots/06-paused.png" alt="Pauza — stvarna Android snimka" width="220"/><br/><strong>Pauza</strong></td>
+  </tr>
+  <tr>
+    <td width="33%" align="center"><img src="docs/screenshots/07-settings-dark.png" alt="Tamne postavke — stvarna Android snimka" width="220"/><br/><strong>Tamne postavke</strong></td>
+    <td width="33%" align="center"><img src="docs/screenshots/08-dark-ready.png" alt="Tamna tema — poruka — stvarna Android snimka" width="220"/><br/><strong>Tamna tema — poruka</strong></td>
+    <td width="33%" align="center"><img src="docs/screenshots/09-dark-home.png" alt="Tamna tema — početak — stvarna Android snimka" width="220"/><br/><strong>Tamna tema — početak</strong></td>
   </tr>
 </table>
 
@@ -43,7 +52,7 @@ Snimke su **izvorni Android emulator screenshotovi**, snimljeni tijekom automati
 
 Aplikacija podržava svijetlu, tamnu i automatsku temu, pristupačne kontrole za snimanje, pauziranje, nastavak, reprodukciju i izravno dijeljenje. Prikazi su snimljeni stvarnim Android emulatorom, ne generirani.
 
-<img src="docs/screenshots/05-settings.png" width="220" alt="Postavke VOJS aplikacije"/>
+Postavke, pauza i oba načina prikaza dokumentirani su stvarnim snimkama u gornjoj galeriji.
 
 ## ✨ Zašto VOJS?
 
