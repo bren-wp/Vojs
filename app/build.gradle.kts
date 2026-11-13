@@ -13,7 +13,24 @@ android {
         versionCode = (providers.gradleProperty("vojsVersionCode").orNull?.toIntOrNull() ?: 1)
         versionName = providers.gradleProperty("vojsVersionName").orNull ?: "1.0.0"
     }
-    buildTypes { release { isMinifyEnabled = false } }
+    val canSign = listOf("VOJS_KEYSTORE_PATH", "VOJS_STORE_PASSWORD", "VOJS_KEY_ALIAS", "VOJS_KEY_PASSWORD")
+        .all { !System.getenv(it).isNullOrBlank() }
+    signingConfigs {
+        if (canSign) {
+            create("vojsProduction") {
+                storeFile = file(System.getenv("VOJS_KEYSTORE_PATH"))
+                storePassword = System.getenv("VOJS_STORE_PASSWORD")
+                keyAlias = System.getenv("VOJS_KEY_ALIAS")
+                keyPassword = System.getenv("VOJS_KEY_PASSWORD")
+            }
+        }
+    }
+    buildTypes {
+        getByName("release") {
+            isMinifyEnabled = false
+            if (canSign) signingConfig = signingConfigs.getByName("vojsProduction")
+        }
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
