@@ -1,0 +1,66 @@
+name: Recover missing VOJS releases from successful build artifacts
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/recover-releases.yml'
+  workflow_run:
+    workflows: ["Android build and release"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  recover:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'failure'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish any missing releases for already built APK/AAB
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_RUN_ID: ${{ github.event.workflow_run.id }}
+          EVENT_RUN_NO: ${{ github.event.workflow_run.run_number }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          recover() {
+            local run_id="$1" number="$2"
+            local tag="v1.0.$number"
+            if gh release view "$tag" >/dev/null 2>&1; then
+              echo "Already published: $tag"
+              return 0
+            fi
+            local dir="$RUNNER_TEMP/recovery-$number"
+            mkdir -p "$dir" "$dir/dist"
+            if ! gh run download "$run_id" --name "vojs-android-build-$number" --dir "$dir"; then
+              echo "::notice::No build artifact for $tag"
+              return 0
+            fi
+            local debug="$dir/apk/debug/app-debug.apk"
+            local release="$dir/apk/release/app-release-unsigned.apk"
+            local aab="$dir/bundle/release/app-release.aab"
+            if [[ ! -s "$debug" || ! -s "$release" || ! -s "$aab" ]]; then
+              echo "::warning::Incomplete build artifact for $tag"
+              return 0
+            fi
+            cp "$debug" "$dir/dist/VOJS-$tag-debug.apk"
+            cp "$release" "$dir/dist/VOJS-$tag-unsigned.apk"
+            cp "$aab" "$dir/dist/VOJS-$tag-unsigned.aab"
+            local sha
+            sha="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id" --jq .head_sha)"
+            if ! gh release create "$tag" "$dir/dist/VOJS-$tag-debug.apk" "$dir/dist/VOJS-$tag-unsigned.apk" "$dir/dist/VOJS-$tag-unsigned.aab" --title "VOJS $tag" --notes "Recovered from a verified successful Gradle build artifact. Test APK uses a debug certificate. Release APK and AAB are UNSIGNED and not Google Play-ready." --target "$sha"; then
+              gh release view "$tag" >/dev/null 2>&1 || exit 1
+            fi
+          }
+          recover "43515980257" "7"
+          recover "43516121536" "8"
+          if [[ -n "${EVENT_RUN_ID:-}" && -n "${EVENT_RUN_NO:-}" ]]; then
+            if [[ "$EVENT_RUN_NO" != "7" && "$EVENT_RUN_NO" != "8" ]]; then
+              recover "$EVENT_RUN_ID" "$EVENT_RUN_NO"
+            fi
+          fi
