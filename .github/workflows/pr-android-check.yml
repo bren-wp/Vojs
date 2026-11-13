@@ -28,6 +28,28 @@ jobs:
           "$SDKMANAGER" --install "platforms;android-36" "build-tools;35.0.0"
       - name: Build Android APK and AAB
         run: gradle --no-daemon --stacktrace :app:assembleDebug :app:assembleRelease :app:bundleRelease
+      - name: Verify source logo and clean VOJS user interface
+        shell: bash
+        run: |
+          set -euo pipefail
+          cmp branding/logotip/logotip-svijetla-podloga.png app/src/main/res/drawable-nodpi/vojs_logo_light.png
+          cmp branding/logotip/logotip-bijeli-prozirni.png app/src/main/res/drawable-nodpi/vojs_logo_dark.png
+          cmp branding/android/res/mipmap-xxxhdpi/ic_launcher.png app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+          if grep -E 'Bez računa|Bez VOJS servera|brendigo.com|BRENDIGO' app/src/main/java/com/brendigo/vojs/MainActivity.kt; then
+            echo "::error::Unexpected branding/technical text is present in VOJS UI."
+            exit 1
+          fi
+      - name: Check Android UI coordinate parser
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+          source = Path("scripts/capture_screenshots.py").read_text()
+          assert 're.findall(r"[0-9]+", node.attrib.get("bounds", ""))' in source, "Wrong UI bounds matcher"
+          assert re.findall(r"[0-9]+", "[393,1655][687,1949]") == ["393","1655","687","1949"]
+          PY
       - name: Security boundary checks
         shell: bash
         run: |

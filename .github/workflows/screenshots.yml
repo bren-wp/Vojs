@@ -65,10 +65,13 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          if [[ "$(git rev-parse origin/main)" != "$GITHUB_SHA" ]]; then
+            echo "::notice::Screenshots archived, but not committed: newer main is available."
+            exit 0
+          fi
           git add docs/screenshots/
           if ! git diff --cached --quiet; then
-            git commit -m "docs: add genuine Android emulator screenshots [skip ci]"
-            git fetch origin main
-            git rebase origin/main
+            git commit -m "docs: genuine Android emulator screenshots [skip ci]"
             git push origin HEAD:main
           fi
