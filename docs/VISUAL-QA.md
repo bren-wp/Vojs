@@ -14,7 +14,7 @@ Ove tri slike su **konceptualni marketinški prikazi**, ne pokrenuta Android apl
 | Primarna boja | #7868FF | #7868FF |
 | Tamni tekst | #20213B | #20213B |
 | Naslov | Nova poruka | Nova poruka |
-| Grafika | 43 tankih, zaobljenih audio stupaca | Nativni Compose Canvas s 43 stupca, snimanje očitava realnu amplitudu |
+| Grafika | 22 zaobljena, međusobno odvojena audio stupca | Nativni Compose Canvas s 22 stupca, snimanje očitava realnu amplitudu |
 | Odbrojavanje | Velike minute i sekunde | 00:00 – 05:00, aktivno vrijeme snimanja |
 | Snimanje | Veliki okrugli gumb | Veliki okrugli gumb s pristupačnim nazivom |
 | Rezultat | Jedan primarni ljubičasti gumb | Jedan primarni gumb za dijeljenje M4A datoteke |
