@@ -78,7 +78,10 @@ adb("wait-for-device", timeout=120)
 adb("shell","pm","grant","com.brendigo.vojs","android.permission.RECORD_AUDIO")
 adb("shell","am","force-stop","com.brendigo.vojs")
 adb("shell","am","start","-n","com.brendigo.vojs/.MainActivity")
-time.sleep(4)
+# Real screenshot of the native full-frame VOJS splash, while it is visible.
+time.sleep(1.35)
+screenshot("00-splash-light.png", "Original VOJS splash - light")
+time.sleep(2.5)
 # Older emulator images may display Android's immersive tutorial left
 # behind by an earlier build; dismiss only this system prompt, if present.
 if bounds_of("Viewing full screen") and bounds_of("Got it"):
@@ -139,6 +142,11 @@ if tap("Započni snimanje") and wait_ui("Završi snimanje", 12):
             if not tap("Snimi novu poruku"):
                 fail("Start new message failed")
             screenshot("09-dark-home.png", "Native dark mode home")
+            # Confirm dark theme persisted across a fresh app launch.
+            adb("shell", "am", "force-stop", "com.brendigo.vojs")
+            adb("shell", "am", "start", "-n", "com.brendigo.vojs/.MainActivity")
+            time.sleep(1.35)
+            screenshot("10-splash-dark.png", "Original VOJS splash - dark")
 
 # A successful UI flow must also be free of app-process Java crashes.
 crashes = adb("logcat", "-d", "-s", "AndroidRuntime:E", "*:S").stdout.decode(
@@ -153,5 +161,5 @@ if re.search(r"FATAL EXCEPTION[\s\S]{0,800}Process: com\.brendigo\.vojs", crashe
     "captured_at_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
     "screenshots": saved
 },ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
-if len(saved) < 9:
-    fail(f"Expected 9 functional screens, captured {len(saved)}")
+if len(saved) < 11:
+    fail(f"Expected 9 functional screens and both splash themes, captured {len(saved)}")

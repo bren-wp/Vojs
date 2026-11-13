@@ -73,7 +73,8 @@ class MainActivity : ComponentActivity() {
             var showSettings by remember { mutableStateOf(false) }
             var brandedSplash by remember { mutableStateOf(true) }
             LaunchedEffect(Unit) {
-                delay(700)
+                // 2.5 seconds: the complete, genuine VOJS splash is readable.
+                delay(2500L)
                 brandedSplash = false
             }
             SideEffect {
@@ -118,14 +119,7 @@ class MainActivity : ComponentActivity() {
                     Unit
                 }
                 if (brandedSplash) {
-                    Image(
-                        painter = painterResource(
-                            if (dark) R.drawable.vojs_splash_dark else R.drawable.vojs_splash_light
-                        ),
-                        contentDescription = "VOJS · Reci to glasom",
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
+                    VojsBrandedSplash(dark = dark)
                 } else {
                 VoiceScreen(
                     recorder = voice,
