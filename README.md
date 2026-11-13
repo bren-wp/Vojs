@@ -24,6 +24,19 @@ Neke poruke zaslužuju se čuti. VOJS omogućuje da u nekoliko dodira snimiš gl
 | :---: | :---: | :---: |
 | Do 5 min, pauza i nastavak | Provjeri poruku prije slanja | Android Sharesheet / M4A |
 
+## 🎬 Originalni splash — 2,5 sekunde
+
+VOJS koristi originalne neizmijenjene 1080 × 2400 PNG grafike svijetle i tamne teme iz
+[branding/pocetni-zaslon/](branding/pocetni-zaslon/). Nativni splash prikazuje se **2,5 sekunde**,
+bez rezanja slike. Prilikom prvog pokretanja Android kratko prikazuje i vlastiti sistemski splash.
+
+Emulator workflow snima stvarne prikaze kao
+[svijetli splash](docs/screenshots/00-splash-light.png) i
+[tamni splash](docs/screenshots/10-splash-dark.png).
+Rezultati usporedbe s originalnim slikama nalaze se u
+[splash-pixel-audit.json](docs/screenshots/splash-pixel-audit.json).
+*Stvarne snimke automatski će se pojaviti nakon uspješnog testiranja nove verzije.*
+
 ## 📱 Stvarni zasloni aplikacije
 
 Svih devet snimki dolazi iz **stvarnog izvođenja Android aplikacije na emulatoru Pixel 6 (API 35)**, tijekom automatiziranih provjera funkcija. Nisu marketinški mockupovi; snimke uključuju i izvorni VOJS logotip.

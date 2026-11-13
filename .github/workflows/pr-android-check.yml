@@ -50,6 +50,14 @@ jobs:
           assert 're.findall(r"[0-9]+", node.attrib.get("bounds", ""))' in source, "Wrong UI bounds matcher"
           assert re.findall(r"[0-9]+", "[393,1655][687,1949]") == ["393","1655","687","1949"]
           PY
+      - name: Original VOJS splash correctness
+        shell: bash
+        run: |
+          set -euo pipefail
+          cmp branding/pocetni-zaslon/pocetni-zaslon-svijetli-1080x2400.png app/src/main/res/drawable-nodpi/vojs_splash_light.png
+          cmp branding/pocetni-zaslon/pocetni-zaslon-tamni-1080x2400.png app/src/main/res/drawable-nodpi/vojs_splash_dark.png
+          grep -q 'delay(2500L)' app/src/main/java/com/brendigo/vojs/MainActivity.kt
+          grep -q 'ContentScale.Fit' app/src/main/java/com/brendigo/vojs/VojsBrandedSplash.kt
       - name: Security boundary checks
         shell: bash
         run: |

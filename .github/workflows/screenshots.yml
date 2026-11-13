@@ -6,6 +6,7 @@ on:
     paths:
       - 'app/**'
       - 'scripts/capture_screenshots.py'
+      - 'scripts/audit_splash_pixels.py'
       - '.github/workflows/screenshots.yml'
   workflow_dispatch:
 
@@ -50,8 +51,11 @@ jobs:
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -no-boot-anim
           script: |
+            python3 -m venv "$RUNNER_TEMP/vojs-splash-audit"
+            "$RUNNER_TEMP/vojs-splash-audit/bin/python" -m pip install --disable-pip-version-check "Pillow>=11,<13"
             adb install -r app/build/outputs/apk/debug/app-debug.apk
             python3 scripts/capture_screenshots.py
+            "$RUNNER_TEMP/vojs-splash-audit/bin/python" scripts/audit_splash_pixels.py
       - name: Archive real screenshots and diagnostics even on failed UI tests
         if: always()
         uses: actions/upload-artifact@v4
