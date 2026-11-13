@@ -59,7 +59,7 @@ internal class VoiceRecorder(private val context: Context) {
 
     init {
         repeat(MAX_WAVEFORM_SAMPLES) { waveform.add(0.12f) }
-        cleanupExpired()
+        runCatching { cleanupExpired() }
     }
 
     private fun directory(): File = File(context.cacheDir, "shared_audio").apply { mkdirs() }
@@ -77,7 +77,12 @@ internal class VoiceRecorder(private val context: Context) {
     fun start(): Boolean {
         if (stage == RecordingStage.RECORDING) return false
         discardCurrent()
-        val audio = File(directory(), "vojs-${System.currentTimeMillis()}.m4a")
+        val audio = try {
+            File(directory(), "vojs-${System.currentTimeMillis()}.m4a")
+        } catch (_: Exception) {
+            error = "Nije moguće pristupiti privremenoj pohrani uređaja."
+            return false
+        }
         try {
             val candidate = if (Build.VERSION.SDK_INT >= 31) MediaRecorder(context) else MediaRecorder()
             recorder = candidate

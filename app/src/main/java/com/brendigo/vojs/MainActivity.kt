@@ -59,7 +59,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            var appearance by rememberSaveable { mutableStateOf("system") }
+            var appearance by rememberSaveable {
+                mutableStateOf(
+                    getPreferences(0).getString("vojs_appearance", "system")
+                        ?.takeIf { it in setOf("system", "light", "dark") } ?: "system"
+                )
+            }
             val dark = when (appearance) {
                 "dark" -> true
                 "light" -> false
@@ -145,12 +150,20 @@ class MainActivity : ComponentActivity() {
                                    "light" to "Svijetla tema",
                                    "dark" to "Tamna tema").forEach { (key, title) ->
                                 Row(
-                                    Modifier.fillMaxWidth().clickable { appearance = key }
+                                    Modifier.fillMaxWidth().clickable {
+                                        appearance = key
+                                        getPreferences(0).edit()
+                                            .putString("vojs_appearance", key).apply()
+                                    }
                                         .padding(vertical = 13.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     RadioButton(selected = appearance == key,
-                                        onClick = { appearance = key })
+                                        onClick = {
+                                            appearance = key
+                                            getPreferences(0).edit()
+                                                .putString("vojs_appearance", key).apply()
+                                        })
                                     Spacer(Modifier.width(10.dp))
                                     Text(title)
                                 }
