@@ -39,6 +39,12 @@ Snimke su **izvorni Android emulator screenshotovi**, snimljeni tijekom automati
 
 📷 [Pogledaj sve stvarne snimke zaslona](docs/screenshots/) · [Automatsko testiranje zaslona](https://github.com/bren-wp/Vojs/actions/workflows/screenshots.yml)
 
+## 🎛️ Postavke i tamna tema
+
+Aplikacija podržava svijetlu, tamnu i automatsku temu, pristupačne kontrole za snimanje, pauziranje, nastavak, reprodukciju i izravno dijeljenje. Prikazi su snimljeni stvarnim Android emulatorom, ne generirani.
+
+<img src="docs/screenshots/05-settings.png" width="220" alt="Postavke VOJS aplikacije"/>
+
 ## ✨ Zašto VOJS?
 
 - **⚡ Brzo** — otvoriš, snimiš, poslušaš, podijeliš.
