@@ -288,7 +288,10 @@ private fun VoiceScreen(
                         Text("●", fontSize = 45.sp, color = Paper)
                     }
                     Spacer(Modifier.height(13.dp))
-                    Text("dotakni za početak snimanja", color = secondary, fontSize = 14.sp)
+                    TextButton(onClick = onRecord) {
+                        Text("Započni snimanje", color = secondary,
+                            fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                    }
                 }
                 RecordingStage.RECORDING -> {
                     Button(
@@ -301,7 +304,10 @@ private fun VoiceScreen(
                         Text("■", fontSize = 35.sp, color = Paper)
                     }
                     Spacer(Modifier.height(10.dp))
-                    Text("dotakni za kraj snimanja", color = secondary, fontSize = 14.sp)
+                    TextButton(onClick = recorder::finish) {
+                        Text("Završi snimanje", color = secondary,
+                            fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                    }
                     Spacer(Modifier.height(7.dp))
                     TextButton(onClick = recorder::togglePause) {
                         Text(if (recorder.paused) "▶ Nastavi snimanje" else "Ⅱ Pauziraj",
