@@ -95,4 +95,4 @@ Originalni predrenderirani web i kompletni binarni brending mogu se zasebno uves
 
 Izvorni dizajn je dostavljen u `VOJS-Android-brending-1.0.0.zip`. Nativni zasloni sada koriste valni prikaz, veliko vrijeme, okrugli gumb i raspored iz referenci. **Potpuna pikselna podudarnost nije potvrđena mjerenjem**, a reference koje prikazuju web-poveznice i vremensko brisanje opisuju serverske funkcije koje ova offline aplikacija namjerno nema.
 
-Originalni ZIP-ovi mogu se uvesti skriptom [import_original_assets.py](scripts/import_original_assets.py); bez unesenih binarnih datoteka repo ne sadrži puni originalni branding/web arhiv. Prava radna web prezentacija ostaje u `website/` i **ne objavljuje se automatski**.
+**Cijeli izvorni web i brending već su u repozitoriju** u [source-archives/](source-archives/). Automatski [import-original-assets.yml](.github/workflows/import-original-assets.yml) provjerava SHA256 te izdvaja 87 web i 55 brending datoteka na `main` bez web deploya. Prava radna web prezentacija ostaje u `website/` i **ne objavljuje se automatski**.

@@ -1,15 +1,13 @@
-# Izvorni VOJS web i Android brending
+# Originalni VOJS web i brending — bez GitHub Pages
 
-Originalni `VOJS.zip` i `VOJS-Android-brending-1.0.0.zip` sadrže 13 HTML stranica, 2 izvorne fotografije, fontove, JavaScript/CSS pakete, Android PNG resurse i Google Play grafike.
+**Oba izvorna ZIP arhiva sa svim binarnim datotekama nalaze se u GitHubu**:
+- `source-archives/VOJS.zip` — 87 izvornih datoteka (13 HTML stranica, CSS/JS, fontovi, 2 fotografije i favicon)
+- `source-archives/VOJS-Android-brending-1.0.0.zip` — 55 izvornih datoteka (Android bitmap ikone, splash, logotipi, Google Play grafike, PDF smjernice)
 
-Repozitorij uključuje `scripts/import_original_assets.py`. Stavi originalna dva ZIP-a u isti lokalni direktorij i pokreni:
+Arhivi su preneseni bez preinaka te imaju kontrolne SHA256 sažetke u `source-archives/SHA256SUMS`.
 
-```bash
-python3 scripts/import_original_assets.py /putanja/do/zipova
-```
+`scripts/import_original_assets.py` provjerava SHA256 i CRC, zatim čuva izvorni web pod `original-web/public_html/`, brending u `branding/` i kopira originalne bitmap Android resurse u `app/src/main/res/`. Workflow `import-original-assets.yml` automatski izvršava uvoz na main grani i zatim komitira izdvojene datoteke.
 
-Skripta sigurno kopira web **bez izmjena** u `original-web/public_html/`, kompletan branding u `branding/`, te Android bitmap ikone u `app/src/main/res/`. Zatim je potreban commit/push promjena na GitHub.
+**`website/` se ne objavljuje.** Sva web dokumentacija ostaje isključivo u GitHub repozitoriju; `pages.yml` je uklonjen. Originalni web služi kao referenca i nije povezan s izvornom Android aplikacijom. Originalne stranice o javnim poveznicama, istekima i brisanju na serveru nisu dostupne funkcije ovog offline izdanja.
 
-**Napomena:** Originalna web aplikacija govori o poveznicama i roku trajanja snimki. Bez servera te funkcije nisu dostupne; postojeći `website/` u GitHub repozitoriju opisuje samo stvarni lokalni APK tijek rada. GitHub Pages i automatski web deploy su uklonjeni. Originalni web čuva se kao referenca, ne postavlja se automatski u produkciju.
-
-**Snimke:** tri slike iz originalnog Play brendinga su konceptualne. Samo `docs/screenshots/` koje stvori workflow [Capture real Android screenshots](https://github.com/bren-wp/Vojs/actions/workflows/screenshots.yml) iz emulatora smiju se nazvati stvarnima.
+**Marketinške konceptualne slike** pod `branding/google-play/snimke-zaslona/` nisu stvarni Android zasloni. Samo `docs/screenshots/`, generiran na emulatoru, smije se prikazati kao stvarna snimka.

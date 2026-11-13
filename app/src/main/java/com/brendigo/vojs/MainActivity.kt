@@ -44,6 +44,7 @@ private val Muted = Color(0xFF777783)
 private val Paper = Color(0xFFFFFFFF)
 private val Night = Color(0xFF20213B)
 
+@OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
     private val voice by lazy { VoiceRecorder(this) }
 
