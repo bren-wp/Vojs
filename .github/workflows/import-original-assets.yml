@@ -1,0 +1,50 @@
+name: Import original VOJS web and branding
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'source-archives/**'
+      - 'scripts/import_original_assets.py'
+      - '.github/workflows/import-original-assets.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: vojs-original-assets-main
+  cancel-in-progress: false
+jobs:
+  import:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify ZIP SHA256, extract all original files, install Android assets
+        run: python3 scripts/import_original_assets.py source-archives
+      - name: Validate original archive contents
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s original-web/public_html/index.html
+          test -s original-web/public_html/assets/index-ClJALxKN.js
+          test -s branding/logotip/simbol.svg
+          test -s branding/google-play/ikona-512.png
+          test -s branding/VOJS-smjernice-vizualnog-identiteta.pdf
+          test -s app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png
+          test -s app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
+          test ! -e app/src/main/res/mipmap-anydpi/ic_launcher.xml
+          test "$(find original-web/public_html -type f | wc -l)" -eq 87
+          test "$(find branding -type f | wc -l)" -eq 55
+      - name: Commit original files to repo, without website deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A original-web branding app/src/main/res docs/IMPORTED-ASSETS.json
+          if ! git diff --cached --quiet; then
+            git commit -m "assets: import all original VOJS binary web and branding files"
+            git fetch origin main
+            git rebase origin/main
+            git push origin HEAD:main
+          fi

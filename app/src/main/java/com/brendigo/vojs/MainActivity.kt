@@ -1,17 +1,17 @@
 package com.brendigo.vojs
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.media.MediaPlayer
-import android.media.MediaRecorder
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -19,193 +19,328 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import kotlinx.coroutines.delay
-import java.io.File
+import kotlin.math.abs
+import kotlin.math.sin
 
-private val Purple = Color(0xFF7868FF)
-private val DarkPurple = Color(0xFF5145CB)
+private val Violet = Color(0xFF7868FF)
+private val VioletDark = Color(0xFF5145CB)
 private val Ink = Color(0xFF20213B)
-private val Light = Color(0xFFF7F6FF)
-private const val MAX_SECONDS = 300
+private val Muted = Color(0xFF777783)
+private val Paper = Color(0xFFFFFFFF)
+private val Night = Color(0xFF20213B)
 
+@OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
-    private var recorder: MediaRecorder? = null
-    private var player: MediaPlayer? = null
-    private var file: File? = null
-    private var recording by mutableStateOf(false)
-    private var paused by mutableStateOf(false)
-    private var playing by mutableStateOf(false)
-    private var elapsed by mutableIntStateOf(0)
-    private var message by mutableStateOf("")
-    private var finished by mutableStateOf(false)
+    private val voice by lazy { VoiceRecorder(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
-        val directory = File(cacheDir, "shared_audio").apply { mkdirs() }
-        // Keep active shares readable; remove older temporary exports on a later launch.
-        directory.listFiles()?.filter { System.currentTimeMillis() - it.lastModified() > 24L * 3600 * 1000 }?.forEach { it.delete() }
+        enableEdgeToEdge()
         setContent {
-            val permission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-                if (granted) startRecord() else message = "Za snimanje je potrebno dopuštenje za mikrofon."
+            var appearance by rememberSaveable { mutableStateOf("system") }
+            val dark = when (appearance) {
+                "dark" -> true
+                "light" -> false
+                else -> isSystemInDarkTheme()
             }
-            LaunchedEffect(recording, paused) {
-                while (recording && !paused) {
-                    delay(1000)
-                    if (recording && !paused) {
-                        elapsed += 1
-                        if (elapsed >= MAX_SECONDS) stopRecord()
-                    }
+            var showSettings by remember { mutableStateOf(false) }
+            val permissionRequest = rememberLauncherForActivityResult(
+                ActivityResultContracts.RequestPermission()
+            ) { allowed ->
+                if (allowed) voice.start()
+                else voice.errorMessage("Dopusti korištenje mikrofona u postavkama uređaja.")
+            }
+            LaunchedEffect(voice.stage, voice.paused) {
+                while (voice.stage == RecordingStage.RECORDING && !voice.paused) {
+                    voice.tick()
+                    delay(120)
                 }
             }
-            MaterialTheme(colorScheme = lightColorScheme(primary = Purple, background = Light, surface = Color.White)) {
-                Column(
-                    Modifier.fillMaxSize().background(Light).verticalScroll(rememberScrollState())
-                        .padding(horizontal = 24.dp, vertical = 28.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text("VOJS", fontSize = 32.sp, fontWeight = FontWeight.ExtraBold, color = Ink)
-                    Spacer(Modifier.height(6.dp))
-                    Text("Neke stvari bolje zvuče.", fontSize = 15.sp, color = DarkPurple)
-                    Spacer(Modifier.height(54.dp))
-                    Box(Modifier.size(178.dp).background(Purple, CircleShape), contentAlignment = Alignment.Center) {
-                        Text(if (recording) "●" else if (finished) "▶" else "♫", fontSize = 80.sp, color = Color.White)
-                    }
-                    Spacer(Modifier.height(34.dp))
-                    Text(if (recording) "Snimanje poruke" else if (finished) "Poruka je spremna" else "Tvoj glas. Tvoja poruka.",
-                        fontSize = 24.sp, color = Ink, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
-                    Spacer(Modifier.height(12.dp))
-                    Text("%02d:%02d / 05:00".format(elapsed / 60, elapsed % 60), fontSize = 24.sp, color = DarkPurple)
-                    Spacer(Modifier.height(24.dp))
-                    if (!recording && !finished) {
-                        Button(
-                            onClick = {
-                                if (ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) startRecord()
-                                else permission.launch(Manifest.permission.RECORD_AUDIO)
-                            },
-                            modifier = Modifier.fillMaxWidth().height(56.dp),
-                            shape = RoundedCornerShape(18.dp)
-                        ) { Text("●  Započni snimanje") }
-                    }
-                    if (recording) {
-                        Button(onClick = { stopRecord() }, modifier = Modifier.fillMaxWidth().height(56.dp)) { Text("■  Završi snimanje") }
-                        Spacer(Modifier.height(12.dp))
-                        OutlinedButton(onClick = { togglePause() }, modifier = Modifier.fillMaxWidth()) {
-                            Text(if (paused) "▶  Nastavi" else "Ⅱ  Pauziraj")
+            val foreground = if (dark) Paper else Ink
+            val background = if (dark) Night else Paper
+            val secondary = if (dark) Color(0xFFB3B0C8) else Muted
+            MaterialTheme(
+                colorScheme = if (dark) darkColorScheme(
+                    primary = Violet, background = Night, surface = Night,
+                    onBackground = Paper, onSurface = Paper
+                ) else lightColorScheme(
+                    primary = Violet, background = Paper, surface = Paper,
+                    onBackground = Ink, onSurface = Ink
+                )
+            ) {
+                val requestStart = {
+                    if (ContextCompat.checkSelfPermission(
+                            this@MainActivity, Manifest.permission.RECORD_AUDIO
+                        ) == PackageManager.PERMISSION_GRANTED
+                    ) voice.start()
+                    else permissionRequest.launch(Manifest.permission.RECORD_AUDIO)
+                    Unit
+                }
+                VoiceScreen(
+                    recorder = voice,
+                    dark = dark,
+                    foreground = foreground,
+                    background = background,
+                    secondary = secondary,
+                    onSettings = { showSettings = true },
+                    onRecord = requestStart
+                )
+                if (showSettings) {
+                    ModalBottomSheet(onDismissRequest = { showSettings = false }) {
+                        Column(
+                            Modifier.fillMaxWidth().padding(horizontal = 25.dp)
+                                .padding(bottom = 36.dp)
+                        ) {
+                            Text("Postavke", style = MaterialTheme.typography.headlineSmall,
+                                fontWeight = FontWeight.Bold)
+                            Spacer(Modifier.height(14.dp))
+                            Text("Izgled aplikacije", color = secondary)
+                            listOf("system" to "Prema postavkama uređaja",
+                                   "light" to "Svijetla tema",
+                                   "dark" to "Tamna tema").forEach { (key, title) ->
+                                Row(
+                                    Modifier.fillMaxWidth().clickable { appearance = key }
+                                        .padding(vertical = 13.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    RadioButton(selected = appearance == key,
+                                        onClick = { appearance = key })
+                                    Spacer(Modifier.width(10.dp))
+                                    Text(title)
+                                }
+                            }
+                            HorizontalDivider()
+                            Spacer(Modifier.height(18.dp))
+                            Text("Privatnost", fontWeight = FontWeight.SemiBold)
+                            Spacer(Modifier.height(8.dp))
+                            Text(
+                                "Snimke se ne šalju na VOJS server. Privremene M4A datoteke " +
+                                "koriste se za Android dijeljenje i čiste pri sljedećem " +
+                                "pokretanju kada su starije od 24 sata.",
+                                color = secondary, fontSize = 13.sp, lineHeight = 19.sp
+                            )
+                            Spacer(Modifier.height(12.dp))
+                            Text("VOJS · BRENDIGO · brendigo.com",
+                                fontSize = 12.sp, color = secondary)
                         }
                     }
-                    if (finished) {
-                        Button(onClick = { share() }, modifier = Modifier.fillMaxWidth().height(56.dp)) { Text("↗  Podijeli glasovnu poruku") }
-                        Spacer(Modifier.height(12.dp))
-                        OutlinedButton(onClick = { playOrStop() }, modifier = Modifier.fillMaxWidth()) { Text(if (playing) "■  Zaustavi" else "▶  Preslušaj") }
-                        TextButton(onClick = { clear() }) { Text("Snimi novu poruku") }
-                    }
-                    Spacer(Modifier.height(22.dp))
-                    if (message.isNotEmpty()) Text(message, color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center)
-                    Spacer(Modifier.height(22.dp))
-                    Text("Bez računa • Bez VOJS servera • Bez oglasa", fontSize = 12.sp, color = Ink, textAlign = TextAlign.Center)
-                    Spacer(Modifier.height(6.dp))
-                    Text("Snimke se privremeno čuvaju samo na uređaju radi dijeljenja. Primateljska aplikacija može pohraniti vlastitu kopiju.",
-                        fontSize = 12.sp, color = Ink.copy(alpha = 0.7f), textAlign = TextAlign.Center)
-                    Spacer(Modifier.height(30.dp))
-                    Text("BRENDIGO · brendigo.com", fontSize = 11.sp, color = DarkPurple)
                 }
             }
         }
     }
 
-    @Suppress("DEPRECATION")
-    private fun startRecord() {
-        clear()
-        try {
-            file = File(File(cacheDir, "shared_audio").apply { mkdirs() }, "vojs-${System.currentTimeMillis()}.m4a")
-            recorder = if (Build.VERSION.SDK_INT >= 31) MediaRecorder(this) else MediaRecorder()
-            recorder!!.apply {
-                setAudioSource(MediaRecorder.AudioSource.MIC)
-                setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-                setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
-                setAudioEncodingBitRate(128000)
-                setAudioSamplingRate(44100)
-                setMaxDuration(MAX_SECONDS * 1000)
-                setOutputFile(file!!.absolutePath)
-                prepare()
-                start()
-            }
-            recording = true
-            elapsed = 0
-        } catch (e: Exception) {
-            message = "Snimanje nije uspjelo: ${e.localizedMessage ?: "nepoznata pogreška"}"
-            recorder?.runCatching { release() }
-            recorder = null
-            recording = false
-        }
+    override fun onStop() {
+        super.onStop()
+        voice.onBackground()
     }
-    private fun togglePause() {
-        try {
-            if (paused) recorder?.resume() else recorder?.pause()
-            paused = !paused
-        } catch (e: Exception) { message = "Pauziranje nije uspjelo."; stopRecord() }
-    }
-    private fun stopRecord() {
-        if (!recording) return
-        recording = false
-        paused = false
-        val success = runCatching { recorder?.stop() }.isSuccess
-        recorder?.runCatching { release() }
-        recorder = null
-        finished = success && file?.let { it.exists() && it.length() > 0 } == true
-        if (!finished) {
-            file?.delete()
-            message = "Snimka nije uspjela. Pokušaj ponovno."
-        }
-    }
-    private fun playOrStop() {
-        if (playing) {
-            player?.release(); player = null; playing = false
-        } else {
-            val audio = file ?: return
-            try {
-                player = MediaPlayer().apply {
-                    setDataSource(audio.absolutePath)
-                    setOnCompletionListener { it.release(); player = null; playing = false }
-                    prepare(); start()
-                }
-                playing = true
-            } catch (e: Exception) { player?.release(); player = null; message = "Reprodukcija nije uspjela." }
-        }
-    }
-    private fun share() {
-        val audio = file?.takeIf { it.exists() && it.length() > 0 } ?: return
-        try {
-            val uri = FileProvider.getUriForFile(this, "${packageName}.fileprovider", audio)
-            val send = Intent(Intent.ACTION_SEND).apply {
-                type = "audio/mp4"
-                putExtra(Intent.EXTRA_STREAM, uri)
-                clipData = android.content.ClipData.newUri(contentResolver, "VOJS", uri)
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            }
-            startActivity(Intent.createChooser(send, "Podijeli putem"))
-        } catch (e: Exception) { message = "Dijeljenje nije moguće na ovom uređaju." }
-    }
-    private fun clear() {
-        if (recording) stopRecord()
-        player?.runCatching { release() }; player = null; playing = false
-        // Delete prior local working recording only when starting a new one;
-        // Android receiver may already have copied the shared URI.
-        file?.delete(); file = null
-        finished = false; elapsed = 0; paused = false; message = ""
-    }
+
     override fun onDestroy() {
-        if (recording) stopRecord()
-        player?.runCatching { release() }; player = null
+        voice.close()
         super.onDestroy()
     }
+}
+
+private fun VoiceRecorder.errorMessage(text: String) = showError(text)
+
+@Composable
+private fun VoiceScreen(
+    recorder: VoiceRecorder,
+    dark: Boolean,
+    foreground: Color,
+    background: Color,
+    secondary: Color,
+    onSettings: () -> Unit,
+    onRecord: () -> Unit
+) {
+    val compact = androidx.compose.ui.platform.LocalConfiguration.current.screenHeightDp < 710
+    val stage = recorder.stage
+    Column(
+        Modifier.fillMaxSize().background(background).safeDrawingPadding()
+    ) {
+        Column(
+            Modifier.weight(1f).verticalScroll(rememberScrollState())
+                .fillMaxWidth().padding(horizontal = 24.dp)
+                .padding(top = if (compact) 13.dp else 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    if (stage == RecordingStage.READY) "Poruka je spremna" else "Nova poruka",
+                    color = foreground, fontSize = if (compact) 25.sp else 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.weight(1f)
+                )
+                TextButton(onClick = onSettings, modifier = Modifier
+                    .semantics { contentDescription = "Postavke aplikacije" }) {
+                    Text("VOJS ⚙", fontWeight = FontWeight.ExtraBold, color = Violet)
+                }
+            }
+            Spacer(Modifier.height(if (compact) 20.dp else 40.dp))
+            Text(
+                when (stage) {
+                    RecordingStage.IDLE -> "Tvoj glas. Tvoja poruka."
+                    RecordingStage.RECORDING ->
+                        if (recorder.paused) "Snimanje je pauzirano" else "Snimanje je u tijeku"
+                    RecordingStage.READY -> "Preslušaj pa podijeli"
+                },
+                color = secondary, fontSize = 15.sp, textAlign = TextAlign.Center
+            )
+            Spacer(Modifier.height(if (compact) 12.dp else 26.dp))
+            VoiceWaveform(
+                values = recorder.waveform.toList(),
+                active = stage == RecordingStage.RECORDING && !recorder.paused,
+                color = if (dark) Color(0xFF978BFF) else Violet,
+                modifier = Modifier.fillMaxWidth()
+                    .height(if (compact) 135.dp else 180.dp)
+            )
+            Spacer(Modifier.height(if (compact) 16.dp else 29.dp))
+            Text(
+                formatTime(recorder.elapsedMs),
+                color = foreground, fontSize = if (compact) 49.sp else 62.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = (-2).sp
+            )
+            Text(
+                if (stage == RecordingStage.READY) "glasovna poruka"
+                else "najviše 05:00",
+                color = secondary, fontSize = 15.sp
+            )
+            if (stage == RecordingStage.READY) {
+                Spacer(Modifier.height(29.dp))
+                OutlinedButton(
+                    onClick = recorder::togglePlayback,
+                    shape = RoundedCornerShape(17.dp),
+                    modifier = Modifier.fillMaxWidth().height(53.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Violet)
+                ) {
+                    Text(if (recorder.playing) "■  Zaustavi" else "▶  Preslušaj",
+                        fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                }
+            }
+            if (recorder.error != null) {
+                Spacer(Modifier.height(20.dp))
+                Text(
+                    recorder.error ?: "",
+                    color = if (dark) Color(0xFFFFA3B3) else Color(0xFFB92342),
+                    fontSize = 13.sp, textAlign = TextAlign.Center
+                )
+            }
+        }
+        Column(
+            modifier = Modifier.fillMaxWidth()
+                .padding(horizontal = 24.dp)
+                .padding(bottom = if (compact) 10.dp else 23.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            when (stage) {
+                RecordingStage.IDLE -> {
+                    Button(
+                        onClick = onRecord,
+                        shape = CircleShape,
+                        modifier = Modifier.size(if (compact) 94.dp else 112.dp)
+                            .semantics { contentDescription = "Započni snimanje" },
+                        colors = ButtonDefaults.buttonColors(containerColor = Violet)
+                    ) {
+                        Text("●", fontSize = 45.sp, color = Paper)
+                    }
+                    Spacer(Modifier.height(13.dp))
+                    Text("dotakni za početak snimanja", color = secondary, fontSize = 14.sp)
+                }
+                RecordingStage.RECORDING -> {
+                    Button(
+                        onClick = recorder::finish,
+                        shape = CircleShape,
+                        modifier = Modifier.size(if (compact) 94.dp else 112.dp)
+                            .semantics { contentDescription = "Završi snimanje" },
+                        colors = ButtonDefaults.buttonColors(containerColor = Violet)
+                    ) {
+                        Text("■", fontSize = 35.sp, color = Paper)
+                    }
+                    Spacer(Modifier.height(10.dp))
+                    Text("dotakni za kraj snimanja", color = secondary, fontSize = 14.sp)
+                    Spacer(Modifier.height(7.dp))
+                    TextButton(onClick = recorder::togglePause) {
+                        Text(if (recorder.paused) "▶ Nastavi snimanje" else "Ⅱ Pauziraj",
+                            color = Violet, fontSize = 14.sp)
+                    }
+                }
+                RecordingStage.READY -> {
+                    Button(
+                        onClick = recorder::share,
+                        shape = RoundedCornerShape(18.dp),
+                        modifier = Modifier.fillMaxWidth().height(58.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Violet)
+                    ) {
+                        Text("Podijeli glasovnu poruku", fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold, color = Paper)
+                    }
+                    Spacer(Modifier.height(4.dp))
+                    TextButton(onClick = recorder::discardCurrent) {
+                        Text("Snimi novu poruku", color = Violet)
+                    }
+                }
+            }
+            Spacer(Modifier.height(if (compact) 11.dp else 16.dp))
+            Text(
+                "Bez računa  •  Bez VOJS servera",
+                fontSize = 11.sp, color = secondary, textAlign = TextAlign.Center
+            )
+            Text("BRENDIGO · brendigo.com", fontSize = 11.sp,
+                color = VioletDark, textAlign = TextAlign.Center)
+        }
+    }
+}
+
+@Composable
+private fun VoiceWaveform(
+    values: List<Float>, active: Boolean, color: Color,
+    modifier: Modifier = Modifier
+) {
+    Canvas(
+        modifier.semantics {
+            contentDescription =
+                if (active) "Prikaz jakosti zvuka tijekom snimanja"
+                else "Valni prikaz glasovne poruke"
+        }
+    ) {
+        val count = 43
+        val step = size.width / (count + 1)
+        val mid = size.height / 2f
+        val cap = 4.5.dp.toPx()
+        for (i in 0 until count) {
+            val envelope = (0.23f + 0.77f *
+                abs(sin((i + 0.8) * 0.53)).toFloat())
+            val sample = values.getOrNull(i)?.coerceIn(0.09f, 1f) ?: envelope
+            val height = if (active) {
+                (0.12f + sample * envelope * 0.88f) * size.height * 0.75f
+            } else {
+                (0.22f + envelope * 0.78f) * size.height * 0.78f
+            }
+            val x = (i + 1) * step
+            drawLine(color, Offset(x, mid - height / 2f),
+                Offset(x, mid + height / 2f),
+                strokeWidth = cap, cap = StrokeCap.Round)
+        }
+    }
+}
+
+private fun formatTime(ms: Long): String {
+    val seconds = (ms / 1000).coerceIn(0L, 300L)
+    return "%02d:%02d".format(seconds / 60, seconds % 60)
 }

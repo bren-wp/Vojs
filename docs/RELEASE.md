@@ -1,9 +1,9 @@
 # VOJS: provjera Android CI i izdanja
 
 ## Uzrok prethodnog pada
-Prethodni workflow koristio je `android-actions/setup-android@v3`, koji je pozivao `sdkmanager tools`; taj paket više ne postoji i build nije ni započeo. Novi CI izravno instalira platformu 35 i build-tools 35 te koristi Gradle 8.10.2 na Ubuntu 24.04.
+Prethodni workflow koristio je `android-actions/setup-android@v3`, koji je pozivao `sdkmanager tools`; taj paket više ne postoji i build nije ni započeo. Novi CI instalira platformu Android 36 i koristi Gradle 8.11.1 na Ubuntu 24.04.
 
-GitHub Pages nije bio omogućen i `configure-pages@v5` vraćao je 404. Novi workflow uvijek sprema web artifact, a deploy pokreće tek kada je Pages stvarno uključen.
+Raniji GitHub Pages workflow je uklonjen na zahtjev vlasnika. Web ostaje kao izvorni kod u `website/` bez automatskog hostinga.
 
 ## Izdanja i ključevi
 Svaki push na `main` pokreće Gradle build i nakon uspješne izgradnje GitHub Release s tri datoteke:
@@ -16,8 +16,8 @@ Za instalabilni produkcijski APK i Google Play AAB potrebne su GitHub Actions se
 Kod ne stvara i ne sprema vlastite trajne produkcijske ključeve.
 
 ## Web
-Pripremljena je statična prezentacija u `website/`. GitHub Pages: Settings → Pages → Source: GitHub Actions.
-Početna verzija weba ne uključuje svih 13 izvornih HTML stranica; izvorna web-arhiva i svi binarni materijali moraju se posebno prenijeti za vizualno 1:1 zadržavanje. Ne prikazivati nacrte iz `google-play/snimke-zaslona` kao snimke stvarne aplikacije.
+Statična prezentacija je u `website/`; nema GitHub Pages deploya i web ostaje unutar GitHuba.
+Aktualna GitHub web prezentacija ima 13 ruta, ali nije binarno ni vizualno identična svim datotekama izvornog arhiva; izvorna web-arhiva i svi binarni materijali moraju se posebno prenijeti za vizualno 1:1 zadržavanje. Ne prikazivati nacrte iz `google-play/snimke-zaslona` kao snimke stvarne aplikacije.
 
 ## Privatnost
 Snimanje ne koristi VOJS server. FileProvider privremeno izlaže privatni cache za ACTION_SEND. Dijeljenim sadržajem upravlja odabrana vanjska aplikacija.

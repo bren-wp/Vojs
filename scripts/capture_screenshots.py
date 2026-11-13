@@ -57,11 +57,15 @@ if tap("Započni snimanje") and bounds_of("Završi snimanje") is not None:
         screenshot("03-ready.png","Recorded audio / ready to share")
         if tap("Podijeli glasovnu poruku"):
             screenshot("04-android-share.png","Android native Sharesheet")
+            adb("shell", "input", "keyevent", "4")
+            time.sleep(2)
+            if tap("Postavke aplikacije"):
+                screenshot("05-settings.png", "Native settings and theme controls")
 (OUT/"manifest.json").write_text(json.dumps({
     "source": "Android emulator; real adb screencap screenshots",
     "device": "Pixel 6 profile, Android API 35 emulator",
     "captured_at_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
     "screenshots": saved
 },ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
-if not saved:
-    raise RuntimeError("No screenshots captured")
+if len(saved) < 4:
+    raise RuntimeError(f"Expected at least 4 functional screens, captured {len(saved)}")
