@@ -77,7 +77,7 @@ Izvorni kod: `app/` · statični web: `website/` · CI: `.github/workflows/`.
 
 ## 🌐 Web VOJS
 
-U `website/` nalazi se **13 responzivnih statičnih stranica** usklađenih sa stvarnim mogućnostima aplikacije bez servera. Web workflow može ih objaviti preko GitHub Pages kada se u postavkama repozitorija omogući *Settings → Pages → GitHub Actions*.
+U `website/` nalazi se **13 responzivnih statičnih stranica** usklađenih sa stvarnim mogućnostima aplikacije bez servera. Web ostaje u repozitoriju; nema GitHub Pages workflowa.
 
 Originalni predrenderirani web i kompletni binarni brending mogu se zasebno uvesti skriptom [import_original_assets.py](scripts/import_original_assets.py). Njihov izvorni dizajn služi kao referenca; navedena statična prezentacija nije još verificirana kao 1:1 kopija.
 
@@ -90,3 +90,9 @@ Originalni predrenderirani web i kompletni binarni brending mogu se zasebno uves
 [brendigo.com](https://brendigo.com) · [GitHub](https://github.com/bren-wp/Vojs)
 
 </div>
+
+## 🖌️ Vizualne reference
+
+Izvorni dizajn je dostavljen u `VOJS-Android-brending-1.0.0.zip`. Nativni zasloni sada koriste valni prikaz, veliko vrijeme, okrugli gumb i raspored iz referenci. **Potpuna pikselna podudarnost nije potvrđena mjerenjem**, a reference koje prikazuju web-poveznice i vremensko brisanje opisuju serverske funkcije koje ova offline aplikacija namjerno nema.
+
+Originalni ZIP-ovi mogu se uvesti skriptom [import_original_assets.py](scripts/import_original_assets.py); bez unesenih binarnih datoteka repo ne sadrži puni originalni branding/web arhiv. Prava radna web prezentacija ostaje u `website/` i **ne objavljuje se automatski**.

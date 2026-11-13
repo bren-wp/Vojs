@@ -15,7 +15,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.content.FileProvider
 import java.io.File
-import kotlin.math.coerceIn
 import kotlin.math.sqrt
 
 internal enum class RecordingStage { IDLE, RECORDING, READY }
@@ -219,6 +218,8 @@ internal class VoiceRecorder(private val context: Context) {
             error = "Dijeljenje nije uspjelo. Provjeri dostupne aplikacije."
         }
     }
+
+    fun showError(message: String) { error = message }
 
     fun discardCurrent() {
         if (stage == RecordingStage.RECORDING) finish()
