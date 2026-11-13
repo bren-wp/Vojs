@@ -91,10 +91,7 @@ jobs:
           fi
           AAB="app/build/outputs/bundle/release/app-release.aab"
           test -s "$DEBUG" && test -s "$APK" && test -s "$AAB"
-          gh release create "$TAG" \
-            "$DEBUG#VOJS-$TAG-debug.apk" \
-            "$APK#$APK_NAME" \
-            "$AAB#$AAB_NAME" \
+
             --title "VOJS $TAG" \
             --notes "$NOTE" \
             --target "${{ github.sha }}"
