@@ -1,7 +1,7 @@
 {
   "source": "Android emulator; real adb screencap screenshots",
   "device": "Pixel 6 profile, Android API 35 emulator",
-  "captured_at_utc": "2026-11-13T22:36:57.528545+00:00",
+  "captured_at_utc": "2026-11-13T23:13:37.357297+00:00",
   "screenshots": [
     {
       "file": "01-home.png",
@@ -10,6 +10,10 @@
     {
       "file": "02-recording.png",
       "screen": "Recording"
+    },
+    {
+      "file": "06-paused.png",
+      "screen": "Recording paused"
     },
     {
       "file": "03-ready.png",
@@ -22,6 +26,18 @@
     {
       "file": "05-settings.png",
       "screen": "Native settings and theme controls"
+    },
+    {
+      "file": "07-settings-dark.png",
+      "screen": "Native dark theme settings"
+    },
+    {
+      "file": "08-dark-ready.png",
+      "screen": "Native dark theme ready screen"
+    },
+    {
+      "file": "09-dark-home.png",
+      "screen": "Native dark mode home"
     }
   ]
 }
