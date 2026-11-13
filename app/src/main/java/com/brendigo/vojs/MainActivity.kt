@@ -72,6 +72,8 @@ class MainActivity : ComponentActivity() {
             }
             SideEffect {
                 val insets = WindowCompat.getInsetsController(window, window.decorView)
+                insets.isAppearanceLightStatusBars = !dark
+                insets.isAppearanceLightNavigationBars = !dark
                 if (brandedSplash) insets.hide(WindowInsetsCompat.Type.systemBars())
                 else insets.show(WindowInsetsCompat.Type.systemBars())
             }
