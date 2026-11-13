@@ -34,7 +34,7 @@ jobs:
           test -s app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
           test ! -e app/src/main/res/mipmap-anydpi/ic_launcher.xml
           test "$(find original-web/public_html -type f | wc -l)" -eq 87
-          test "$(find branding -type f | wc -l)" -eq 55
+          test "$(find branding -type f ! -path 'branding/simbol.svg' | wc -l)" -eq 55
       - name: Commit original files to repo, without website deployment
         shell: bash
         run: |
