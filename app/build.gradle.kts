@@ -5,11 +5,11 @@ plugins {
 }
 android {
     namespace = "com.brendigo.vojs"
-    compileSdk = 35
+    compileSdk = 36
     defaultConfig {
         applicationId = "com.brendigo.vojs"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         versionCode = (providers.gradleProperty("vojsVersionCode").orNull?.toIntOrNull() ?: 1)
         versionName = providers.gradleProperty("vojsVersionName").orNull ?: "1.0.0"
     }
