@@ -1,58 +1,95 @@
 <div align="center">
-<img src="website/logo.svg" width="96" alt="VOJS logo"/>
+
+<img src="website/logo.svg" width="112" alt="VOJS — BRENDIGO" />
 
 # VOJS
+
 ### Neke stvari bolje zvuče.
 
-**Tvoj glas. Tvoja poruka. Tvoj izbor.**
+**Snimi glas. Preslušaj poruku. Podijeli trenutak.**
 
-[🌐 Web](website/) · [📱 Izdanja za Android](https://github.com/bren-wp/Vojs/releases) · [💜 BRENDIGO](https://brendigo.com)
+Nativna Android aplikacija za glasovne poruke do pet minuta — **bez računa, oglasa i VOJS servera**.
+
+[📲 Preuzmi najnovije izdanje](https://github.com/bren-wp/Vojs/releases/latest) · [🌐 VOJS web](website/) · [💜 BRENDIGO](https://brendigo.com)
 
 </div>
 
-## 🎙️ Glasovne poruke bez komplikacija
+---
 
-VOJS je **nativna Android aplikacija** za snimanje, preslušavanje i dijeljenje glasovnih poruka do pet minuta. Ne treba korisnički račun, vlastiti server, bazu podataka ni VOJS cloud.
+## 🎙️ Tvoj glas. Tvoja poruka.
+
+Neke poruke zaslužuju se čuti. VOJS omogućuje da u nekoliko dodira snimiš glasovnu poruku, poslušaš je i podijeliš kao M4A audio datoteku kroz Androidov sustav dijeljenja.
 
 | 🎤 Snimi | 🎧 Preslušaj | 📤 Podijeli |
-| :--- | :--- | :--- |
-| Mikrofon, pauza i nastavak | Reproduciraj prije slanja | Android Sharesheet, M4A audio |
+| :---: | :---: | :---: |
+| Do 5 min, pauza i nastavak | Provjeri poruku prije slanja | Android Sharesheet / M4A |
 
-**💜 Brending**: ljubičasta `#7868FF`, tamnoljubičasta `#5145CB`, naglasak `#FF7C91`. Aplikaciju i web potpisuje **BRENDIGO — brendigo.com**.
+## 📱 Stvarni zasloni aplikacije
 
-## ✨ Prednosti
+Snimke su **izvorni Android emulator screenshotovi**, snimljeni tijekom automatiziranog izvođenja aplikacije na Android API 35 uređaju Pixel 6 profila. Nisu konceptualni mockupovi.
 
-- ✅ Izvorni Kotlin i Jetpack Compose; bez WebViewa
-- ✅ Offline snimanje i preslušavanje
-- ✅ Dijeljenje datoteke kroz WhatsApp, Viber, Bluetooth, Quick Share i druge kompatibilne Android aplikacije
-- ✅ Bez registracije, oglasa, Firebasea i vlastitog servera
-- ✅ Privatni cache za privremeni audio i automatsko uklanjanje starijih datoteka pri pokretanju
-- ✅ Android 7.0+ (minSdk 24), cilj Android 15 (targetSdk 35)
+<table>
+  <tr>
+    <td width="25%" align="center"><img src="docs/screenshots/01-home.png" alt="VOJS — početni zaslon" width="210"/><br/><strong>Početni zaslon</strong></td>
+    <td width="25%" align="center"><img src="docs/screenshots/02-recording.png" alt="VOJS — snimanje glasovne poruke" width="210"/><br/><strong>Snimanje</strong></td>
+    <td width="25%" align="center"><img src="docs/screenshots/03-ready.png" alt="VOJS — poruka spremna za dijeljenje" width="210"/><br/><strong>Preslušaj i podijeli</strong></td>
+    <td width="25%" align="center"><img src="docs/screenshots/04-android-share.png" alt="VOJS — Androidov izbornik dijeljenja" width="210"/><br/><strong>Podijeli</strong></td>
+  </tr>
+</table>
 
-## 📱 Prikaz izgleda
+📷 [Pogledaj sve stvarne snimke zaslona](docs/screenshots/) · [Automatsko testiranje zaslona](https://github.com/bren-wp/Vojs/actions/workflows/screenshots.yml)
 
-![VOJS web i sučelje](website/logo.svg)
+## ✨ Zašto VOJS?
 
-*Prikaz identiteta; stvarne snimke Android zaslona potrebno je prikupiti na uređaju prije objave na trgovini.*
+- **⚡ Brzo** — otvoriš, snimiš, poslušaš, podijeliš.
+- **🔒 Privatno na uređaju** — nema VOJS clouda, baze podataka ni korisničkih računa.
+- **✈️ Offline** — snimanje i preslušavanje ne zahtijevaju internet.
+- **💬 Tvoj izbor primatelja** — Android nudi kompatibilne aplikacije poput Bluetootha, Quick Sharea, poruka, WhatsAppa ili Vibera (ovisno o instaliranim aplikacijama).
+- **🎨 BRENDIGO identitet** — glavna boja `#7868FF`, tamna `#5145CB` i naglasak `#FF7C91`.
+- **📱 Nativno** — Kotlin + Jetpack Compose; najmanje Android 7.0 (API 24).
 
-## 🔐 Privatnost i dijeljenje
+## 🔐 Privatnost bez skrivenih obećanja
 
-Audio je kratkotrajno pohranjen **lokalno u privatnom cacheu** zbog Androidova FileProvider dijeljenja. Nema trajne interne galerije snimki ni VOJS prijenosa prema serveru. Datoteke starije od 24 sata brišu se pri sljedećem pokretanju aplikacije. Dijeljenje preko neke druge aplikacije podliježe pravilima i infrastrukturi te aplikacije. Ovo **nije** usluga dijeljenja javnih web-poveznica ni poruka s vremenskim istekom.
+VOJS sprema snimku **privremeno u privatni cache uređaja** da bi Android FileProvider omogućio pouzdano dijeljenje. Cache stariji od 24 sata briše se pri sljedećem pokretanju aplikacije. Aplikacija ne šalje zvuk na vlastite servere. Vanjska aplikacija preko koje korisnik dijeli zvuk može koristiti svoje servere i trajno zadržati kopiju.
 
-## 🧰 Izgradnja i izdanja
+VOJS ne stvara javne web-poveznice i ne može opozvati već predanu audio datoteku. Dopuštenje za mikrofon koristi se za snimanje glasa.
 
-Otvorite projekt u Android Studiju ili instalirajte JDK 17, Android SDK 35 i Gradle 8.10.2:
+## 📦 APK i AAB izdanja
+
+[**Preuzmi najnoviji VOJS na GitHub Releases**](https://github.com/bren-wp/Vojs/releases/latest)
+
+Svaka uspješna Android build objava na `main` grani automatski stvara novo verzionirano izdanje:
+
+| Datoteka | Namjena |
+| :--- | :--- |
+| `VOJS-vX-debug.apk` | Instalacijski APK za **testiranje**, potpisan debug ključem |
+| `VOJS-vX-unsigned.apk` | Nepotpisani release APK |
+| `VOJS-vX-unsigned.aab` | Nepotpisani AAB, **nije spreman za Google Play** |
+
+Kad su konfigurirane tajne `VOJS_KEYSTORE_BASE64`, `VOJS_STORE_PASSWORD`, `VOJS_KEY_ALIAS`, `VOJS_KEY_PASSWORD`, workflow potpisuje produkcijski APK/AAB. Za stabilna ažuriranja potrebno je čuvati isti produkcijski ključ. Debug APK iz odvojenih CI pokretanja može imati različit certifikat i nije namijenjen za produkcijske nadogradnje.
+
+## 🛠️ Razvoj i izgradnja
+
+Android Studio, Java 17, Android SDK 35 i Gradle 8.10.2:
 
 ```bash
-gradle :app:assembleRelease :app:bundleRelease
+gradle :app:assembleDebug :app:assembleRelease :app:bundleRelease
 ```
 
-Workflow `.github/workflows/android-release.yml` pri promjeni `main` grane izrađuje novo GitHub izdanje s **nepotpisanim** APK i AAB datotekama. Za instalaciju na uređaj ili Google Play **potrebno je zasebno konfigurirati potpisivanje**. Nemojte distribuirati artefakte kao produkcijski potpisane bez provjere.
+Izvorni kod: `app/` · statični web: `website/` · CI: `.github/workflows/`.
 
-## 🌐 Web
+## 🌐 Web VOJS
 
-`website/` je statička javna prezentacija prilagođena arhitekturi bez servera. Web se može objaviti putem GitHub Pages (uključiti Pages / GitHub Actions u postavkama repozitorija).
+U `website/` nalazi se **13 responzivnih statičnih stranica** usklađenih sa stvarnim mogućnostima aplikacije bez servera. Web workflow može ih objaviti preko GitHub Pages kada se u postavkama repozitorija omogući *Settings → Pages → GitHub Actions*.
 
-## ❤️ Autor
+Originalni predrenderirani web i kompletni binarni brending mogu se zasebno uvesti skriptom [import_original_assets.py](scripts/import_original_assets.py). Njihov izvorni dizajn služi kao referenca; navedena statična prezentacija nije još verificirana kao 1:1 kopija.
 
-**BRENDIGO** · [brendigo.com](https://brendigo.com)
+---
+
+<div align="center">
+
+**VOJS by BRENDIGO**
+
+[brendigo.com](https://brendigo.com) · [GitHub](https://github.com/bren-wp/Vojs)
+
+</div>
