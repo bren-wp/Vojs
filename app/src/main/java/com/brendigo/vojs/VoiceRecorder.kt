@@ -7,6 +7,8 @@ import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.os.Build
 import android.os.SystemClock
+import android.os.Handler
+import android.os.Looper
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableLongStateOf
@@ -53,6 +55,7 @@ internal class VoiceRecorder(private val context: Context) {
     private var startedAt = 0L
     private var accumulatedMs = 0L
     private var shared = false
+    private val mainHandler = Handler(Looper.getMainLooper())
 
     init {
         repeat(MAX_WAVEFORM_SAMPLES) { waveform.add(0.12f) }
@@ -86,7 +89,9 @@ internal class VoiceRecorder(private val context: Context) {
                 setAudioSamplingRate(44_100)
                 setMaxDuration(MAX_DURATION_MS.toInt())
                 setOnInfoListener { _, what, _ ->
-                    if (what == MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) finish()
+                    if (what == MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
+                        mainHandler.post { finish() }
+                    }
                 }
                 setOutputFile(audio.absolutePath)
                 prepare()
@@ -211,7 +216,10 @@ internal class VoiceRecorder(private val context: Context) {
                 clipData = ClipData.newUri(context.contentResolver, "VOJS", uri)
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
-            context.startActivity(Intent.createChooser(send, "Podijeli glasovnu poruku"))
+            val chooser = Intent.createChooser(send, "Podijeli glasovnu poruku").apply {
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            context.startActivity(chooser)
             shared = true
             error = null
         } catch (_: Exception) {

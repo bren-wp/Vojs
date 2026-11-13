@@ -57,7 +57,7 @@ def tap(label):
         print("State not available:", label, flush=True)
         return False
     adb("shell","input","tap",str(pos[0]),str(pos[1]))
-    time.sleep(3)
+    time.sleep(0.8)
     return True
 
 def fail(reason):
@@ -90,6 +90,8 @@ def wait_ui(label, timeout_s=30):
     for second in range(timeout_s):
         if bounds_of(label):
             return True
+        if bounds_of("Viewing full screen") and bounds_of("Got it"):
+            tap("Got it")
         time.sleep(1)
     print("Timed out waiting for", repr(label), flush=True)
     try:
@@ -107,15 +109,15 @@ def wait_ui(label, timeout_s=30):
 
 if not wait_ui("Započni snimanje"):
     raise RuntimeError("Home did not render native start-recording button")
-if tap("Započni snimanje") and bounds_of("Završi snimanje") is not None:
+if tap("Započni snimanje") and wait_ui("Završi snimanje", 12):
     screenshot("02-recording.png","Recording")
     if not tap("Pauziraj") or not bounds_of("Nastavi snimanje"):
         fail("Pause control failed")
     screenshot("06-paused.png","Recording paused")
     if not tap("Nastavi snimanje"):
         fail("Resume control failed")
-    time.sleep(4)
-    if tap("Završi snimanje") and bounds_of("Podijeli glasovnu poruku") is not None:
+    time.sleep(8)
+    if tap("Završi snimanje") and wait_ui("Podijeli glasovnu poruku", 12):
         screenshot("03-ready.png","Recorded audio / ready to share")
         if not tap("Preslušaj") or not bounds_of("Zaustavi"):
             fail("Audio playback control failed")
