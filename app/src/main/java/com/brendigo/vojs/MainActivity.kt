@@ -74,8 +74,10 @@ class MainActivity : ComponentActivity() {
                 val insets = WindowCompat.getInsetsController(window, window.decorView)
                 insets.isAppearanceLightStatusBars = !dark
                 insets.isAppearanceLightNavigationBars = !dark
-                if (brandedSplash) insets.hide(WindowInsetsCompat.Type.systemBars())
-                else insets.show(WindowInsetsCompat.Type.systemBars())
+                // Preserve transparent edge-to-edge system bars; never enter
+                // immersive mode, which triggers Android's blocking fullscreen
+                // onboarding prompt on a fresh device.
+                insets.show(WindowInsetsCompat.Type.systemBars())
             }
             val permissionRequest = rememberLauncherForActivityResult(
                 ActivityResultContracts.RequestPermission()

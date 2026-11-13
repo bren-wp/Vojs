@@ -49,7 +49,12 @@ adb("wait-for-device", timeout=120)
 adb("shell","pm","grant","com.brendigo.vojs","android.permission.RECORD_AUDIO")
 adb("shell","am","force-stop","com.brendigo.vojs")
 adb("shell","am","start","-n","com.brendigo.vojs/.MainActivity")
-time.sleep(7)
+time.sleep(4)
+# Older emulator images may display Android's immersive tutorial left
+# behind by an earlier build; dismiss only this system prompt, if present.
+if bounds_of("Viewing full screen") and bounds_of("Got it"):
+    tap("Got it")
+time.sleep(3)
 screenshot("01-home.png","Home / idle")
 
 def wait_ui(label, timeout_s=30):
