@@ -55,7 +55,7 @@ jobs:
             python3 -m venv "$RUNNER_TEMP/vojs-splash-audit"
             "$RUNNER_TEMP/vojs-splash-audit/bin/python" -m pip install --disable-pip-version-check "Pillow>=11,<13"
             adb install -r app/build/outputs/apk/debug/app-debug.apk
-            python3 scripts/capture_screenshots.py
+            "$RUNNER_TEMP/vojs-splash-audit/bin/python" scripts/capture_screenshots.py
             "$RUNNER_TEMP/vojs-splash-audit/bin/python" scripts/audit_splash_pixels.py
             "$RUNNER_TEMP/vojs-splash-audit/bin/python" scripts/audit_reference_pixels.py
       - name: Archive real screenshots and diagnostics even on failed UI tests

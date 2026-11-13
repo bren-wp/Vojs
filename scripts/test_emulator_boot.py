@@ -5,7 +5,8 @@ source = Path("scripts/capture_screenshots.py").read_text("utf-8")
 for expected in (
     '("Quickstep", "Pixel Launcher")',
     'am", "force-stop", launcher',
-    'time.sleep(1.1)',
+    'capture_branded_splash("00-splash-light.png", "light")',
+    'capture_branded_splash("10-splash-dark.png", "dark")',
     'screenshot("00-splash-light.png"',
     'screenshot("10-splash-dark.png"',
 ):
