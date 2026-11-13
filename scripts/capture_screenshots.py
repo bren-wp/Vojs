@@ -36,7 +36,7 @@ def bounds_of(label):
         content = (raw_text + " " + raw_description).casefold()
         if query not in content:
             continue
-        bounds = re.findall(r"\\d+", node.attrib.get("bounds", ""))
+        bounds = re.findall(r"[0-9]+", node.attrib.get("bounds", ""))
         if len(bounds) != 4:
             continue
         a, b, c, d = (int(x) for x in bounds)
@@ -86,7 +86,7 @@ if bounds_of("Viewing full screen") and bounds_of("Got it"):
 time.sleep(3)
 screenshot("01-home.png","Home / idle")
 
-def wait_ui(label, timeout_s=30):
+def wait_ui(label, timeout_s=9):
     for second in range(timeout_s):
         if bounds_of(label):
             return True
