@@ -213,19 +213,20 @@ private fun VoiceScreen(
                 .padding(top = if (compact) 8.dp else 12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    if (stage == RecordingStage.READY) "Poruka je spremna" else "Nova poruka",
-                    color = foreground, fontSize = if (compact) 25.sp else 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.weight(1f)
-                )
+            // Original VOJS wordmark is unmodified. Keep it in a dedicated
+            // compact toolbar so "Poruka je spremna" never wraps or collides
+            // with the logo/gear on 360dp+ screens or with large text scaling.
+            Row(
+                Modifier.fillMaxWidth().height(38.dp),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Image(
                     painter = painterResource(
                         if (dark) R.drawable.vojs_logo_dark else R.drawable.vojs_logo_light
                     ),
                     contentDescription = "VOJS",
-                    modifier = Modifier.width(102.dp).height(40.dp),
+                    modifier = Modifier.width(102.dp).height(38.dp),
                     contentScale = ContentScale.Fit
                 )
                 TextButton(onClick = onSettings,
@@ -235,7 +236,15 @@ private fun VoiceScreen(
                     Text("⚙", fontSize = 21.sp, color = Violet)
                 }
             }
-            Spacer(Modifier.height(if (compact) 17.dp else 36.dp))
+            Spacer(Modifier.height(5.dp))
+            Text(
+                if (stage == RecordingStage.READY) "Poruka je spremna" else "Nova poruka",
+                color = foreground, fontSize = if (compact) 25.sp else 28.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.fillMaxWidth(),
+                maxLines = 2
+            )
+            Spacer(Modifier.height(if (compact) 9.dp else 17.dp))
             Text(
                 when (stage) {
                     RecordingStage.IDLE -> "Dodirni gumb za snimanje"
