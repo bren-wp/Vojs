@@ -19,6 +19,9 @@
     player.pause();
     player.removeAttribute("src");
     player.hidden = true;
+    download.hidden = true;
+    download.removeAttribute("href");
+    if (url) { URL.revokeObjectURL(url); url = null; }
     if (window.VojsPeer) window.VojsPeer.closeActive();
   });
   try {
