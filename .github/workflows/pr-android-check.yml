@@ -10,6 +10,12 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+      - name: Validate Android screenshot automation before Gradle
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/capture_screenshots.py scripts/audit_splash_pixels.py scripts/audit_reference_pixels.py scripts/test_emulator_boot.py
+          python3 scripts/test_emulator_boot.py
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
