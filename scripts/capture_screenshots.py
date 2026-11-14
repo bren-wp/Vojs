@@ -35,17 +35,23 @@ def bounds_of(label):
     for node in root.iter("node"):
         raw_text = node.attrib.get("text", "").strip()
         raw_description = node.attrib.get("content-desc", "").strip()
-        content = (raw_text + " " + raw_description).casefold()
-        if query not in content:
+        # Strip only known decorative leading icons; never use a subtitle
+        # like "Preslušaj pa podijeli" in place of the real Play button.
+        def clean(value):
+            return re.sub(r"^[\s▶■◼⏸Ⅱ]+", "", value).strip().casefold()
+        labels = [clean(raw_text), clean(raw_description)]
+        if not any(query in value for value in labels):
             continue
         bounds = re.findall(r"[0-9]+", node.attrib.get("bounds", ""))
         if len(bounds) != 4:
             continue
         a, b, c, d = (int(x) for x in bounds)
-        exact = raw_text.casefold() == query or raw_description.casefold() == query
+        exact = any(value == query for value in labels)
+        prefix = any(value.startswith(query) for value in labels)
+        suffix = any(value.endswith(query) for value in labels)
         clickable = node.attrib.get("clickable") == "true"
-        suffix = raw_text.casefold().endswith(query)
-        priority = (100 if exact else 0) + (40 if clickable else 0) + (15 if suffix else 0)
+        priority = (1000 if exact else 0) + (200 if prefix else 0) + (
+            80 if suffix else 0) + (40 if clickable else 0)
         matches.append((priority, (a+c)//2, (b+d)//2, raw_text))
     if matches:
         winner = max(matches, key=lambda row: row[0])
@@ -227,7 +233,7 @@ if tap("Započni snimanje") and wait_ui("Završi snimanje", 12):
             if not (tap("Postavke aplikacije") or tap("VOJS ⚙")):
                 fail("Settings control failed")
             screenshot("05-settings.png", "Native settings and theme controls")
-            if not tap("Tamna tema"):
+            if not tap("Tamna tema (zadana)"):
                 fail("Dark theme option failed")
             screenshot("07-settings-dark.png", "Native dark theme settings")
             adb("shell", "input", "keyevent", "4")
