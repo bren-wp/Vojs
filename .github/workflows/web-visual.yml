@@ -1,0 +1,63 @@
+name: VOJS full web visual matrix
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'website/**'
+      - 'scripts/capture_web_screenshots.mjs'
+      - 'scripts/audit_web_visual.py'
+      - '.github/workflows/web-visual.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'website/**'
+      - 'scripts/capture_web_screenshots.mjs'
+      - 'scripts/audit_web_visual.py'
+      - '.github/workflows/web-visual.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  visual-web:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install browser and pixel audit requirements
+        run: |
+          set -euo pipefail
+          npm install --no-save --no-audit --no-fund playwright@latest
+          npx playwright install --with-deps chromium
+          python -m pip install --disable-pip-version-check 'Pillow>=11,<13'
+      - name: Serve website on isolated localhost
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -S 127.0.0.1:8765 -t website > "$RUNNER_TEMP/vojs-web.log" 2>&1 &
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:8765/ > /dev/null; then break; fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:8765/ > /dev/null
+      - name: Capture all web routes in dark and light across 4 sizes
+        run: node scripts/capture_web_screenshots.mjs
+        env:
+          VOJS_VISUAL_BASE_URL: http://127.0.0.1:8765
+      - name: Audit exact reference matches when available
+        run: python scripts/audit_web_visual.py --captures artifacts/web-visual --references docs/web-reference
+      - name: Archive real screenshots, manifest and pixel report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vojs-web-visual-matrix
+          path: artifacts/web-visual/
+          if-no-files-found: warn
