@@ -11,6 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -245,49 +246,50 @@ private fun VoiceScreen(
                 maxLines = 2
             )
             Spacer(Modifier.height(if (compact) 9.dp else 17.dp))
-            Text(
-                when (stage) {
-                    RecordingStage.IDLE -> "Dodirni gumb za snimanje"
-                    RecordingStage.RECORDING ->
-                        if (recorder.paused) "Snimanje je pauzirano" else ""
-                    RecordingStage.READY -> "Preslušaj pa podijeli"
-                },
-                color = secondary, fontSize = 15.sp, textAlign = TextAlign.Center
-            )
-            Spacer(Modifier.height(if (compact) 12.dp else 26.dp))
-            VoiceWaveform(
-                values = recorder.waveform.toList(),
-                active = stage == RecordingStage.RECORDING && !recorder.paused,
-                color = if (dark) Color(0xFF978BFF) else Violet,
-                modifier = Modifier.fillMaxWidth()
-                    .padding(horizontal = 8.dp)
-                    .height(if (compact) 170.dp else 228.dp)
-            )
-            Spacer(Modifier.height(if (compact) 12.dp else 20.dp))
-            Text(
-                formatTime(recorder.elapsedMs),
-                color = foreground, fontSize = if (compact) 49.sp else 62.sp,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = (-2).sp
-            )
-            Text(
-                if (stage == RecordingStage.READY) "glasovna poruka"
-                else "najviše 05:00",
-                color = secondary, fontSize = 15.sp
-            )
-            // Keep the primary record/stop control near the reference bottom
-            // position. Secondary pause/resume is available under the timer.
-            if (stage == RecordingStage.RECORDING) {
-                Spacer(Modifier.height(5.dp))
-                TextButton(onClick = recorder::togglePause) {
-                    Text(
-                        if (recorder.paused) "▶ Nastavi snimanje" else "Ⅱ Pauziraj",
-                        color = Violet, fontSize = 14.sp
-                    )
-                }
-            }
             if (stage == RecordingStage.READY) {
-                Spacer(Modifier.height(29.dp))
+                // Original share reference uses concise cards instead of the
+                // large recording-only waveform. There is no fake public URL
+                // or expiry selector: the native app shares an actual M4A.
+                Text(
+                    "Preslušaj pa podijeli",
+                    color = secondary, fontSize = 15.sp,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(Modifier.height(if (compact) 20.dp else 34.dp))
+                Row(
+                    Modifier.fillMaxWidth()
+                        .background(
+                            if (dark) Color(0xFF302D52) else Color(0xFFF4F2FF),
+                            RoundedCornerShape(16.dp)
+                        )
+                        .border(
+                            1.dp, if (dark) Color(0xFF6256B5) else Color(0xFFE0DDF3),
+                            RoundedCornerShape(16.dp)
+                        )
+                        .padding(horizontal = 20.dp, vertical = 24.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Glasovna poruka", color = foreground,
+                        fontWeight = FontWeight.Bold, fontSize = 17.sp,
+                        modifier = Modifier.weight(1f))
+                    Text("M4A", color = Violet, fontWeight = FontWeight.SemiBold)
+                }
+                Spacer(Modifier.height(14.dp))
+                Row(
+                    Modifier.fillMaxWidth()
+                        .border(
+                            1.dp, if (dark) Color(0xFF625F79) else Color(0xFFDAD9E3),
+                            RoundedCornerShape(16.dp)
+                        )
+                        .padding(horizontal = 20.dp, vertical = 21.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Trajanje snimke", color = secondary,
+                        modifier = Modifier.weight(1f), fontSize = 15.sp)
+                    Text(formatTime(recorder.elapsedMs), color = foreground,
+                        fontWeight = FontWeight.SemiBold, fontSize = 17.sp)
+                }
+                Spacer(Modifier.height(if (compact) 20.dp else 30.dp))
                 OutlinedButton(
                     onClick = recorder::togglePlayback,
                     shape = RoundedCornerShape(17.dp),
@@ -296,6 +298,38 @@ private fun VoiceScreen(
                 ) {
                     Text(if (recorder.playing) "■  Zaustavi" else "▶  Preslušaj",
                         fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                }
+            } else {
+                Text(
+                    if (stage == RecordingStage.IDLE) "Dodirni gumb za snimanje"
+                    else if (recorder.paused) "Snimanje je pauzirano" else "",
+                    color = secondary, fontSize = 15.sp,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(Modifier.height(if (compact) 12.dp else 26.dp))
+                VoiceWaveform(
+                    values = recorder.waveform.toList(),
+                    active = stage == RecordingStage.RECORDING && !recorder.paused,
+                    color = if (dark) Color(0xFF978BFF) else Violet,
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(horizontal = 8.dp)
+                        .height(if (compact) 170.dp else 228.dp)
+                )
+                Spacer(Modifier.height(if (compact) 12.dp else 20.dp))
+                Text(
+                    formatTime(recorder.elapsedMs),
+                    color = foreground, fontSize = if (compact) 49.sp else 62.sp,
+                    fontWeight = FontWeight.Bold, letterSpacing = (-2).sp
+                )
+                Text("najviše 05:00", color = secondary, fontSize = 15.sp)
+                if (stage == RecordingStage.RECORDING) {
+                    Spacer(Modifier.height(5.dp))
+                    TextButton(onClick = recorder::togglePause) {
+                        Text(
+                            if (recorder.paused) "▶ Nastavi snimanje" else "Ⅱ Pauziraj",
+                            color = Violet, fontSize = 14.sp
+                        )
+                    }
                 }
             }
             if (recorder.error != null) {

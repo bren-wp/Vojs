@@ -162,3 +162,7 @@ Projekt koristi kompatibilan stabilni alatni lanac: AGP 8.13.2, Gradle 8.14.4, K
 ## 🧭 Responzivno zaglavlje
 
 Android zaglavlje zadržava **originalni VOJS logotip** u odvojenoj kompaktnoj alatnoj traci; naslov zaslona sada ima cijelu dostupnu širinu, pa na manjim telefonima ne dolazi do sudara ili neželjenog prelamanja uz logotip i gumb postavki. Raspored se provjerava snimkama iz stvarnog emulatora. Vizualna podudarnost svih područja 1:1 mora se nastaviti mjeriti, ne pretpostavljati.
+
+## 🎧 Zaslon spremne poruke
+
+Prikaz spremne poruke sada koristi dvije kartice usklađene s izvornom hijerarhijom VOJS reference: lokalnu M4A audio datoteku i trajanje snimke. Ispod je kontrola preslušavanja, a primarni gradijentni gumb dijeljenja zadržan je pri dnu. **Ne prikazujemo lažnu VOJS web-poveznicu, rok isteka ni tajnu poveznicu za brisanje** jer ih Android aplikacija bez servera ne može ostvariti. U README se koriste isključivo stvarne emulator snimke nakon uspješnog builda.
