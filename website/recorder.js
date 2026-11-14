@@ -21,7 +21,7 @@
     if (fileUrl) URL.revokeObjectURL(fileUrl);
     fileUrl = null;
     el("preview").removeAttribute("src");
-    el("upload").disabled = false;
+    el("upload").disabled = !el("accept-terms").checked;
     el("pause").textContent = "Pauziraj";
   }
   function updateTimer() {
@@ -63,6 +63,7 @@
         fileUrl = URL.createObjectURL(file);
         el("preview").src = fileUrl;
         el("finished").hidden = false;
+        el("upload").disabled = !el("accept-terms").checked;
         message("Snimka je spremna za dijeljenje.");
       };
       recorder.start(250);
@@ -104,7 +105,7 @@
     } else { download(); message("Datoteka je spremna za lokalno spremanje."); }
   }
   async function upload() {
-    if (!file || link) return;
+    if (!file || link || !el('accept-terms').checked) return;
     if (!navigator.onLine) {
       error("Za P2P poveznicu potreban je internet. Datoteka se može dijeliti offline.");
       return;
@@ -142,11 +143,14 @@
       session = null; link = null;
       el("link").value = "";
       el("link-result").hidden = true;
-      el("upload").disabled = false;
+      el("upload").disabled = !el("accept-terms").checked;
       message("P2P sesija je zatvorena. Lokalna snimka ostaje.");
     } catch { error("Prekidanje veze nije uspjelo."); }
     finally { el("revoke").disabled = false; }
   }
+  el("accept-terms").addEventListener("change", () => {
+    el("upload").disabled = !file || !!link || !el("accept-terms").checked;
+  });
   for (const [id, fn] of [["start",start],["stop",finish],["pause",pause],["download",download],
     ["share-file",shareFile],["upload",upload],["copy",copy],["share-link",shareLink],["revoke",revoke]]) {
     el(id).addEventListener("click", fn);

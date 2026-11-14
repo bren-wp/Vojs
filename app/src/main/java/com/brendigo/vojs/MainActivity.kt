@@ -186,6 +186,17 @@ class MainActivity : ComponentActivity() {
                                 "pošiljatelj moraju biti online u isto vrijeme.",
                                 color = secondary, fontSize = 13.sp, lineHeight = 19.sp
                             )
+                            Spacer(Modifier.height(12.dp))
+                            TextButton(onClick = {
+                                startActivity(
+                                    android.content.Intent(
+                                        android.content.Intent.ACTION_VIEW,
+                                        android.net.Uri.parse("https://vojs.com.hr/privatnost/")
+                                    )
+                                )
+                            }) {
+                                Text("Pravila privatnosti", color = Violet)
+                            }
                         }
                     }
                 }

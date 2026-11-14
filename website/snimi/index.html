@@ -15,7 +15,8 @@
 <audio id="preview" controls preload="metadata" aria-label="Preslušaj snimku"></audio>
 <div class="button-row"><button id="download">Spremi datoteku (offline)</button><button id="share-file">Podijeli datoteku</button></div>
 <p>Poveznica služi za <strong>izravni prijenos uživo</strong>. Pošiljatelj mora ostati na stranici dok primatelj preuzme snimku. Server sprema samo kratkotrajne JSON podatke za povezivanje (najviše 15 minuta), <strong>nikad audio</strong>. Neke mreže bez TURN servera ne podržavaju P2P povezivanje.</p>
-<div class="button-row"><button id="upload" class="record-action">P2P poveznica (bez pohrane)</button></div>
+<label class="voice-consent"><input type="checkbox" id="accept-terms"> Prihvaćam <a href="../uvjeti/" target="_blank" rel="noopener noreferrer">pravila korištenja</a> i neću dijeliti nezakonit, nasilni ili uznemirujući sadržaj.</label>
+<div class="button-row"><button id="upload" class="record-action" disabled>P2P poveznica (bez pohrane)</button></div>
 <div id="link-result" hidden><label for="link">Privatna poveznica</label><input id="link" readonly>
 <div class="button-row"><button id="copy">Kopiraj</button><button id="share-link">Podijeli poveznicu</button><button id="revoke">Prekini povezivanje</button></div></div>
 </div><p id="error" class="voice-error" role="alert" hidden></p></section>

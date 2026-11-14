@@ -15,6 +15,7 @@ small{color:#bcb4e9;line-height:1.6}
 <h1>Glasovna poruka bez servera</h1>
 <p>Audio ostaje u ovoj aplikaciji dok ga izravno ne pošalješ primatelju preko WebRTC-a. Samo kratkotrajni JSON opis povezivanja putuje na VOJS poslužitelj.</p>
 <p id="status" role="status" aria-live="polite">Pripremam lokalnu snimku…</p>
+<p><label><input type="checkbox" id="accept"> Prihvaćam <a href="https://vojs.com.hr/uvjeti/" target="_blank" rel="noopener noreferrer">pravila korištenja</a> i neću dijeliti neprimjeren sadržaj.</label></p>
 <button id="create" disabled>Stvori P2P poveznicu</button>
 <div id="result" hidden>
 <label for="link">Poveznica za primatelja</label><input id="link" readonly>
@@ -44,13 +45,16 @@ window.vojsAndroidReceiveChunk = (encoded, last) => {
       audio = new File(parts, "vojs-poruka.m4a", {type:"audio/mp4"});
       parts = [];
       if (audio.size < 64 || audio.size > 8 * 1024 * 1024) throw Error("Neispravna snimka.");
-      create.disabled = false;
+      create.disabled = !document.getElementById("accept").checked;
       say("Snimka je spremna. Za poveznicu dodirni gumb.");
     }
   } catch (e) {say(e.message || "Učitavanje snimke nije uspjelo.");}
 };
+document.getElementById("accept").addEventListener("change", () => {
+  create.disabled = !audio || !!session || !document.getElementById("accept").checked;
+});
 create.addEventListener("click", async () => {
-  if (!audio || session) return;
+  if (!audio || session || !document.getElementById("accept").checked) return;
   create.disabled = true; say("Povezujem uređaje…");
   try {
     session = await VojsPeer.create(audio, say);
@@ -62,7 +66,7 @@ create.addEventListener("click", async () => {
 document.getElementById("end").addEventListener("click", async () => {
   if (session) await session.close();
   session = null; result.hidden = true; link.value = "";
-  create.disabled = false; say("P2P sesija je zatvorena.");
+  create.disabled = !document.getElementById("accept").checked; say("P2P sesija je zatvorena.");
 });
 })();
 </script>

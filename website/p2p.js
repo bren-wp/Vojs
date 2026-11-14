@@ -227,5 +227,11 @@ window.VojsPeer = (() => {
       }
     }
   });
-  return { create, receive };
+  function closeActive() {
+    if (active) {
+      active.close();
+      active = null;
+    }
+  }
+  return { create, receive, closeActive };
 })();

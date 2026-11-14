@@ -4,6 +4,29 @@
   const state = document.getElementById("message-status");
   const player = document.getElementById("shared-audio");
   const download = document.getElementById("received-download");
+  const blockButton = document.getElementById("block");
+  const report = document.getElementById("report");
+  report.href = "../prijava-sadrzaja/?id=" + encodeURIComponent(id);
+  blockButton.addEventListener("click", () => {
+    try {
+      const list = JSON.parse(localStorage.getItem("vojs-blocked") || "[]");
+      const ids = Array.isArray(list) ? list.filter(value => /^[a-f0-9]{48}$/.test(value)) : [];
+      localStorage.setItem("vojs-blocked", JSON.stringify([...new Set([...ids.slice(-99), id])]));
+    } catch { /* Private browser mode may deny storage. */ }
+    state.textContent = "Ova P2P poveznica je blokirana na ovom uređaju.";
+    player.pause();
+    player.removeAttribute("src");
+    player.hidden = true;
+    if (window.VojsPeer) window.VojsPeer.closeActive();
+  });
+  try {
+    const blocked = JSON.parse(localStorage.getItem("vojs-blocked") || "[]");
+    if (Array.isArray(blocked) && blocked.includes(id)) {
+      state.textContent = "Ovu poveznicu blokirao si na ovom uređaju.";
+      blockButton.disabled = true;
+      return;
+    }
+  } catch { /* Proceed without persistent block in private browsing. */ }
   if (!/^[a-f0-9]{48}$/.test(id)) {
     state.textContent = "Poveznica nije valjana. Zatraži novu od pošiljatelja.";
     return;
