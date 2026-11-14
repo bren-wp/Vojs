@@ -1,48 +1,22 @@
 package com.brendigo.vojs
 
-import android.Manifest
-import android.content.pm.PackageManager
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import kotlinx.coroutines.delay
-import kotlin.math.abs
-import kotlin.math.sin
+
+// Geometry measured from the 22 original VOJS marketing waveform bars.
+// Preallocated so redraws while recording do not allocate another FloatArray.
+private val VOJS_REFERENCE_BARS = floatArrayOf(
+    .187f, .351f, .545f, .313f, .709f, .918f, .478f, .754f,
+    1.000f, .604f, .418f, .836f, .649f, .963f, .373f, .560f,
+    .791f, .455f, .896f, .627f, .291f, .731f
+)
 
 @Composable
 internal fun VoiceWaveform(
@@ -61,12 +35,7 @@ internal fun VoiceWaveform(
         // 1080×1920 concept (the phone's white display area), normalized
         // to its tallest bar. Preserve contour instead of adding a base
         // floor that made all shorter bars substantially too tall.
-        val reference = floatArrayOf(
-            .187f, .351f, .545f, .313f, .709f, .918f, .478f, .754f,
-            1.000f, .604f, .418f, .836f, .649f, .963f, .373f, .560f,
-            .791f, .455f, .896f, .627f, .291f, .731f
-        )
-        val count = reference.size
+        val count = VOJS_REFERENCE_BARS.size
         val step = size.width / (count + 1)
         val mid = size.height / 2f
         val cap = 5.dp.toPx()
@@ -77,7 +46,7 @@ internal fun VoiceWaveform(
             // Preserve the reference contour at low volumes while reacting
             // to actual microphone amplitude instead of drawing flat bars.
             val dynamicScale = if (active) 0.72f + 0.28f * measured else 1f
-            val height = reference[i] * size.height * .98f * dynamicScale
+            val height = VOJS_REFERENCE_BARS[i] * size.height * .98f * dynamicScale
             val x = (i + 1) * step
             drawLine(
                 color, Offset(x, mid - height / 2f),
