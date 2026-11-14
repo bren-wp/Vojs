@@ -39,6 +39,12 @@ Datum provjere: 14. studenoga 2026.
 - Ne označiti automatski 'no data collected': online upload prenosi SDP i koristi sigurnosnu obradu IP-a.
 - Offline način mora raditi bez internetske veze. [Upute za deployment](SHARING-DEPLOYMENT.md).
 
+## UGC i privatnost prema Google Play pravilima
+
+- Prije pokretanja P2P dijeljenja korisnik prihvaća pravila i zabranjene vrste sadržaja. U web pregledniku primatelj može blokirati poveznicu i prijaviti neprimjeren sadržaj.
+- U sklopu Play Console reviewa provjeriti jesu li ove mjere dovoljne za svoj tip privatnog 1:1 dijeljenja; Google može zahtijevati dodatno moderiranje i blokiranje.
+- U postavkama Android aplikacije dodana je poveznica na javna pravila privatnosti. Potrebno je potvrditi da produkcijska URL stranica radi bez prijave.
+
 ## Novo: bez poslužiteljske pohrane audija
 
 - Stari endpointi vraćaju 410, bez novih snimki na serveru. Migracija prethodne poslužiteljske pohrane traži ručni sigurni zahvat na hostingu.

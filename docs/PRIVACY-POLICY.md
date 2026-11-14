@@ -24,6 +24,6 @@ Poslužitelj obrađuje IP adresu radi ograničavanja anonimnih sesija i privreme
 
 ## Uklanjanje i prijava
 
-Pošiljatelj može zatvoriti trenutačnu P2P sesiju, a sesija svakako prestaje biti dostupna nakon 15 minuta. Nakon što primatelj preuzme datoteku, VOJS ne može izbrisati tu kopiju. Štetan sadržaj ili zloupotrebu moguće je prijaviti preko https://vojs.com.hr/prijava-sadrzaja/ ili https://vojs.com.hr/kontakt/. Nemoj javno objavljivati privatne snimke u prijavama.
+Pošiljatelj može zatvoriti trenutačnu P2P sesiju, a sesija svakako prestaje biti dostupna nakon 15 minuta. Nakon što primatelj preuzme datoteku, VOJS ne može izbrisati tu kopiju. Na stranici primljene poruke korisnik može blokirati poveznicu; odabrani ID može se sačuvati samo u lokalnom spremištu preglednika (localStorage). Štetan sadržaj ili zloupotrebu moguće je prijaviti preko https://vojs.com.hr/prijava-sadrzaja/ ili https://vojs.com.hr/kontakt/. Nemoj javno objavljivati privatne snimke u prijavama.
 
 Izdavač: **BRENDIGO** — https://brendigo.com. Ova pravila trebaju biti dostupna na https://vojs.com.hr/privatnost/ i u Android aplikaciji te u Google Play listingu, nakon usklađivanja s konkretnim hostingom i provedene produkcijske provjere.

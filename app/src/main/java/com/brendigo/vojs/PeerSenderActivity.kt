@@ -126,6 +126,15 @@ class PeerSenderActivity : ComponentActivity() {
             }
             override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
                 val uri = request?.url ?: return true
+                if (uri.scheme == "https" && uri.host == HOST && uri.path == "/uvjeti/" &&
+                    request.hasGesture()) {
+                    runCatching {
+                        startActivity(android.content.Intent(
+                            android.content.Intent.ACTION_VIEW, uri
+                        ))
+                    }
+                    return true
+                }
                 return !(uri.scheme == "https" && uri.host == HOST && uri.path == SENDER_PATH)
             }
             override fun onPageFinished(view: WebView?, url: String?) {

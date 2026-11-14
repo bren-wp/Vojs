@@ -4,10 +4,12 @@
   const state = document.getElementById("message-status");
   const player = document.getElementById("shared-audio");
   const download = document.getElementById("received-download");
+  let blockedByUser = false;
   const blockButton = document.getElementById("block");
   const report = document.getElementById("report");
   report.href = "../prijava-sadrzaja/?id=" + encodeURIComponent(id);
   blockButton.addEventListener("click", () => {
+    blockedByUser = true;
     try {
       const list = JSON.parse(localStorage.getItem("vojs-blocked") || "[]");
       const ids = Array.isArray(list) ? list.filter(value => /^[a-f0-9]{48}$/.test(value)) : [];
@@ -34,8 +36,9 @@
   let url = null;
   try {
     await window.VojsPeer.receive(id,
-      text => { state.textContent = text; },
+      text => { if (!blockedByUser) state.textContent = text; },
       blob => {
+        if (blockedByUser) return;
         if (url) URL.revokeObjectURL(url);
         url = URL.createObjectURL(blob);
         player.src = url;
@@ -46,7 +49,7 @@
         download.hidden = false;
       });
   } catch (e) {
-    state.textContent = e.message || "Pošiljatelj nije dostupan. Potreban je istovremeni pristup internetu.";
+    if (!blockedByUser) state.textContent = e.message || "Pošiljatelj nije dostupan. Potreban je istovremeni pristup internetu.";
   }
   window.addEventListener("pagehide", () => { if (url) URL.revokeObjectURL(url); });
 })();
