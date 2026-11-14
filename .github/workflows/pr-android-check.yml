@@ -85,7 +85,8 @@ jobs:
         run: |
           grep -q 'android.permission.INTERNET' app/src/main/AndroidManifest.xml
           grep -q 'android:usesCleartextTraffic="false"' app/src/main/AndroidManifest.xml
-          grep -Fq 'https://$HOST' app/src/main/java/com/brendigo/vojs/VoiceLinkService.kt
+          grep -Fq 'https://$HOST$SENDER_PATH' app/src/main/java/com/brendigo/vojs/PeerSenderActivity.kt
+          ! grep -R -E 'upload.php|/api/audio.php|move_uploaded_file' app/src/main/java website/recorder.js website/message.js
           ! grep -R -E 'FirebaseApp|Retrofit|OkHttpClient|http://' app/src/main/java
 
   web-links:
@@ -100,6 +101,12 @@ jobs:
       - name: Validate browser scripts
         run: |
           set -euo pipefail
-          for f in website/recorder.js website/message.js website/sw.js; do node --check "$f"; done
-      - name: Integration test for anonymous links
+          for f in website/recorder.js website/message.js website/sw.js website/p2p.js; do node --check "$f"; done
+      - name: Integration test for JSON signaling and no audio storage
         run: bash scripts/test_web_link_api.sh
+      - name: Fail if server accepts audio storage
+        run: |
+          set -euo pipefail
+          ! grep -R -E 'move_uploaded_file|\.audio\b|audio/mp4' website/api/*.php
+          grep -q 'http_response_code(410)' website/api/upload.php
+          grep -q 'http_response_code(410)' website/api/audio.php
