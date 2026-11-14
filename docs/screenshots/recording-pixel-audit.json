@@ -21,8 +21,8 @@
         652,
         240
       ],
-      "changed_pixels_over_8_percent": 10.576,
-      "mean_absolute_rgb_error": 15.874
+      "changed_pixels_over_8_percent": 9.403,
+      "mean_absolute_rgb_error": 13.379
     },
     "waveform": {
       "roi": [
@@ -31,8 +31,8 @@
         652,
         640
       ],
-      "changed_pixels_over_8_percent": 18.89,
-      "mean_absolute_rgb_error": 16.642
+      "changed_pixels_over_8_percent": 22.015,
+      "mean_absolute_rgb_error": 18.186
     },
     "time": {
       "roi": [
@@ -41,8 +41,8 @@
         652,
         970
       ],
-      "changed_pixels_over_8_percent": 9.264,
-      "mean_absolute_rgb_error": 14.893
+      "changed_pixels_over_8_percent": 6.785,
+      "mean_absolute_rgb_error": 11.25
     },
     "controls": {
       "roi": [
@@ -51,8 +51,8 @@
         652,
         1403
       ],
-      "changed_pixels_over_8_percent": 15.788,
-      "mean_absolute_rgb_error": 17.861
+      "changed_pixels_over_8_percent": 15.137,
+      "mean_absolute_rgb_error": 14.915
     }
   }
 }

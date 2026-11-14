@@ -14,8 +14,8 @@
         1080,
         2260
       ],
-      "changed_pixels_over_4_percent": 6.54265,
-      "mean_absolute_rgb_error": 5.75516
+      "changed_pixels_over_4_percent": 0.0,
+      "mean_absolute_rgb_error": 0.0
     },
     {
       "screenshot": "10-splash-dark.png",
