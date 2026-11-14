@@ -31,7 +31,7 @@ jobs:
           if [ ! -x "$SDKMANAGER" ]; then
             SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -Vr | head -1)"
           fi
-          "$SDKMANAGER" --install "platforms;android-36" "build-tools;35.0.0"
+          "$SDKMANAGER" --install "platforms;android-36.1" "build-tools;35.0.0"
       - name: Build Android APK and AAB
         run: gradle --no-daemon --stacktrace :app:assembleDebug :app:assembleRelease :app:bundleRelease :app:lintDebug :app:lintRelease
       - name: Verify release permissions and 16 KB native-library constraints

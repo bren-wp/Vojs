@@ -5,7 +5,10 @@ plugins {
 }
 android {
     namespace = "com.brendigo.vojs"
-    compileSdk = 36
+    // Android 16 QPR2 (36.1), supported by AGP 8.13.2 and AndroidX Core 1.18.
+    compileSdk {
+        version = release(36) { minorApiLevel = 1 }
+    }
     defaultConfig {
         applicationId = "com.brendigo.vojs"
         minSdk = 24
