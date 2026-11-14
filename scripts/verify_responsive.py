@@ -32,9 +32,12 @@ def center(node):
     return ((x1+x2)//2, (y1+y2)//2) if x2 > x1 and y2 > y1 else None
 
 def locate(label):
-    # Do not confuse the 'Preslušaj' playback BUTTON with the static subtitle
-    # 'Preslušaj pa podijeli'. Compose semantics can report clickable=false for
-    # a child text node even when its parent is a button.
+    """Match the actual accessible control, never a partial subtitle.
+
+    A Compose text child can be clickable=false when its parent handles taps.
+    Exact matching after *leading icon removal* is safe for that case. Broad
+    substrings are unsafe: 'Preslušaj pa podijeli' is NOT the play button.
+    """
     target = label.strip().casefold()
     candidates = []
     for node in nodes():
@@ -42,20 +45,20 @@ def locate(label):
             continue
         values = [node.get("text", ""), node.get("content-desc", "")]
         def normalized(value):
-            # Android renders a leading play/stop/gear icon in some labels.
-            return re.sub(r"^[^\w]+", "", value, flags=re.UNICODE).strip().casefold()
-        exact = any(normalized(value) == target for value in values)
-        partial = any(target in value.casefold() for value in values)
-        if exact or partial:
-            candidates.append((node, exact))
+            # "Ⅱ" is a Unicode letter (numeric category), so the earlier
+            # non-word prefix stripping did NOT remove the pause icon.
+            value = re.sub(r"^[\s▶■◼⏸Ⅱ]+", "", value)
+            value = re.sub(r"^[^\w]+", "", value, flags=re.UNICODE)
+            return value.strip().casefold()
+        if any(normalized(value) == target for value in values):
+            candidates.append(node)
     if not candidates:
         return None
-    candidates.sort(key=lambda entry: (
-        not entry[1],
-        entry[0].get("clickable") != "true",
-        len(entry[0].get("text", "") + entry[0].get("content-desc", ""))
+    candidates.sort(key=lambda node: (
+        node.get("clickable") != "true",
+        len(node.get("text", "") + node.get("content-desc", ""))
     ))
-    return candidates[0][0]
+    return candidates[0]
 
 def wait(label, seconds=28):
     end = time.monotonic() + seconds
@@ -93,6 +96,7 @@ def main():
     parser.add_argument("--profile", required=True)
     parser.add_argument("--output", default="docs/responsive")
     parser.add_argument("--font-scale", default=None)
+    parser.add_argument("--fresh-install", action="store_true")
     args = parser.parse_args()
     dest = Path(args.output) / args.profile
     dest.mkdir(parents=True, exist_ok=True)
@@ -117,6 +121,10 @@ def main():
         if args.font_scale:
             original_font = shell("settings", "get", "system", "font_scale").strip()
             shell("settings", "put", "system", "font_scale", args.font_scale)
+        # Dedicated CI emulator: clear an existing theme choice before checking
+        # the fresh-install default. Never do this in the physical-device run.
+        if args.fresh_install:
+            shell("pm", "clear", PACKAGE)
         shell("pm", "grant", PACKAGE, "android.permission.RECORD_AUDIO")
         shell("am", "force-stop", PACKAGE)
         shell("am", "start", "-n", ACTIVITY)
@@ -124,6 +132,16 @@ def main():
         wait("Nova poruka")
         wait("Započni snimanje")
         capture("01-dark-home.png")
+        if args.fresh_install:
+            # Device-screenshot pixel sampled from a known content margin;
+            # ensures a truly dark canvas (independent of system theme).
+            from PIL import Image
+            with Image.open(dest / "01-dark-home.png") as screenshot:
+                rgb = screenshot.convert("RGB")
+                width, height = rgb.size
+                probe = rgb.getpixel((max(2, width // 30), height // 3))
+                assert max(probe) < 85, "Fresh install did not start in dark mode: " + str(probe)
+            verified("fresh-install dark theme rendered")
         verified("home + native record controls")
         tap("Započni snimanje")
         wait("Završi snimanje")
@@ -137,16 +155,24 @@ def main():
         # ADB uiautomator dumps may take seconds on slower emulators.
         # Keep a long enough M4A recording so playback is still active
         # when the next UI hierarchy is queried.
-        time.sleep(18)
+        time.sleep(26)
         tap("Završi snimanje")
         wait("Poruka je spremna")
-        wait("Preslušaj")
+        assert locate("Preslušaj") is not None, "Real playback control not found"
         capture("04-ready.png")
         verified("finish with playable M4A")
         tap("Preslušaj")
         wait("Zaustavi", seconds=10)
         tap("Zaustavi", seconds=10)
         verified("playback start and stop")
+        wait("Podijeli izravno (P2P)")
+        tap("Podijeli izravno (P2P)")
+        wait("Natrag", seconds=20)
+        capture("05-p2p-sender.png")
+        verified("P2P sender screen is reachable")
+        tap("Natrag")
+        wait("Poruka je spremna")
+        verified("return to native ready state")
         tap("Podijeli glasovnu poruku")
         time.sleep(1.5)
         capture("05-share-sheet.png")
@@ -155,6 +181,7 @@ def main():
         time.sleep(.8)
         tap("Postavke aplikacije")
         wait("Svijetla tema")
+        wait("Tamna tema (zadana)")
         capture("06-settings.png")
         verified("settings opened")
         tap("Svijetla tema")
@@ -172,6 +199,12 @@ def main():
         wait("Nova poruka")
         capture("09-light-relaunch.png")
         verified("theme persists after restart")
+        # Leave preference dark after test; old users can retain light/system.
+        tap("Postavke aplikacije")
+        wait("Tamna tema (zadana)")
+        tap("Tamna tema (zadana)")
+        shell("input", "keyevent", "4")
+        verified("dark theme can be restored")
         check_crash()
         verified("no app fatal exception")
         result["result"] = "passed"

@@ -5,7 +5,7 @@
 ### Neke stvari bolje zvuče.
 **Snimi glas. Preslušaj. Podijeli trenutak.**
 
-**Android + Web • Bez računa • Offline snimanje • P2P dijeljenje bez pohrane zvuka na serveru**
+**Android + Web • Zadana tamna tema • Bez računa • Offline snimanje • P2P bez pohrane zvuka na serveru**
 
 [🌐 VOJS web](https://vojs.com.hr) · [📱 Najnoviji Android APK/AAB](https://github.com/bren-wp/Vojs/releases/latest) · [💜 BRENDIGO](https://brendigo.com)
 </div>
@@ -91,3 +91,9 @@ Za web je dovoljan HTTPS shared hosting s PHP 8.1+ i zapisivim privatnim direkto
 ---
 
 <div align="center">**VOJS by BRENDIGO** · [brendigo.com](https://brendigo.com)</div>
+
+## Tamna tema i responzivnost
+
+VOJS na novoj instalaciji otvara **tamnu temu** na Androidu i na svim javnim web stranicama. Svijetla tema može se ručno uključiti; Android također nudi praćenje sistemske teme. Izbor se sprema samo lokalno. Web raspored prilagođen je mobilnim uređajima i velikim zaslonima, a nativni Compose sadržaj na tabletima ograničen je na čitljivu širinu kako se kontrole ne bi nepotrebno rastezale.
+
+Stvarne slike zaslona i pixel ROI audit dostupni su u `docs/screenshots/`, a CI provjerava prepoznatljivost kontrola, otvoreni P2P ekran, snimanje, reprodukciju, dijeljenje, odabir teme i rad na tri Android profila. **1:1 identičnost svih zaslona s marketinškim referencama nije potvrđena** jer su referentne slike na dijelu mjesta kompozicije s okvirima uređaja. Usporedbe i ograničenja opisani su u `docs/DEVICE-TEST-MATRIX.md`.

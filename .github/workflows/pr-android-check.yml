@@ -101,7 +101,9 @@ jobs:
       - name: Validate browser scripts
         run: |
           set -euo pipefail
-          for f in website/recorder.js website/message.js website/sw.js website/p2p.js; do node --check "$f"; done
+          for f in website/recorder.js website/message.js website/sw.js website/p2p.js website/theme.js; do node --check "$f"; done
+      - name: Verify dark-first web theme
+        run: node scripts/test_web_theme.js
       - name: Integration test for JSON signaling and no audio storage
         run: bash scripts/test_web_link_api.sh
       - name: Fail if server accepts audio storage
