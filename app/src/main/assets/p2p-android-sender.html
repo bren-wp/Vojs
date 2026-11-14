@@ -1,73 +1,213 @@
 <!doctype html>
-<html lang="hr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="referrer" content="no-referrer"><title>VOJS · P2P iz Androida</title>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#20213b">
+<title>VOJS · Izravno dijeljenje</title>
 <style>
-:root{color-scheme:dark;font:16px system-ui,-apple-system,sans-serif}
-body{margin:0;background:#20213b;color:white;padding:18px}
-h1{font-size:25px;margin:0 0 12px}
-p{line-height:1.55;color:#d0cced}
-button{background:#7868ff;border:0;border-radius:15px;color:#fff;font:700 16px system-ui;padding:14px 18px;min-height:48px;margin:12px 0}
-button:disabled{opacity:.5}
-input{width:100%;box-sizing:border-box;border:1px solid #aaa1d4;border-radius:12px;padding:14px;color:#20213b;background:white}
-small{color:#bcb4e9;line-height:1.6}
-:focus-visible{outline:3px solid #ff7c91;outline-offset:3px}
-</style></head><body>
-<h1>Glasovna poruka bez servera</h1>
-<p>Audio ostaje u ovoj aplikaciji dok ga izravno ne pošalješ primatelju preko WebRTC-a. Samo kratkotrajni JSON opis povezivanja putuje na VOJS poslužitelj.</p>
-<p id="status" role="status" aria-live="polite">Pripremam lokalnu snimku…</p>
-<p><label><input type="checkbox" id="accept"> Prihvaćam <a href="https://vojs.com.hr/uvjeti/">pravila korištenja</a> i neću dijeliti neprimjeren sadržaj.</label></p>
-<button id="create" disabled>Stvori P2P poveznicu</button>
-<div id="result" hidden>
-<label for="link">Poveznica za primatelja</label><input id="link" readonly>
-<p>Ostavi ovaj zaslon otvoren dok primatelj ne preuzme snimku. Poveznica ne radi kada pošiljatelj ode offline.</p>
-<button id="end">Završi dijeljenje</button>
+:root{
+  color-scheme:dark;
+  font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;
+  --bg:#20213b;--surface:#302d52;--line:#6256b5;
+  --text:#fff;--muted:#cbc8e0;--violet:#7868ff;--deep:#5145cb
+}
+*{box-sizing:border-box}
+html,body{min-height:100%;margin:0}
+body{background:var(--bg);color:var(--text)}
+.page{width:min(100%,520px);min-height:100dvh;margin:auto;display:flex;
+  flex-direction:column;padding:clamp(16px,4vw,26px)}
+.eyebrow{display:flex;justify-content:space-between;align-items:center;
+  gap:12px;font-size:12px;letter-spacing:.11em;font-weight:800;color:#ad9eff}
+.eyebrow span:last-child{font-size:10px;color:var(--muted);text-align:right}
+h1{font-size:clamp(24px,6.5vw,30px);line-height:1.18;letter-spacing:-.03em;
+  margin:24px 0 6px;font-weight:800}
+.subtitle{color:var(--muted);margin:0 0 24px;font-size:14px}
+.audio-card{border:1px solid var(--line);background:var(--surface);
+  border-radius:16px;padding:18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.audio-card strong{font-size:16px;font-weight:750}
+.audio-card .filetype{color:#b4a7ff;font-weight:750;font-size:13px}
+.link-card{border:1px solid #625f79;border-radius:16px;margin-top:14px;padding:17px 18px;
+  min-height:85px}
+.link-card label{font-size:12px;color:var(--muted);font-weight:700}
+.link-card input{display:block;width:100%;margin-top:6px;font:600 14px/1.4 system-ui,sans-serif;
+  border:0;outline:0;background:transparent;color:var(--text);
+  text-overflow:ellipsis;padding:0;min-height:28px}
+.link-card input:focus-visible{outline:2px solid #ff7c91;outline-offset:3px}
+#link-placeholder{margin:8px 0 0;color:var(--muted);font-size:13px}
+#result[hidden],#link-placeholder[hidden]{display:none}
+.features{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:16px 0 0}
+.features span{border:1px solid var(--line);border-radius:40px;
+  padding:7px 11px;font-size:12px;font-weight:700;color:var(--muted)}
+.features .active{background:var(--deep);border-color:var(--deep);color:#fff}
+#status{border-left:3px solid var(--violet);padding:10px 12px;
+  background:rgba(120,104,255,.09);color:#e5e0ff;border-radius:0 10px 10px 0;
+  font-size:13px;line-height:1.55;margin:18px 0}
+.consent{display:flex;align-items:flex-start;gap:11px;color:var(--muted);
+  font-size:13px;line-height:1.65;margin:0}
+.consent input{width:20px;height:20px;flex-shrink:0;accent-color:var(--violet);margin:2px 0}
+a{color:#b7acff;text-decoration:underline;text-underline-offset:3px}
+.actions{margin-top:auto;padding-top:28px}
+button{font:700 15px/1.35 system-ui,sans-serif;border-radius:16px;
+  cursor:pointer;min-height:52px;width:100%;padding:13px 16px}
+button:focus-visible, a:focus-visible{outline:3px solid #ff7c91;outline-offset:3px}
+button:disabled{opacity:.45;cursor:not-allowed}
+#create{color:#fff;background:linear-gradient(90deg,var(--violet),var(--deep));
+  border:0;box-shadow:0 6px 16px rgba(25,18,80,.25)}
+#end{color:#d9d2ff;background:transparent;border:1px solid var(--line);
+  margin-top:10px}
+.expiry{color:var(--muted);font-variant-numeric:tabular-nums;font-size:12px;margin:8px 0 0}
+.details{margin-top:20px;font-size:12px;color:var(--muted)}
+.details summary{cursor:pointer;color:#c6bfff;font-weight:650}
+.details p{margin:8px 0 0;line-height:1.65}
+.footer{color:#9996b5;font-size:11px;text-align:center;padding-top:18px}
+@media(max-height:700px){h1{margin-top:12px}.subtitle{margin-bottom:16px}
+  .audio-card{padding:13px 16px}.link-card{margin-top:10px;padding:12px 16px;min-height:75px}
+  #status{margin:12px 0}.actions{padding-top:15px}.details{margin-top:12px}}
+@media(max-width:340px){.page{padding:12px}h1{font-size:22px}
+  .features span{font-size:11px;padding:6px 9px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="page">
+<header class="eyebrow"><span>VOJS</span><span>PRIVATNA P2P PORUKA</span></header>
+<main>
+  <h1>Poruka je spremna</h1>
+  <p class="subtitle">Podijeli jednom poveznicom. Bez korisničkog računa.</p>
+  <div class="audio-card"><strong>Glasovna poruka</strong><span class="filetype">M4A</span></div>
+  <div class="link-card">
+    <label for="link">Poveznica za primatelja</label>
+    <p id="link-placeholder">Stvorit će se tek kada to odabereš.</p>
+    <div id="result" hidden>
+      <input id="link" type="text" readonly autocomplete="off" spellcheck="false"
+        aria-label="Privatna VOJS P2P poveznica">
+      <p class="expiry" id="expires" role="timer" aria-live="off"></p>
+    </div>
+  </div>
+  <div class="features" aria-label="Uvjeti prijenosa">
+    <span class="active">15 min</span>
+    <span>Bez pohrane zvuka</span>
+    <span>Oba uređaja online</span>
+  </div>
+  <p id="status" role="status" aria-live="polite">Pripremam lokalnu snimku…</p>
+  <label class="consent"><input type="checkbox" id="accept">
+    <span>Prihvaćam <a href="https://vojs.com.hr/uvjeti/">pravila korištenja</a>
+    i neću dijeliti nezakonit ili uznemirujući sadržaj.</span>
+  </label>
+</main>
+<div class="actions">
+  <button id="create" type="button" disabled>Stvori P2P poveznicu</button>
+  <button id="end" type="button" hidden>Prekini dijeljenje</button>
 </div>
-<small>Važno: P2P može biti blokiran na restriktivnim mrežama bez TURN poslužitelja. Ako ne uspije, vrati se i podijeli M4A datoteku pomoću Android sustava.</small>
+<details class="details">
+  <summary>Kako radi privatno dijeljenje?</summary>
+  <p>Pošiljatelj mora ostati na ovom zaslonu dok primatelj preuzima snimku.
+  VOJS poslužitelj pohranjuje samo kratkotrajne JSON podatke za povezivanje,
+  ne audio. Na nekim mrežama P2P nije dostupan bez TURN poslužitelja.
+  Za pouzdano offline dijeljenje upotrijebi izvorno Android slanje M4A datoteke.</p>
+</details>
+<footer class="footer">VOJS by BRENDIGO · vojs.com.hr</footer>
+</div>
 <script src="/p2p.js"></script>
 <script>
 "use strict";
 (() => {
-const status = document.getElementById("status");
-const result = document.getElementById("result");
-const create = document.getElementById("create");
-const link = document.getElementById("link");
-let parts = [], audio = null, session = null;
-function say(message){status.textContent = message;}
-window.vojsAndroidReceiveChunk = (encoded, last) => {
-  try {
-    if (encoded) {
-      const bin = atob(encoded);
-      const bytes = new Uint8Array(bin.length);
-      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-      parts.push(bytes);
+  const byId = id => document.getElementById(id);
+  const status = byId("status");
+  const result = byId("result");
+  const create = byId("create");
+  const end = byId("end");
+  const link = byId("link");
+  const placeholder = byId("link-placeholder");
+  const accept = byId("accept");
+  const expires = byId("expires");
+  let parts = [];
+  let audio = null;
+  let session = null;
+  let timer = null;
+
+  function say(text) { status.textContent = text; }
+  function canCreate() { return !!audio && !session && accept.checked; }
+  function refresh() { create.disabled = !canCreate(); }
+  function stopTimer() {
+    if (timer !== null) { clearInterval(timer); timer = null; }
+  }
+  function resetUi(message) {
+    stopTimer();
+    session = null;
+    link.value = "";
+    result.hidden = true;
+    placeholder.hidden = false;
+    end.hidden = true;
+    expires.textContent = "";
+    refresh();
+    say(message);
+  }
+  function tick() {
+    if (!session) return;
+    const remaining = Math.max(0, session.expires * 1000 - Date.now());
+    const minutes = Math.floor(remaining / 60000);
+    const seconds = Math.ceil((remaining % 60000) / 1000);
+    expires.textContent = "Veza vrijedi još " + String(minutes).padStart(2,"0") +
+      ":" + String(seconds).padStart(2,"0");
+    if (remaining === 0) {
+      const expired = session;
+      resetUi("Sesija je istekla. Možeš stvoriti novu poveznicu.");
+      expired.close().catch(() => {});
     }
-    if (last) {
-      audio = new File(parts, "vojs-poruka.m4a", {type:"audio/mp4"});
-      parts = [];
-      if (audio.size < 64 || audio.size > 8 * 1024 * 1024) throw Error("Neispravna snimka.");
-      create.disabled = !document.getElementById("accept").checked;
-      say("Snimka je spremna. Za poveznicu dodirni gumb.");
+  }
+  window.vojsAndroidReceiveChunk = (encoded, last) => {
+    try {
+      if (encoded) {
+        const bin = atob(encoded);
+        const bytes = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+        parts.push(bytes);
+      }
+      if (last) {
+        audio = new File(parts, "vojs-poruka.m4a", {type:"audio/mp4"});
+        parts = [];
+        if (audio.size < 64 || audio.size > 8 * 1024 * 1024)
+          throw Error("Neispravna snimka (maks. 8 MB).");
+        refresh();
+        say("Snimka je spremna. Poveznicu stvori samo kada je želiš podijeliti.");
+      }
+    } catch (error) {
+      parts = []; audio = null; refresh();
+      say(error.message || "Učitavanje snimke nije uspjelo.");
     }
-  } catch (e) {say(e.message || "Učitavanje snimke nije uspjelo.");}
-};
-document.getElementById("accept").addEventListener("change", () => {
-  create.disabled = !audio || !!session || !document.getElementById("accept").checked;
-});
-create.addEventListener("click", async () => {
-  if (!audio || session || !document.getElementById("accept").checked) return;
-  create.disabled = true; say("Povezujem uređaje…");
-  try {
-    session = await VojsPeer.create(audio, say);
-    link.value = session.url;
-    result.hidden = false;
-    say("Poveznica je spremna. Podijeli je pomoću gumba iznad ovog zaslona.");
-  } catch (e) {say(e.message); create.disabled = false;}
-});
-document.getElementById("end").addEventListener("click", async () => {
-  if (session) await session.close();
-  session = null; result.hidden = true; link.value = "";
-  create.disabled = !document.getElementById("accept").checked; say("P2P sesija je zatvorena.");
-});
+  };
+  accept.addEventListener("change", refresh);
+  create.addEventListener("click", async () => {
+    if (!canCreate()) return;
+    create.disabled = true;
+    say("Pripremam šifriranu vezu između uređaja…");
+    try {
+      if (!window.VojsPeer) throw Error("P2P skripta nije dostupna. Provjeri internet.");
+      session = await VojsPeer.create(audio, say);
+      link.value = session.url;
+      placeholder.hidden = true;
+      result.hidden = false;
+      end.hidden = false;
+      tick();
+      timer = setInterval(tick, 1000);
+      say("Poveznica je spremna. Na gornjoj traci odaberi Kopiraj link ili Podijeli.");
+    } catch (error) {
+      session = null;
+      refresh();
+      say(error.message || "Povezivanje nije uspjelo.");
+    }
+  });
+  end.addEventListener("click", async () => {
+    if (!session) return;
+    const previous = session;
+    resetUi("P2P sesija je zatvorena. Lokalna snimka ostaje dostupna.");
+    await previous.close().catch(() => {});
+  });
+  window.addEventListener("pagehide", stopTimer);
 })();
 </script>
-</body></html>
+</body>
+</html>
