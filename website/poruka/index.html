@@ -1,7 +1,7 @@
-<!doctype html><html lang="hr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><title>Preslušaj glasovnu poruku — VOJS</title><meta name="description" content="Privatna, vremenski ograničena VOJS glasovna poruka."><link rel="icon" href="../logo.svg"><link rel="stylesheet" href="../style.css"></head><body>
+<!doctype html><html lang="hr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><title>Preslušaj glasovnu poruku — VOJS</title><meta name="description" content="Privatna P2P glasovna poruka bez servera za pohranu zvuka."><link rel="icon" href="../logo.svg"><link rel="stylesheet" href="../style.css"></head><body>
 <header class="nav"><a class="brand" href="../"><img src="../logo.svg" alt="">VOJS</a><nav><a href="../">Naslovnica</a><a href="../snimi/">Snimi poruku</a><a href="../privatnost/">Privatnost</a></nav></header>
 <main class="content-page vojs-recorder"><p class="eyebrow">VOJS · Glasovna poruka</p><h1>Poslušaj.<br><span>Osjeti poruku.</span></h1>
-<div class="voice-panel"><p id="message-status" role="status" aria-live="polite">Provjera poveznice…</p><audio id="shared-audio" controls preload="metadata" hidden aria-label="Glasovna poruka"></audio>
-<p>Svatko tko ima poveznicu može preslušati snimku. Istječe najkasnije 24 sata nakon prijenosa ili ranije ako je pošiljatelj opozove.</p><a class="cta" href="../snimi/">Snimi svoju poruku</a></div></main>
+<div class="voice-panel"><p id="message-status" role="status" aria-live="polite">Provjera poveznice…</p><audio id="shared-audio" controls preload="metadata" hidden aria-label="Glasovna poruka"></audio><p><a id="received-download" class="back" hidden>Spremi primljenu snimku</a></p>
+<p>Poveznica omogućuje jednokratni prijenos dok je pošiljatelj online i drži VOJS otvorenim. Zvuk se ne pohranjuje na VOJS serveru. Sesija vrijedi najviše 15 minuta.</p><a class="cta" href="../snimi/">Snimi svoju poruku</a></div></main>
 <footer>VOJS · by <a href="https://brendigo.com">BRENDIGO</a> · <a href="../privatnost/">Privatnost</a></footer>
-<script src="../message.js" defer></script></body></html>
+<script src="../p2p.js" defer></script><script src="../message.js" defer></script></body></html>

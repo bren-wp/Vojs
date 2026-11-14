@@ -1,6 +1,6 @@
 "use strict";
-const CACHE_NAME = "vojs-offline-v1";
-const STATIC_FILES = ["/", "/snimi/", "/poruka/", "/recorder.js", "/message.js", "/style.css", "/logo.svg"];
+const CACHE_NAME = "vojs-offline-v2";
+const STATIC_FILES = ["/", "/snimi/", "/poruka/", "/recorder.js", "/message.js", "/p2p.js", "/style.css", "/logo.svg"];
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(STATIC_FILES))
     .then(() => self.skipWaiting()));

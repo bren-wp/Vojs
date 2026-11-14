@@ -3,15 +3,27 @@
   const id = new URLSearchParams(location.search).get("id") || "";
   const state = document.getElementById("message-status");
   const player = document.getElementById("shared-audio");
+  const download = document.getElementById("received-download");
   if (!/^[a-f0-9]{48}$/.test(id)) {
-    state.textContent = "Poveznica nije valjana. Zatraži novu od pošiljatelja."; return;
+    state.textContent = "Poveznica nije valjana. Zatraži novu od pošiljatelja.";
+    return;
   }
-  const audioUrl = "../api/audio.php?id=" + encodeURIComponent(id);
+  let url = null;
   try {
-    const response = await fetch(audioUrl, { method: "HEAD", cache: "no-store", credentials: "omit" });
-    if (!response.ok || !/^audio\/(mp4|webm|ogg)$/.test(response.headers.get("content-type") || "")) throw Error("expired");
-    player.src = audioUrl; player.hidden = false;
-    state.textContent = "Poruka je dostupna. Pokreni reprodukciju.";
-    player.addEventListener("error", () => { state.textContent = "Snimka više nije dostupna."; });
-  } catch { state.textContent = "Snimka ne postoji ili je istekla. Otvaranje poveznica zahtijeva internet."; }
+    await window.VojsPeer.receive(id,
+      text => { state.textContent = text; },
+      blob => {
+        if (url) URL.revokeObjectURL(url);
+        url = URL.createObjectURL(blob);
+        player.src = url;
+        player.hidden = false;
+        download.href = url;
+        download.download = blob.type === "audio/mp4" ? "vojs.m4a" :
+          blob.type === "audio/ogg" ? "vojs.ogg" : "vojs.webm";
+        download.hidden = false;
+      });
+  } catch (e) {
+    state.textContent = e.message || "Pošiljatelj nije dostupan. Potreban je istovremeni pristup internetu.";
+  }
+  window.addEventListener("pagehide", () => { if (url) URL.revokeObjectURL(url); });
 })();
