@@ -106,12 +106,12 @@
           "mean_absolute_rgb_error": 0.0
         },
         "content": {
-          "changed_pixels_over_8_pct": 3.971,
-          "mean_absolute_rgb_error": 3.24
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
         },
         "controls": {
-          "changed_pixels_over_8_pct": 0.877,
-          "mean_absolute_rgb_error": 0.623
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
         }
       },
       "marketing_reference": {
@@ -147,12 +147,12 @@
           "mean_absolute_rgb_error": 0.0
         },
         "content": {
-          "changed_pixels_over_8_pct": 30.773,
-          "mean_absolute_rgb_error": 45.039
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
         },
         "controls": {
-          "changed_pixels_over_8_pct": 97.846,
-          "mean_absolute_rgb_error": 167.548
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
         }
       }
     },
@@ -170,12 +170,12 @@
           "mean_absolute_rgb_error": 0.0
         },
         "content": {
-          "changed_pixels_over_8_pct": 2.415,
-          "mean_absolute_rgb_error": 1.563
+          "changed_pixels_over_8_pct": 35.068,
+          "mean_absolute_rgb_error": 4.228
         },
         "controls": {
-          "changed_pixels_over_8_pct": 0.871,
-          "mean_absolute_rgb_error": 0.752
+          "changed_pixels_over_8_pct": 99.9,
+          "mean_absolute_rgb_error": 15.875
         }
       }
     },
@@ -216,12 +216,12 @@
           "mean_absolute_rgb_error": 0.0
         },
         "content": {
-          "changed_pixels_over_8_pct": 2.445,
-          "mean_absolute_rgb_error": 1.737
+          "changed_pixels_over_8_pct": 35.152,
+          "mean_absolute_rgb_error": 5.538
         },
         "controls": {
-          "changed_pixels_over_8_pct": 0.885,
-          "mean_absolute_rgb_error": 0.964
+          "changed_pixels_over_8_pct": 99.995,
+          "mean_absolute_rgb_error": 19.934
         }
       }
     },
@@ -239,12 +239,12 @@
           "mean_absolute_rgb_error": 0.0
         },
         "content": {
-          "changed_pixels_over_8_pct": 3.996,
-          "mean_absolute_rgb_error": 3.398
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
         },
         "controls": {
-          "changed_pixels_over_8_pct": 0.883,
-          "mean_absolute_rgb_error": 0.773
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
         }
       }
     },
