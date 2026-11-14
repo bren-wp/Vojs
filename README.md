@@ -35,11 +35,18 @@ Emulator workflow snima stvarne prikaze kao
 [tamni splash](docs/screenshots/10-splash-dark.png).
 Rezultati usporedbe s originalnim slikama nalaze se u
 [splash-pixel-audit.json](docs/screenshots/splash-pixel-audit.json).
-*Stvarne snimke automatski će se pojaviti nakon uspješnog testiranja nove verzije.*
+Snimke su snimljene na Android emulatoru i uspoređene s originalnim 1080 × 2400 slikama. Posljednja potvrđena analiza oba splasha pokazuje 0 % promijenjenih piksela u mjerenim područjima (bez Androidovih sistemskih traka).
+
+<table>
+  <tr>
+    <td align="center" width="50%"><img src="docs/screenshots/00-splash-light.png" alt="Stvarni VOJS svijetli splash zaslon" width="240"/><br/><strong>Svijetli splash</strong></td>
+    <td align="center" width="50%"><img src="docs/screenshots/10-splash-dark.png" alt="Stvarni VOJS tamni splash zaslon" width="240"/><br/><strong>Tamni splash</strong></td>
+  </tr>
+</table>
 
 ## 📱 Stvarni zasloni aplikacije
 
-Svih devet snimki dolazi iz **stvarnog izvođenja Android aplikacije na emulatoru Pixel 6 (API 35)**, tijekom automatiziranih provjera funkcija. Nisu marketinški mockupovi; snimke uključuju i izvorni VOJS logotip.
+Svih devet funkcionalnih snimki (uz oba gornja splasha, ukupno **11 stvarnih prikaza**) dolazi iz **stvarnog izvođenja Android aplikacije na emulatoru Pixel 6 (API 35)**, tijekom automatiziranih provjera funkcija. Nisu marketinški mockupovi; snimke uključuju i izvorni VOJS logotip.
 
 <table>
   <tr>
@@ -147,3 +154,7 @@ Android emulator može tijekom pokretanja prikazati sistemsku poruku "Quickstep 
 ## 🧪 Kontrola izvornog vizualnog identiteta
 
 Android koristi **originalne logotipe** iz `branding/logotip/` u svijetloj i tamnoj temi. Oni se kopiraju pri svakom Gradle buildu. Iz aplikacije su uklonjeni marketinški potpisi i tehničke poruke. Stvarne snimke Android zaslona ostaju u `docs/screenshots/` i obnavljaju se emulator workflowom. 0 % pikselnog odstupanja još nije potvrđeno usporednim mjerenjem.
+
+## ✅ Google Play spremnost i nadograđene ovisnosti
+
+Projekt koristi kompatibilan stabilni alatni lanac: AGP 8.13.2, Gradle 8.14.4, Kotlin 2.4.21, Compose BOM 2026.06.01 (posljednja kompatibilna Compose 1.11 linija), Activity 1.13.0, Core 1.18.0 i Core SplashScreen 1.2.0. `targetSdk=36` zadovoljava trenutačni Google Play cilj za telefone. Detalji i preostale ručne provjere nalaze se u [Google Play popisu provjera](docs/GOOGLE-PLAY-READY.md) i [pravilima privatnosti](docs/PRIVACY-POLICY.md). Potpisani produkcijski AAB zahtijeva zaseban ključ i Play Console provjere. Nepotpisani AAB nije spreman za slanje u Google Play.

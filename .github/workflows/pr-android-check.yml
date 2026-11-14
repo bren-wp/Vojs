@@ -14,7 +14,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m py_compile scripts/capture_screenshots.py scripts/audit_splash_pixels.py scripts/audit_reference_pixels.py scripts/test_emulator_boot.py
+          python3 -m py_compile scripts/capture_screenshots.py scripts/audit_splash_pixels.py scripts/audit_reference_pixels.py scripts/test_emulator_boot.py scripts/check_native_alignment.py
           python3 scripts/test_emulator_boot.py
       - uses: actions/setup-java@v4
         with:
@@ -22,7 +22,7 @@ jobs:
           java-version: '17'
       - uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: '8.11.1'
+          gradle-version: '8.14.4'
       - name: Install Android SDK 36
         shell: bash
         run: |
@@ -31,9 +31,26 @@ jobs:
           if [ ! -x "$SDKMANAGER" ]; then
             SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -Vr | head -1)"
           fi
-          "$SDKMANAGER" --install "platforms;android-36" "build-tools;35.0.0"
+          "$SDKMANAGER" --install "platforms;android-36.1" "build-tools;35.0.0"
       - name: Build Android APK and AAB
-        run: gradle --no-daemon --stacktrace :app:assembleDebug :app:assembleRelease :app:bundleRelease
+        run: gradle --no-daemon --stacktrace :app:assembleDebug :app:assembleRelease :app:bundleRelease :app:lintDebug :app:lintRelease
+      - name: Verify release permissions and 16 KB native-library constraints
+        shell: bash
+        run: |
+          set -euo pipefail
+          BT="$ANDROID_HOME/build-tools/35.0.0"
+          "$BT/aapt" dump badging app/build/outputs/apk/debug/app-debug.apk | grep -q "sdkVersion:'24'"
+          "$BT/aapt" dump badging app/build/outputs/apk/debug/app-debug.apk | grep -q "targetSdkVersion:'36'"
+          if "$BT/aapt" dump permissions app/build/outputs/apk/debug/app-debug.apk | grep -q 'android.permission.INTERNET'; then
+            echo "::error::Unexpected internet permission in merged APK"
+            exit 1
+          fi
+          python3 scripts/check_native_alignment.py \
+            app/build/outputs/apk/debug/app-debug.apk \
+            app/build/outputs/apk/release/app-release-unsigned.apk \
+            app/build/outputs/bundle/release/app-release.aab
+          "$BT/zipalign" -c -P 16 -v 4 app/build/outputs/apk/debug/app-debug.apk
+          "$BT/zipalign" -c -P 16 -v 4 app/build/outputs/apk/release/app-release-unsigned.apk
       - name: Verify source logo and clean VOJS user interface
         shell: bash
         run: |

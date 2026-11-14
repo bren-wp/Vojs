@@ -25,7 +25,7 @@ jobs:
           java-version: '17'
       - uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: '8.11.1'
+          gradle-version: '8.14.4'
       - name: Prepare Android SDK 36
         shell: bash
         run: |
@@ -37,7 +37,7 @@ jobs:
             SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -Vr | head -1)"
           fi
           test -x "$SDKMANAGER"
-          "$SDKMANAGER" --install "platforms;android-36" "build-tools;35.0.0"
+          "$SDKMANAGER" --install "platforms;android-36.1" "build-tools;35.0.0"
       - name: Prepare optional production key
         env:
           VOJS_KEYSTORE_BASE64: ${{ secrets.VOJS_KEYSTORE_BASE64 }}
@@ -58,9 +58,37 @@ jobs:
           fi
       - name: Build debug APK, release APK and release AAB
         run: |
-          gradle --no-daemon --stacktrace :app:assembleDebug :app:assembleRelease :app:bundleRelease \
+          gradle --no-daemon --stacktrace :app:assembleDebug :app:assembleRelease :app:bundleRelease :app:lintRelease \
             -PvojsVersionCode=${{ github.run_number }} \
             -PvojsVersionName=1.0.${{ github.run_number }}
+      - name: Verify APK target, permissions, native libs and optional signing
+        shell: bash
+        run: |
+          set -euo pipefail
+          BT="$ANDROID_HOME/build-tools/35.0.0"
+          "$BT/aapt" dump badging app/build/outputs/apk/debug/app-debug.apk | grep -q "sdkVersion:'24'"
+          "$BT/aapt" dump badging app/build/outputs/apk/debug/app-debug.apk | grep -q "targetSdkVersion:'36'"
+          "$BT/aapt" dump permissions app/build/outputs/apk/debug/app-debug.apk | grep -q "android.permission.RECORD_AUDIO"
+          if "$BT/aapt" dump permissions app/build/outputs/apk/debug/app-debug.apk | grep -q "android.permission.INTERNET"; then
+            echo "::error::Network permission found in built APK"
+            exit 1
+          fi
+          if [[ "${SIGNING_READY:-false}" == "true" ]]; then
+            RELEASE_FILE="app/build/outputs/apk/release/app-release.apk"
+          else
+            RELEASE_FILE="app/build/outputs/apk/release/app-release-unsigned.apk"
+          fi
+          python3 scripts/check_native_alignment.py \
+            app/build/outputs/apk/debug/app-debug.apk \
+            "$RELEASE_FILE" \
+            app/build/outputs/bundle/release/app-release.aab
+          "$BT/zipalign" -c -P 16 -v 4 app/build/outputs/apk/debug/app-debug.apk
+          "$BT/zipalign" -c -P 16 -v 4 "$RELEASE_FILE"
+          "$BT/apksigner" verify --print-certs app/build/outputs/apk/debug/app-debug.apk > /dev/null
+          if [[ "${SIGNING_READY:-false}" == "true" ]]; then
+            "$BT/apksigner" verify --print-certs app/build/outputs/apk/release/app-release.apk > /dev/null
+            jarsigner -verify -strict app/build/outputs/bundle/release/app-release.aab > /dev/null
+          fi
       - name: Archive all build outputs
         uses: actions/upload-artifact@v4
         with:
