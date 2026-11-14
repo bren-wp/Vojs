@@ -87,3 +87,19 @@ jobs:
           grep -q 'android:usesCleartextTraffic="false"' app/src/main/AndroidManifest.xml
           grep -Fq 'https://$HOST' app/src/main/java/com/brendigo/vojs/VoiceLinkService.kt
           ! grep -R -E 'FirebaseApp|Retrofit|OkHttpClient|http://' app/src/main/java
+
+  web-links:
+    name: PHP API and browser source checks
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate PHP scripts
+        run: |
+          set -euo pipefail
+          for f in website/api/*.php; do php -l "$f"; done
+      - name: Validate browser scripts
+        run: |
+          set -euo pipefail
+          for f in website/recorder.js website/message.js website/sw.js; do node --check "$f"; done
+      - name: Integration test for anonymous links
+        run: bash scripts/test_web_link_api.sh
