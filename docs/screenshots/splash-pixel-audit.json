@@ -1,0 +1,38 @@
+{
+  "device": "Pixel 6 emulator, Android API 35",
+  "results": [
+    {
+      "screenshot": "00-splash-light.png",
+      "reference": "pocetni-zaslon-svijetli-1080x2400.png",
+      "size": [
+        1080,
+        2400
+      ],
+      "roi": [
+        0,
+        115,
+        1080,
+        2260
+      ],
+      "changed_pixels_over_4_percent": 6.54265,
+      "mean_absolute_rgb_error": 5.75516
+    },
+    {
+      "screenshot": "10-splash-dark.png",
+      "reference": "pocetni-zaslon-tamni-1080x2400.png",
+      "size": [
+        1080,
+        2400
+      ],
+      "roi": [
+        0,
+        115,
+        1080,
+        2260
+      ],
+      "changed_pixels_over_4_percent": 0.0,
+      "mean_absolute_rgb_error": 0.0
+    }
+  ],
+  "note": "Android-owned bars excluded; other screens still need ROI calibration"
+}

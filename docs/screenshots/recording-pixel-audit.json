@@ -1,0 +1,58 @@
+{
+  "source": "Live ADB emulator screenshot versus VOJS conceptual phone interior",
+  "reference": "branding/google-play/snimke-zaslona/01-snimi-1080x1920.png",
+  "actual": "docs/screenshots/02-recording.png",
+  "reference_crop": [
+    214,
+    349,
+    866,
+    1752
+  ],
+  "normalized_resolution": [
+    652,
+    1403
+  ],
+  "caveat": "Conceptual render and live UI are not identical source media; clock, recorder state, status bar and live waveform vary.",
+  "zones": {
+    "header": {
+      "roi": [
+        0,
+        0,
+        652,
+        240
+      ],
+      "changed_pixels_over_8_percent": 10.576,
+      "mean_absolute_rgb_error": 15.874
+    },
+    "waveform": {
+      "roi": [
+        0,
+        240,
+        652,
+        640
+      ],
+      "changed_pixels_over_8_percent": 18.89,
+      "mean_absolute_rgb_error": 16.642
+    },
+    "time": {
+      "roi": [
+        0,
+        640,
+        652,
+        970
+      ],
+      "changed_pixels_over_8_percent": 9.264,
+      "mean_absolute_rgb_error": 14.893
+    },
+    "controls": {
+      "roi": [
+        0,
+        970,
+        652,
+        1403
+      ],
+      "changed_pixels_over_8_percent": 15.788,
+      "mean_absolute_rgb_error": 17.861
+    }
+  }
+}
