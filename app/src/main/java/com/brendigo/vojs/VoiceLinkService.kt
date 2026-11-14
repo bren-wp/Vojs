@@ -32,7 +32,7 @@ internal object VoiceLinkService {
             requestMethod = "POST"
             doOutput = true
             setRequestProperty("Content-Type", "multipart/form-data; boundary=$boundary")
-            chunkedStreamingMode = 8192
+            setChunkedStreamingMode(8192)
         }
         try {
             connection.outputStream.use { output ->
