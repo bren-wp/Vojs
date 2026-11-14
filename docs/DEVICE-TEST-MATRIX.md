@@ -39,3 +39,11 @@ Za vizualni audit odabir kontrola daje prednost točnoj normaliziranoj oznaci, z
 ## Kompaktna reprodukcija i sigurni rubovi P2P zaslona
 
 Prikaz gotove snimke zadržava izvorni dizajn na dovoljno visokim zaslonima. Na uređajima s velikim fontom i manjom efektivnom visinom reprodukcija se premješta u donju grupu stalno dostupnih kontrola, dok su opis i metapodaci pomični. Android P2P zaslon sada ima `safeDrawingPadding()` kako sistemske trake (status/navigation bar) ne bi prekrivale tipke Natrag/Kopiraj/Podijeli. To je realna funkcionalna dorada na temelju neuspjelih ADB testova, ne samo promjena automatizacije.
+
+## Izdvojena pixel-stabilna zaglavlja i valni prikaz
+
+Na svim nativnim zaslonima snimanja koristi se izvorni logo u `VojsHeader.kt` i vektorski nacrtana zupčanica koja ne ovisi o fontu/emoji prikazu uređaja. Kontrola postavki ima dodirnu zonu 48dp. Valni prikaz zadržava svih 22 izvornom referencom izmjerenih stupaca, no sadržaj je centriran i sužen na 84% korisne širine (92% u kompaktnom rasporedu), uz blago nižu visinu, radi približavanja dimenzijama izvornog VOJS koncepta. ADB testovi i mjerena ROI odstupanja moraju potvrditi napredak; bez novih rezultata nema tvrdnje o 0% odstupanja.
+
+## Cijeli vizualni tok — uključujući P2P
+
+`capture_screenshots.py` dodatno snima stvarni, zapakirani Android P2P zaslon (`11-p2p-sender.png`) i zahtijeva povratak na izvornu gotovu snimku prije dijeljenja. `audit_all_screens.py` obrađuje 12 stvarnih screenshotova. P2P zaslon uspoređuje se samo *aproksimativno* s marketinškom referencom poveznice: ona prikazuje zastarjela trajanja i nije nativni 1:1 UI. Na P2P zaslonu prikazan je stvarni rok od 15 min, a link se prikazuje **tek nakon uspješne kreacije**. Fotografije, mockupovi i navodne 0% metrike bez ekvivalentnog dizajnerskog izvora se ne generiraju.

@@ -226,6 +226,15 @@ if tap("Započni snimanje") and wait_ui("Završi snimanje", 12):
             fail("Audio playback control failed")
         if not tap("Zaustavi"):
             fail("Stop playback failed")
+        # Capture the real, locally bundled P2P interface. This does NOT
+        # require or pretend to complete an Internet P2P transfer.
+        if not tap("Podijeli izravno (P2P)"):
+            fail("P2P sender CTA is not available")
+        if not wait_ui("Natrag", 15):
+            fail("P2P sender did not render a native back button")
+        screenshot("11-p2p-sender.png", "Private P2P sender / dark theme")
+        if not tap("Natrag") or not wait_ui("Poruka je spremna", 15):
+            fail("Returning from P2P did not preserve recorded message")
         if tap("Podijeli glasovnu poruku"):
             screenshot("04-android-share.png","Android native Sharesheet")
             adb("shell", "input", "keyevent", "4")
@@ -260,5 +269,5 @@ if re.search(r"FATAL EXCEPTION[\s\S]{0,800}Process: com\.brendigo\.vojs", crashe
     "captured_at_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
     "screenshots": saved
 },ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
-if len(saved) < 11:
-    fail(f"Expected 9 functional screens and both splash themes, captured {len(saved)}")
+if len(saved) < 12:
+    fail(f"Expected 10 functional captures and both splash themes, captured {len(saved)}")

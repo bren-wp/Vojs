@@ -15,7 +15,7 @@ NAMES = (
     "00-splash-light.png", "01-home.png", "02-recording.png",
     "03-ready.png", "04-android-share.png", "05-settings.png",
     "06-paused.png", "07-settings-dark.png", "08-dark-ready.png",
-    "09-dark-home.png", "10-splash-dark.png"
+    "09-dark-home.png", "10-splash-dark.png", "11-p2p-sender.png"
 )
 REGIONS = {
     "header": (0, .05, 1, .18),
@@ -24,7 +24,8 @@ REGIONS = {
 }
 CONCEPT = {
     "02-recording.png": "01-snimi-1080x1920.png",
-    "03-ready.png": "03-podijeli-1080x1920.png"
+    "03-ready.png": "03-podijeli-1080x1920.png",
+    "11-p2p-sender.png": "03-podijeli-1080x1920.png"
 }
 
 def roi(size, fractions):
@@ -51,7 +52,7 @@ def main():
         "source": "Real Android emulator screenshots captured with adb",
         "baseline_is_previous_genuine_capture_not_design_reference": True,
         "branding_reference_is_marketing_composite_not_native_screen": True,
-        "missing_expiry_screen": "Unavailable in native offline VOJS: needs remote storage",
+        "missing_expiry_screen": "Long-lived expiry choices are intentionally absent in P2P-only VOJS",
         "screen_count": len(NAMES),
         "screens": []
     }

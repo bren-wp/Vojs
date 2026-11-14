@@ -1,48 +1,25 @@
 package com.brendigo.vojs
 
-import android.Manifest
-import android.content.pm.PackageManager
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import kotlinx.coroutines.delay
-import kotlin.math.abs
-import kotlin.math.sin
 
 @Composable
 internal fun VoiceScreen(
@@ -79,26 +56,7 @@ internal fun VoiceScreen(
             // Original VOJS wordmark is unmodified. Keep it in a dedicated
             // compact toolbar so "Poruka je spremna" never wraps or collides
             // with the logo/gear on 360dp+ screens or with large text scaling.
-            Row(
-                Modifier.fillMaxWidth().height(38.dp),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painter = painterResource(
-                        if (dark) R.drawable.vojs_logo_dark else R.drawable.vojs_logo_light
-                    ),
-                    contentDescription = "VOJS",
-                    modifier = Modifier.width(102.dp).height(38.dp),
-                    contentScale = ContentScale.Fit
-                )
-                TextButton(onClick = onSettings,
-                    modifier = Modifier.semantics {
-                        contentDescription = "Postavke aplikacije"
-                    }) {
-                    Text("⚙", fontSize = 21.sp, color = Violet)
-                }
-            }
+            VojsHeader(dark = dark, onSettings = onSettings)
             Spacer(Modifier.height(5.dp))
             Text(
                 if (stage == RecordingStage.READY) "Poruka je spremna" else "Nova poruka",
@@ -177,9 +135,9 @@ internal fun VoiceScreen(
                     values = recorder.waveform.toList(),
                     active = stage == RecordingStage.RECORDING && !recorder.paused,
                     color = if (dark) Color(0xFF978BFF) else Violet,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(if (compact) 0.92f else 0.84f)
                         .padding(horizontal = 8.dp)
-                        .height(if (compact) 170.dp else 228.dp)
+                        .height(if (compact) 164.dp else 210.dp)
                 )
                 Spacer(Modifier.height(if (compact) 12.dp else 20.dp))
                 Text(
