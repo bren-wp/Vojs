@@ -20,3 +20,95 @@
 
 .voice-panel #received-download{display:inline-block;margin-top:12px}
 .voice-panel #received-download[hidden]{display:none}
+
+/* Design tokens: dark is the default on EVERY VOJS website page. */
+:root {
+  color-scheme: dark;
+  --vojs-bg: #17182b;
+  --vojs-text: #f7f5ff;
+  --vojs-card: #252643;
+  --vojs-secondary: #cbc8e0;
+  --vojs-link: #afa6ff;
+  --vojs-border: #474665;
+  --vojs-input: #20213b;
+  --vojs-input-text: #ffffff;
+  --vojs-phone-border: #9b91f4;
+}
+html[data-theme="light"] {
+  color-scheme: light;
+  --vojs-bg: #f8f7ff;
+  --vojs-text: #20213b;
+  --vojs-card: #ffffff;
+  --vojs-secondary: #56556f;
+  --vojs-link: #5145cb;
+  --vojs-border: #e4e1f3;
+  --vojs-input: #ffffff;
+  --vojs-input-text: #20213b;
+  --vojs-phone-border: #20213b;
+}
+html,body { background: var(--vojs-bg); color: var(--vojs-text); }
+.nav .brand, .nav a, .nav nav a,.phone,.phone h2,.voice-panel .timer {
+  color: var(--vojs-text);
+}
+.nav nav a[href*="/Vojs/releases"] {
+  background: #7868ff; color: #fff;
+  border-radius: 16px; padding: 14px 20px; font-weight: 800;
+}
+.phone { background: var(--vojs-card); border-color: var(--vojs-phone-border); }
+.phone .mic { color: #fff; }
+.cards article,.info-card,.voice-panel {
+  background: var(--vojs-card); color: var(--vojs-text);
+  box-shadow: 0 12px 40px rgba(0,0,0,.12);
+}
+.cards p,.info-card p,.voice-panel p,section>p,.meta {
+  color: var(--vojs-secondary);
+}
+footer { border-color: var(--vojs-border); }
+footer a,.footer-links a,.back,.voice-panel a { color: var(--vojs-link); }
+.voice-panel .timer { color: var(--vojs-text); }
+.voice-panel .timer small { color: var(--vojs-secondary); }
+.voice-panel input,.voice-panel select {
+  color: var(--vojs-input-text);
+  background: var(--vojs-input); border-color: var(--vojs-border);
+}
+.voice-panel .voice-error { color: #ffacb5; }
+html[data-theme="light"] .voice-panel .voice-error { color: #b92342; }
+.voice-panel .button-row button:not(.record-action) {
+  color: var(--vojs-link); background: var(--vojs-card);
+  border: 1px solid var(--vojs-border);
+}
+.voice-panel .button-row button.record-action { color: #fff; }
+.page-action .cta,.voice-panel .cta,.hero .cta { color: #fff; }
+.vojs-theme-toggle {
+  cursor:pointer; font:inherit; font-weight:700; flex-shrink:0;
+  color:var(--vojs-link); background:transparent; border:1px solid var(--vojs-border);
+  border-radius:12px; min-height:44px; padding:10px 13px; white-space:nowrap;
+}
+.vojs-theme-toggle:hover { background:var(--vojs-card); }
+.vojs-theme-toggle:focus-visible,.nav a:focus-visible,
+.page-action a:focus-visible,.cta:focus-visible {
+  outline:3px solid #ff7c91; outline-offset:3px;
+}
+.voice-panel #accept-terms { width:auto; accent-color:#978bff; }
+.voice-panel .voice-consent {
+  display:flex; align-items:flex-start; gap:10px; line-height:1.5;
+}
+.voice-panel .voice-consent input { flex-shrink:0; margin:5px 0 0; }
+@media(max-width:900px){
+  .nav{height:auto;padding:16px 20px;flex-direction:column;align-items:stretch;gap:14px}
+  .nav nav{display:flex;flex-wrap:nowrap;white-space:nowrap;overflow-x:auto;
+    max-width:100%;gap:12px;padding-bottom:8px;scroll-snap-type:x proximity;
+    -webkit-overflow-scrolling:touch}
+  .nav nav>*{flex-shrink:0;scroll-snap-align:start}
+  .nav nav a[href*="/Vojs/releases"]{padding:10px 14px}
+  .hero{margin-top:38px;margin-bottom:64px}
+}
+@media(max-width:360px){
+  .content-page{padding:0 16px}
+  .voice-panel{padding:17px}
+  .voice-panel .button-row button{padding:12px;overflow-wrap:anywhere}
+  .cards article,.info-card{padding:22px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;transition-duration:0ms!important}
+}
