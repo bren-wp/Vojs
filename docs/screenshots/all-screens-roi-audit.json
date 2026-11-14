@@ -170,12 +170,12 @@
           "mean_absolute_rgb_error": 0.0
         },
         "content": {
-          "changed_pixels_over_8_pct": 35.068,
-          "mean_absolute_rgb_error": 4.228
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
         },
         "controls": {
-          "changed_pixels_over_8_pct": 99.9,
-          "mean_absolute_rgb_error": 15.875
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
         }
       }
     },
@@ -216,12 +216,12 @@
           "mean_absolute_rgb_error": 0.0
         },
         "content": {
-          "changed_pixels_over_8_pct": 35.152,
-          "mean_absolute_rgb_error": 5.538
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
         },
         "controls": {
-          "changed_pixels_over_8_pct": 99.995,
-          "mean_absolute_rgb_error": 19.934
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
         }
       }
     },
