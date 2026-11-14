@@ -7,8 +7,6 @@ for expected in (
     'am", "force-stop", launcher',
     'capture_branded_splash("00-splash-light.png", "light")',
     'capture_branded_splash("10-splash-dark.png", "dark")',
-    'screenshot("00-splash-light.png"',
-    'screenshot("10-splash-dark.png"',
 ):
     if expected not in source:
         raise SystemExit(f"Missing safeguard: {expected}")
