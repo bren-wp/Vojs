@@ -6,5 +6,5 @@
     <color name="vojs_accent">#FF7C91</color>
     <color name="vojs_ink">#20213B</color>
     <color name="vojs_surface">#F4F2FF</color>
-    <color name="vojs_splash_background">#F4F2FF</color>
+    <color name="vojs_splash_background">#20213B</color>
 </resources>

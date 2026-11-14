@@ -5,8 +5,9 @@ source = Path("scripts/capture_screenshots.py").read_text("utf-8")
 for expected in (
     '("Quickstep", "Pixel Launcher")',
     'am", "force-stop", launcher',
-    'capture_branded_splash("00-splash-light.png", "light")',
     'capture_branded_splash("10-splash-dark.png", "dark")',
+    'capture_branded_splash("00-splash-light.png", "light")',
+    'tap("Svijetla tema")',
 ):
     if expected not in source:
         raise SystemExit(f"Missing safeguard: {expected}")
