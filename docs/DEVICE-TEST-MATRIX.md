@@ -35,3 +35,7 @@ QA nakon dodavanja P2P funkcije provjerava i ulazak u ugrađeni P2P zaslon te po
 ## Ispravljeni screenshot testovi
 
 Za vizualni audit odabir kontrola daje prednost točnoj normaliziranoj oznaci, zatim prefiksu, pa tek generičkom podudaranju. Time se 'Tamna tema (zadana)' ne može zamijeniti opisom 'Zadano: tamna tema', niti '▶ Preslušaj' podnaslovom. Regression test izrađuje lažnu UI hijerarhiju samo za provjeru odabira koordinata; stvarni screenshotovi i dalje nastaju isključivo preko ADB-a. Emulatorski workflow instalira Pillow prije pravih PNG pixel-provjera.
+
+## Kompaktna reprodukcija i sigurni rubovi P2P zaslona
+
+Prikaz gotove snimke zadržava izvorni dizajn na dovoljno visokim zaslonima. Na uređajima s velikim fontom i manjom efektivnom visinom reprodukcija se premješta u donju grupu stalno dostupnih kontrola, dok su opis i metapodaci pomični. Android P2P zaslon sada ima `safeDrawingPadding()` kako sistemske trake (status/navigation bar) ne bi prekrivale tipke Natrag/Kopiraj/Podijeli. To je realna funkcionalna dorada na temelju neuspjelih ADB testova, ne samo promjena automatizacije.

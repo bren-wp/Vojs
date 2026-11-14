@@ -10,6 +10,7 @@ import android.widget.Toast
 import android.util.Base64
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -54,7 +55,7 @@ class PeerSenderActivity : ComponentActivity() {
         setContent {
             var browserReady by remember { mutableStateOf(false) }
             MaterialTheme(colorScheme = darkColorScheme(primary = Violet)) {
-                Column(Modifier.fillMaxSize()) {
+                Column(Modifier.fillMaxSize().background(Night).safeDrawingPadding()) {
                     Row(
                         Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)

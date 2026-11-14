@@ -67,6 +67,13 @@ def wait(label, seconds=28):
         if found:
             return found
         time.sleep(.5)
+    try:
+        visible = nodes()
+        print("UNAVAILABLE:", repr(label), "visible controls:",
+              [(n.get("text"), n.get("content-desc")) for n in visible
+               if n.get("text") or n.get("content-desc")][-35:], flush=True)
+    except Exception as debug_error:
+        print("UI debug failed:", repr(debug_error), flush=True)
     raise AssertionError("VOJS control not available: " + label)
 
 def tap(label, seconds=28):
