@@ -35,7 +35,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions { jvmTarget = "17" }
     buildFeatures { compose = true }
     lint {
         abortOnError = true
@@ -66,3 +65,10 @@ val syncVojsLogos = tasks.register<Copy>("syncVojsLogos") {
     into(layout.projectDirectory.dir("src/main/res/drawable-nodpi"))
 }
 tasks.named("preBuild").configure { dependsOn(syncVojsLogos) }
+
+// Kotlin 2.4+ requires the typed compilerOptions DSL.
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+    }
+}
