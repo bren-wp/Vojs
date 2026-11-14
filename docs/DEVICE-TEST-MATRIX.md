@@ -15,3 +15,7 @@ Skripta pokreće stvarno snimanje zvuka, reprodukciju i Android izbornik dijelje
 ## Napomena o vremenu reprodukcije u CI-ju
 
 Kratak zvuk od tri sekunde nije prikladan za provjeru stanja gumba „Zaustavi” jer sam Androidov `uiautomator dump` na sporijim emulatorima može trajati dulje od reprodukcije. Automatizirani test zato snima oko 18 sekundi zvuka; **to ne mijenja korisničko maksimalno trajanje snimke (5 minuta)**. Test i dalje izričito mora vidjeti gumb za zaustavljanje i potvrditi njegov rad, bez lažno pozitivnih rezultata.
+
+## Odabir stvarnog gumba u UI testovima
+
+Android `uiautomator` mora odabrati stvarni gumb `▶ Preslušaj`, a ne informativni tekst `Preslušaj pa podijeli`. Provjera sada najprije uspoređuje **točnu normaliziranu oznaku**, uz uklanjanje samo početne ikonice, te u CI zapisuje oznaku i koordinate svakog stvarnog dodira. Ne smije se prijaviti uspjeh ako reprodukcija stvarno nije započela.
