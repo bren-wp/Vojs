@@ -48,5 +48,5 @@ report = {
 (BASE / "splash-pixel-audit.json").write_text(
     json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
 )
-if any(r["changed_pixels_over_4_percent"] > 12.0 for r in results):
-    raise SystemExit("Reference mismatch: splash does not match VOJS original artwork")
+if any(r["changed_pixels_over_4_percent"] > 1.0 for r in results):
+    raise SystemExit("Splash pixel divergence above 1%; original reference is not displayed")
