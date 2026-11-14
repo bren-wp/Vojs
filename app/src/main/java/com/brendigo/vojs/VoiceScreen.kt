@@ -56,7 +56,11 @@ internal fun VoiceScreen(
     onCreateLink: () -> Unit,
     onDiscard: () -> Unit
 ) {
-    val compact = androidx.compose.ui.platform.LocalConfiguration.current.screenHeightDp < 710
+    val config = androidx.compose.ui.platform.LocalConfiguration.current
+    // A 1.25x font on Pixel 2 needs the compact layout even above 710dp.
+    // Keep the original roomy geometry at normal font scaling.
+    val compact = config.screenHeightDp < 710 ||
+        (config.fontScale > 1.15f && config.screenHeightDp < 850)
     val stage = recorder.stage
     Box(
         modifier = Modifier.fillMaxSize().background(background),
@@ -149,20 +153,17 @@ internal fun VoiceScreen(
                 }
                 Spacer(Modifier.height(if (compact) 20.dp else 30.dp))
                 Text(
-                    "Datoteka se može podijeliti offline. P2P poveznica služi za izravni " +
-                    "prijenos u preglednik bez spremanja audija na VOJS server. " +
-                    "Oba uređaja moraju biti online dok prijenos traje.",
+                    if (compact)
+                        "Offline poruka ostaje lokalno. P2P zahtijeva oba uređaja online; VOJS ne pohranjuje zvuk."
+                    else
+                        "Datoteka se može podijeliti offline. P2P poveznica služi za izravni " +
+                        "prijenos u preglednik bez spremanja audija na VOJS server. " +
+                        "Oba uređaja moraju biti online dok prijenos traje.",
                     color = secondary, fontSize = 13.sp, lineHeight = 19.sp
                 )
                 Spacer(Modifier.height(12.dp))
-                OutlinedButton(
-                    onClick = recorder::togglePlayback,
-                    shape = RoundedCornerShape(17.dp),
-                    modifier = Modifier.fillMaxWidth().height(53.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Violet)
-                ) {
-                    Text(if (recorder.playing) "■  Zaustavi" else "▶  Preslušaj",
-                        fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                if (!compact) {
+                    VojsPlaybackButton(recorder)
                 }
             } else {
                 Text(
@@ -256,6 +257,12 @@ internal fun VoiceScreen(
 
                 }
                 RecordingStage.READY -> {
+                    // Keep the play action visible on short / large-text screens.
+                    // Long description and metadata remain scrollable above it.
+                    if (compact) {
+                        VojsPlaybackButton(recorder)
+                        Spacer(Modifier.height(8.dp))
+                    }
                     // Use the original VOJS horizontal gradient CTA rather than
                     // a generic flat Material button; preserve native ShareSheet.
                     Box(
