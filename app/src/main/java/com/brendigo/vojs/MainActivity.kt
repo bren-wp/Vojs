@@ -235,7 +235,7 @@ private fun VoiceScreen(
                     Text("⚙", fontSize = 21.sp, color = Violet)
                 }
             }
-            Spacer(Modifier.height(if (compact) 14.dp else 30.dp))
+            Spacer(Modifier.height(if (compact) 17.dp else 36.dp))
             Text(
                 when (stage) {
                     RecordingStage.IDLE -> "Dodirni gumb za snimanje"
@@ -251,6 +251,7 @@ private fun VoiceScreen(
                 active = stage == RecordingStage.RECORDING && !recorder.paused,
                 color = if (dark) Color(0xFF978BFF) else Violet,
                 modifier = Modifier.fillMaxWidth()
+                    .padding(horizontal = 8.dp)
                     .height(if (compact) 170.dp else 228.dp)
             )
             Spacer(Modifier.height(if (compact) 12.dp else 20.dp))
@@ -395,10 +396,14 @@ private fun VoiceWaveform(
         }
     ) {
         // Original VOJS concept has 22 separated rounded waveform bars.
+        // Heights measured from all 22 purple bars in the original VOJS
+        // 1080×1920 concept (the phone's white display area), normalized
+        // to its tallest bar. Preserve contour instead of adding a base
+        // floor that made all shorter bars substantially too tall.
         val reference = floatArrayOf(
-            .28f, .46f, .63f, .42f, .76f, 1.00f, .56f, .78f,
-            1.00f, .60f, .48f, .91f, .66f, .98f, .40f, .62f,
-            .87f, .56f, .95f, .64f, .30f, .74f
+            .187f, .351f, .545f, .313f, .709f, .918f, .478f, .754f,
+            1.000f, .604f, .418f, .836f, .649f, .963f, .373f, .560f,
+            .791f, .455f, .896f, .627f, .291f, .731f
         )
         val count = reference.size
         val step = size.width / (count + 1)
@@ -411,8 +416,7 @@ private fun VoiceWaveform(
             // Preserve the reference contour at low volumes while reacting
             // to actual microphone amplitude instead of drawing flat bars.
             val dynamicScale = if (active) 0.72f + 0.28f * measured else 1f
-            val height = (.18f + reference[i] * .82f) *
-                size.height * .98f * dynamicScale
+            val height = reference[i] * size.height * .98f * dynamicScale
             val x = (i + 1) * step
             drawLine(
                 color, Offset(x, mid - height / 2f),
