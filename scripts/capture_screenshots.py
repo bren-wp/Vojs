@@ -159,15 +159,26 @@ for launcher in ("com.android.launcher3", "com.google.android.apps.nexuslauncher
     except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
         pass
 adb("shell","am","start","-n","com.brendigo.vojs/.MainActivity")
-# Capture a real frame before the short-lived 2.5-second splash ends.
-# Never query uiautomator before this capture.
-capture_branded_splash("00-splash-light.png", "light")
+# Fresh installs default to DARK, with the original 2.5-second VOJS art.
+# This is an actual ADB frame, not a swapped marketing asset.
+capture_branded_splash("10-splash-dark.png", "dark")
 time.sleep(2.5)
-# Older emulator images may display Android's immersive tutorial left
-# behind by an earlier build; dismiss only this system prompt, if present.
 if bounds_of("Viewing full screen") and bounds_of("Got it"):
     tap("Got it")
-time.sleep(3)
+time.sleep(2)
+# Explicitly select light mode before comparing the reference LIGHT
+# recording and share states. Preserve the user's selection on real devices:
+# these scripted changes run only on an isolated CI emulator.
+if not tap("Postavke aplikacije"):
+    fail("Cannot open settings to exercise light theme")
+if not tap("Svijetla tema"):
+    fail("Cannot change from dark default to light theme")
+adb("shell", "input", "keyevent", "4")
+time.sleep(1)
+adb("shell", "am", "force-stop", "com.brendigo.vojs")
+adb("shell", "am", "start", "-n", "com.brendigo.vojs/.MainActivity")
+capture_branded_splash("00-splash-light.png", "light")
+time.sleep(2.5)
 screenshot("01-home.png","Home / idle")
 
 def wait_ui(label, timeout_s=9):

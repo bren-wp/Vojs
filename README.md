@@ -24,6 +24,10 @@ Neke poruke zaslužuju se čuti. VOJS omogućuje da u nekoliko dodira snimiš gl
 | :---: | :---: | :---: |
 | Do 5 min, pauza i nastavak | Provjeri poruku prije slanja | Android Sharesheet / M4A |
 
+## 🌙 Tamna tema po zadanim postavkama
+
+VOJS se nakon **prve instalacije otvara u tamnoj temi**, s originalnim tamnim VOJS splash zaslonom (2,5 sekunde). Svijetlu ili sistemsku temu moguće je izabrati u Postavkama, a već spremljen izbor ostaje nepromijenjen nakon ažuriranja aplikacije. Za provjeru originalnog svijetlog dizajna automatski emulator-test privremeno odabire svijetlu temu na zasebnom testnom uređaju.
+
 ## 🎬 Originalni splash — 2,5 sekunde
 
 VOJS koristi originalne neizmijenjene 1080 × 2400 PNG grafike svijetle i tamne teme iz

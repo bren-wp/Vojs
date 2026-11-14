@@ -62,8 +62,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             var appearance by rememberSaveable {
                 mutableStateOf(
-                    getPreferences(0).getString("vojs_appearance", "system")
-                        ?.takeIf { it in setOf("system", "light", "dark") } ?: "system"
+                    getPreferences(0).getString("vojs_appearance", "dark")
+                        ?.takeIf { it in setOf("system", "light", "dark") } ?: "dark"
                 )
             }
             val dark = when (appearance) {
