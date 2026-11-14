@@ -62,5 +62,5 @@ for name, roi in zones.items():
 OUTPUT.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 # The reference is a marketing composite and includes non-app chrome:
 # report all deviations but only fail for a major visual regression.
-if result["zones"]["waveform"]["changed_pixels_over_8_percent"] > 65:
-    raise SystemExit("Major visual regression in recording waveform")
+if result["zones"]["waveform"]["changed_pixels_over_8_percent"] > 18:
+    raise SystemExit("Waveform diverges >18% from the approximate original concept; pixel QA regression")

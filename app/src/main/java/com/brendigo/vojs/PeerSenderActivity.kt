@@ -10,6 +10,7 @@ import android.widget.Toast
 import android.util.Base64
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -17,6 +18,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.view.WindowCompat
 import java.io.File
 import java.io.FileInputStream
 import org.json.JSONTokener
@@ -41,6 +43,9 @@ class PeerSenderActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Do not inherit the launcher SplashScreen theme on a secondary Activity.
+        // Ensure a dark, edge-to-edge native shell without the white title bar.
+        enableEdgeToEdge()
         val root = File(cacheDir, "shared_audio").canonicalFile
         val path = intent.getStringExtra(EXTRA_AUDIO_PATH)
         val audio = path?.let { File(it).canonicalFile }?.takeIf {
@@ -55,6 +60,11 @@ class PeerSenderActivity : ComponentActivity() {
         setContent {
             var browserReady by remember { mutableStateOf(false) }
             MaterialTheme(colorScheme = darkColorScheme(primary = Violet)) {
+                SideEffect {
+                    val controller = WindowCompat.getInsetsController(window, window.decorView)
+                    controller.isAppearanceLightStatusBars = false
+                    controller.isAppearanceLightNavigationBars = false
+                }
                 Column(Modifier.fillMaxSize().background(Night).safeDrawingPadding()) {
                     Row(
                         Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),

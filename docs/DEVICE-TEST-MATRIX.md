@@ -47,3 +47,9 @@ Na svim nativnim zaslonima snimanja koristi se izvorni logo u `VojsHeader.kt` i 
 ## Cijeli vizualni tok — uključujući P2P
 
 `capture_screenshots.py` dodatno snima stvarni, zapakirani Android P2P zaslon (`11-p2p-sender.png`) i zahtijeva povratak na izvornu gotovu snimku prije dijeljenja. `audit_all_screens.py` obrađuje 12 stvarnih screenshotova. P2P zaslon uspoređuje se samo *aproksimativno* s marketinškom referencom poveznice: ona prikazuje zastarjela trajanja i nije nativni 1:1 UI. Na P2P zaslonu prikazan je stvarni rok od 15 min, a link se prikazuje **tek nakon uspješne kreacije**. Fotografije, mockupovi i navodne 0% metrike bez ekvivalentnog dizajnerskog izvora se ne generiraju.
+
+## Provjera na stvarnom emulatoru nakon v1.0.41 — povratak geometrije
+
+Brojevi su iz stvarnog GitHub Android screenshot pixela, a ne tvrdnja o 0%: promijenjeni pikseli valnog prikaza u odnosu na koncept porasli su sa 15,302% (v1.0.40) na 21,497% (v1.0.41), a ukupna približna content ROI stopa snimanja s 11,148% na 14,669%. Zbog dokazanog pogoršanja vraćena je izvorna geometrija 170/228 dp i puna širina waveforma, uz zadržavanje boljeg izdvojenog zaglavlja i statički pripremljenog referentnog niza. Referentni crop i dalje je marketinška kompozicija, ne egzaktan native dizajn.
+
+P2P Activity je eksplicitno postavljen na `Theme.Vojs` (ne naslijeđeni SplashScreen theme) i koristi tamne edge-to-edge sistemske trake. Screenshot P2P-a bez ekvivalentne originalne P2P reference označen je kao neusporediv, umjesto besmislenog mjerenja naspram starog 24-satnog serverskog share ekrana.

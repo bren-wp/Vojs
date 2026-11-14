@@ -50,14 +50,14 @@ internal fun VoiceScreen(
         Column(
             Modifier.weight(1f).verticalScroll(rememberScrollState())
                 .fillMaxWidth().padding(horizontal = 24.dp)
-                .padding(top = if (compact) 8.dp else 12.dp),
+                .padding(top = if (compact) 3.dp else 7.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Original VOJS wordmark is unmodified. Keep it in a dedicated
             // compact toolbar so "Poruka je spremna" never wraps or collides
             // with the logo/gear on 360dp+ screens or with large text scaling.
             VojsHeader(dark = dark, onSettings = onSettings)
-            Spacer(Modifier.height(5.dp))
+            // 48dp accessible gear, but maintain the original title baseline.
             Text(
                 if (stage == RecordingStage.READY) "Poruka je spremna" else "Nova poruka",
                 color = foreground, fontSize = if (compact) 25.sp else 28.sp,
@@ -135,9 +135,9 @@ internal fun VoiceScreen(
                     values = recorder.waveform.toList(),
                     active = stage == RecordingStage.RECORDING && !recorder.paused,
                     color = if (dark) Color(0xFF978BFF) else Violet,
-                    modifier = Modifier.fillMaxWidth(if (compact) 0.92f else 0.84f)
+                    modifier = Modifier.fillMaxWidth()
                         .padding(horizontal = 8.dp)
-                        .height(if (compact) 164.dp else 210.dp)
+                        .height(if (compact) 170.dp else 228.dp)
                 )
                 Spacer(Modifier.height(if (compact) 12.dp else 20.dp))
                 Text(
