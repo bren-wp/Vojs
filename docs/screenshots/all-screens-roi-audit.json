@@ -1,0 +1,336 @@
+{
+  "source": "Real Android emulator screenshots captured with adb",
+  "baseline_is_previous_genuine_capture_not_design_reference": true,
+  "branding_reference_is_marketing_composite_not_native_screen": true,
+  "missing_expiry_screen": "Unavailable in native offline VOJS: needs remote storage",
+  "screen_count": 11,
+  "screens": [
+    {
+      "file": "00-splash-light.png",
+      "size": [
+        1080,
+        2400
+      ],
+      "reference_type": "exact_original_fullframe",
+      "zones": {},
+      "previous_run_drift": {
+        "header": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        },
+        "content": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        },
+        "controls": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        }
+      }
+    },
+    {
+      "file": "01-home.png",
+      "size": [
+        1080,
+        2400
+      ],
+      "reference_type": "real_device_only",
+      "zones": {},
+      "previous_run_drift": {
+        "header": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        },
+        "content": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        },
+        "controls": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        }
+      }
+    },
+    {
+      "file": "02-recording.png",
+      "size": [
+        1080,
+        2400
+      ],
+      "reference_type": "real_device_only",
+      "zones": {},
+      "previous_run_drift": {
+        "header": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        },
+        "content": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        },
+        "controls": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        }
+      },
+      "marketing_reference": {
+        "file": "01-snimi-1080x1920.png",
+        "approximate_comparison_only": true,
+        "roi": {
+          "header": {
+            "changed_pixels_over_8_pct": 9.38,
+            "mean_absolute_rgb_error": 15.04
+          },
+          "content": {
+            "changed_pixels_over_8_pct": 11.148,
+            "mean_absolute_rgb_error": 7.932
+          },
+          "controls": {
+            "changed_pixels_over_8_pct": 16.401,
+            "mean_absolute_rgb_error": 15.871
+          }
+        }
+      }
+    },
+    {
+      "file": "03-ready.png",
+      "size": [
+        1080,
+        2400
+      ],
+      "reference_type": "real_device_only",
+      "zones": {},
+      "previous_run_drift": {
+        "header": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        },
+        "content": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        },
+        "controls": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        }
+      },
+      "marketing_reference": {
+        "file": "03-podijeli-1080x1920.png",
+        "approximate_comparison_only": true,
+        "roi": {
+          "header": {
+            "changed_pixels_over_8_pct": 17.061,
+            "mean_absolute_rgb_error": 20.435
+          },
+          "content": {
+            "changed_pixels_over_8_pct": 25.144,
+            "mean_absolute_rgb_error": 8.042
+          },
+          "controls": {
+            "changed_pixels_over_8_pct": 38.821,
+            "mean_absolute_rgb_error": 43.564
+          }
+        }
+      }
+    },
+    {
+      "file": "04-android-share.png",
+      "size": [
+        1080,
+        2400
+      ],
+      "reference_type": "real_device_only",
+      "zones": {},
+      "previous_run_drift": {
+        "header": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        },
+        "content": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        },
+        "controls": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        }
+      }
+    },
+    {
+      "file": "05-settings.png",
+      "size": [
+        1080,
+        2400
+      ],
+      "reference_type": "real_device_only",
+      "zones": {},
+      "previous_run_drift": {
+        "header": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        },
+        "content": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        },
+        "controls": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        }
+      }
+    },
+    {
+      "file": "06-paused.png",
+      "size": [
+        1080,
+        2400
+      ],
+      "reference_type": "real_device_only",
+      "zones": {},
+      "previous_run_drift": {
+        "header": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        },
+        "content": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        },
+        "controls": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        }
+      }
+    },
+    {
+      "file": "07-settings-dark.png",
+      "size": [
+        1080,
+        2400
+      ],
+      "reference_type": "real_device_only",
+      "zones": {},
+      "previous_run_drift": {
+        "header": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        },
+        "content": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        },
+        "controls": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        }
+      }
+    },
+    {
+      "file": "08-dark-ready.png",
+      "size": [
+        1080,
+        2400
+      ],
+      "reference_type": "real_device_only",
+      "zones": {},
+      "previous_run_drift": {
+        "header": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        },
+        "content": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        },
+        "controls": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        }
+      }
+    },
+    {
+      "file": "09-dark-home.png",
+      "size": [
+        1080,
+        2400
+      ],
+      "reference_type": "real_device_only",
+      "zones": {},
+      "previous_run_drift": {
+        "header": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        },
+        "content": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        },
+        "controls": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        }
+      }
+    },
+    {
+      "file": "10-splash-dark.png",
+      "size": [
+        1080,
+        2400
+      ],
+      "reference_type": "exact_original_fullframe",
+      "zones": {},
+      "previous_run_drift": {
+        "header": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        },
+        "content": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        },
+        "controls": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        }
+      }
+    }
+  ],
+  "exact_original_splash_report": {
+    "device": "Pixel 6 emulator, Android API 35",
+    "results": [
+      {
+        "screenshot": "00-splash-light.png",
+        "reference": "pocetni-zaslon-svijetli-1080x2400.png",
+        "size": [
+          1080,
+          2400
+        ],
+        "roi": [
+          0,
+          115,
+          1080,
+          2260
+        ],
+        "changed_pixels_over_4_percent": 0.0,
+        "mean_absolute_rgb_error": 0.0
+      },
+      {
+        "screenshot": "10-splash-dark.png",
+        "reference": "pocetni-zaslon-tamni-1080x2400.png",
+        "size": [
+          1080,
+          2400
+        ],
+        "roi": [
+          0,
+          115,
+          1080,
+          2260
+        ],
+        "changed_pixels_over_4_percent": 0.0,
+        "mean_absolute_rgb_error": 0.0
+      }
+    ],
+    "note": "Android-owned bars excluded; other screens still need ROI calibration"
+  }
+}
