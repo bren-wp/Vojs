@@ -59,13 +59,22 @@ function vojs_room_path(string $store, string $id): string {
 function vojs_gc(string $store): int {
     $live = 0;
     foreach (glob($store . '/*.json') ?: [] as $file) {
-        $json = @json_decode((string)@file_get_contents($file), true);
+        $fp = @fopen($file, 'rb');
+        if (!$fp || !flock($fp, LOCK_SH)) continue;
+        $json = json_decode((string)stream_get_contents($fp), true);
+        flock($fp, LOCK_UN); fclose($fp);
         if (!is_array($json) || (int)($json['expires'] ?? 0) <= time() ||
             !empty($json['closed'])) {
             @unlink($file);
         } else {
             $live++;
         }
+    }
+    // Opportunistic GC; this has no cron or database dependency.
+    // Never remove the shared .rate-secret seed or lock while active.
+    foreach (glob($store . '/.rate-*') ?: [] as $file) {
+        if (!preg_match('/\.rate-[a-f0-9]{64}\z/D', $file)) continue;
+        if ((int)@filemtime($file) < time() - 172800) @unlink($file);
     }
     return $live;
 }

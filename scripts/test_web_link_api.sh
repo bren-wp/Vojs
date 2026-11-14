@@ -65,14 +65,20 @@ status=$(curl -sS -o /dev/null -w '%{http_code}' -H 'Content-Type: application/j
   --data-binary @"$TMP/offer-request.json" "$BASE/api/signal.php")
 test "$status" = "409"
 curl -fsS "$BASE/api/signal.php?id=$ID&view=offer" > "$TMP/got-offer.json"
-status=$(curl -sS -o /dev/null -w '%{http_code}' "$BASE/api/signal.php?id=$ID&view=answer")
-test "$status" = "404"
 status=$(curl -sS -o /dev/null -w '%{http_code}' "$BASE/api/signal.php?id=$ID&view=answer&owner_token=$TOKEN")
+test "$status" = "400"
+status=$(curl -sS -o /dev/null -w '%{http_code}' -H 'Content-Type: application/json' \
+  --data "{\"action\":\"get_answer\",\"id\":\"$ID\",\"owner_token\":\"$(printf '%064d' 0)\"}" \
+  "$BASE/api/signal.php")
+test "$status" = "404"
+status=$(curl -sS -o /dev/null -w '%{http_code}' -H 'Content-Type: application/json' \
+  --data "{\"action\":\"get_answer\",\"id\":\"$ID\",\"owner_token\":\"$TOKEN\"}" \
+  "$BASE/api/signal.php")
 test "$status" = "202"
 status=$(curl -sS -o /dev/null -w '%{http_code}' -H 'Content-Type: application/json' \
   --data-binary @"$TMP/answer-request.json" "$BASE/api/signal.php")
 test "$status" = "204"
-curl -fsS "$BASE/api/signal.php?id=$ID&view=answer&owner_token=$TOKEN" > "$TMP/got-answer.json"
+curl -fsS -H 'Content-Type: application/json' --data "{\"action\":\"get_answer\",\"id\":\"$ID\",\"owner_token\":\"$TOKEN\"}" "$BASE/api/signal.php" > "$TMP/got-answer.json"
 python3 - "$TMP" <<'PY'
 import json,sys
 from pathlib import Path

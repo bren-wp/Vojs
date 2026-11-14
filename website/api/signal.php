@@ -7,23 +7,14 @@ $method = (string)($_SERVER['REQUEST_METHOD'] ?? '');
 if (!in_array($method, ['GET','POST'], true)) vojs_fail(405, 'Metoda nije podržana.');
 $store = vojs_store();
 if ($method === 'GET') {
-    $id = (string)($_GET['id'] ?? '');
-    $view = (string)($_GET['view'] ?? '');
-    if (!in_array($view, ['offer','answer'], true)) vojs_fail(400, 'Neispravan zahtjev.');
-    $room = vojs_read_room($store, $id);
-    if ($view === 'answer') {
-        $owner = (string)($_GET['owner_token'] ?? '');
-        if (!vojs_token($owner) ||
-            !hash_equals((string)$room['owner_hash'], hash('sha256', $owner))) {
-            vojs_fail(404, 'Poveznica nije dostupna.');
-        }
-    }
-    $value = $room[$view] ?? null;
-    if (!is_array($value)) {
+    if ((string)($_GET['view'] ?? '') !== 'offer') vojs_fail(400, 'Neispravan zahtjev.');
+    $room = vojs_read_room($store, (string)($_GET['id'] ?? ''));
+    $offer = $room['offer'] ?? null;
+    if (!is_array($offer)) {
         http_response_code(202);
         echo json_encode(['pending' => true, 'expires' => $room['expires']]);
     } else {
-        echo json_encode(['description' => $value, 'expires' => $room['expires']]);
+        echo json_encode(['description' => $offer, 'expires' => $room['expires']]);
     }
     exit;
 }
@@ -72,6 +63,22 @@ if ($action === 'create') {
 }
 $id = (string)($request['id'] ?? '');
 if (!vojs_id($id)) vojs_fail(400, 'Neispravan identifikator.');
+if ($action === 'get_answer') {
+    // Owner secret is received ONLY in a POST body, never in query strings or access URLs.
+    $owner = (string)($request['owner_token'] ?? '');
+    $room = vojs_read_room($store, $id);
+    if (!vojs_token($owner) ||
+        !hash_equals((string)$room['owner_hash'], hash('sha256', $owner))) {
+        vojs_fail(404, 'Poveznica nije dostupna.');
+    }
+    if (!is_array($room['answer'] ?? null)) {
+        http_response_code(202);
+        echo json_encode(['pending' => true, 'expires' => $room['expires']]);
+    } else {
+        echo json_encode(['description' => $room['answer'], 'expires' => $room['expires']]);
+    }
+    exit;
+}
 if ($action === 'offer') {
     $owner = (string)($request['owner_token'] ?? '');
     $sdp = vojs_sdp($request['description'] ?? null, 'offer');

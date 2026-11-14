@@ -66,9 +66,9 @@ window.VojsPeer = (() => {
   async function poll(id, view, token, state) {
     const until = Date.now() + 15 * 60 * 1000;
     while (!state.closed && Date.now() < until) {
-      const response = await api("GET", {
-        id, view, ...(token ? { owner_token: token } : {})
-      });
+      const response = token
+        ? await api("POST", null, { action: "get_answer", id, owner_token: token })
+        : await api("GET", { id, view });
       if (response !== null) {
         ensure(response.description && response.description.type === view);
         return response.description;
