@@ -2,8 +2,8 @@
   "source": "Real Android emulator screenshots captured with adb",
   "baseline_is_previous_genuine_capture_not_design_reference": true,
   "branding_reference_is_marketing_composite_not_native_screen": true,
-  "missing_expiry_screen": "Unavailable in native offline VOJS: needs remote storage",
-  "screen_count": 11,
+  "missing_expiry_screen": "Long-lived expiry choices are intentionally absent in P2P-only VOJS",
+  "screen_count": 12,
   "screens": [
     {
       "file": "00-splash-light.png",
@@ -38,16 +38,16 @@
       "zones": {},
       "previous_run_drift": {
         "header": {
-          "changed_pixels_over_8_pct": 0.0,
-          "mean_absolute_rgb_error": 0.0
+          "changed_pixels_over_8_pct": 99.93,
+          "mean_absolute_rgb_error": 17.371
         },
         "content": {
-          "changed_pixels_over_8_pct": 0.0,
-          "mean_absolute_rgb_error": 0.0
+          "changed_pixels_over_8_pct": 98.78,
+          "mean_absolute_rgb_error": 24.552
         },
         "controls": {
-          "changed_pixels_over_8_pct": 0.0,
-          "mean_absolute_rgb_error": 0.0
+          "changed_pixels_over_8_pct": 99.974,
+          "mean_absolute_rgb_error": 18.167
         }
       }
     },
@@ -61,12 +61,12 @@
       "zones": {},
       "previous_run_drift": {
         "header": {
-          "changed_pixels_over_8_pct": 0.0,
-          "mean_absolute_rgb_error": 0.0
+          "changed_pixels_over_8_pct": 9.142,
+          "mean_absolute_rgb_error": 14.114
         },
         "content": {
-          "changed_pixels_over_8_pct": 0.0,
-          "mean_absolute_rgb_error": 0.0
+          "changed_pixels_over_8_pct": 12.353,
+          "mean_absolute_rgb_error": 12.739
         },
         "controls": {
           "changed_pixels_over_8_pct": 0.0,
@@ -78,12 +78,12 @@
         "approximate_comparison_only": true,
         "roi": {
           "header": {
-            "changed_pixels_over_8_pct": 9.38,
-            "mean_absolute_rgb_error": 15.04
+            "changed_pixels_over_8_pct": 9.568,
+            "mean_absolute_rgb_error": 15.156
           },
           "content": {
-            "changed_pixels_over_8_pct": 11.148,
-            "mean_absolute_rgb_error": 7.932
+            "changed_pixels_over_8_pct": 14.669,
+            "mean_absolute_rgb_error": 14.523
           },
           "controls": {
             "changed_pixels_over_8_pct": 16.401,
@@ -102,12 +102,12 @@
       "zones": {},
       "previous_run_drift": {
         "header": {
-          "changed_pixels_over_8_pct": 0.0,
-          "mean_absolute_rgb_error": 0.0
+          "changed_pixels_over_8_pct": 11.403,
+          "mean_absolute_rgb_error": 18.037
         },
         "content": {
-          "changed_pixels_over_8_pct": 0.0,
-          "mean_absolute_rgb_error": 0.0
+          "changed_pixels_over_8_pct": 12.516,
+          "mean_absolute_rgb_error": 8.224
         },
         "controls": {
           "changed_pixels_over_8_pct": 0.0,
@@ -119,12 +119,12 @@
         "approximate_comparison_only": true,
         "roi": {
           "header": {
-            "changed_pixels_over_8_pct": 17.061,
-            "mean_absolute_rgb_error": 20.435
+            "changed_pixels_over_8_pct": 18.134,
+            "mean_absolute_rgb_error": 21.758
           },
           "content": {
-            "changed_pixels_over_8_pct": 27.44,
-            "mean_absolute_rgb_error": 10.0
+            "changed_pixels_over_8_pct": 30.977,
+            "mean_absolute_rgb_error": 10.393
           },
           "controls": {
             "changed_pixels_over_8_pct": 41.149,
@@ -143,16 +143,16 @@
       "zones": {},
       "previous_run_drift": {
         "header": {
-          "changed_pixels_over_8_pct": 0.0,
-          "mean_absolute_rgb_error": 0.0
+          "changed_pixels_over_8_pct": 10.462,
+          "mean_absolute_rgb_error": 5.353
         },
         "content": {
-          "changed_pixels_over_8_pct": 0.0,
-          "mean_absolute_rgb_error": 0.0
+          "changed_pixels_over_8_pct": 35.118,
+          "mean_absolute_rgb_error": 46.47
         },
         "controls": {
-          "changed_pixels_over_8_pct": 0.0,
-          "mean_absolute_rgb_error": 0.0
+          "changed_pixels_over_8_pct": 97.846,
+          "mean_absolute_rgb_error": 167.548
         }
       }
     },
@@ -166,12 +166,12 @@
       "zones": {},
       "previous_run_drift": {
         "header": {
-          "changed_pixels_over_8_pct": 0.0,
-          "mean_absolute_rgb_error": 0.0
+          "changed_pixels_over_8_pct": 10.775,
+          "mean_absolute_rgb_error": 12.239
         },
         "content": {
-          "changed_pixels_over_8_pct": 0.0,
-          "mean_absolute_rgb_error": 0.0
+          "changed_pixels_over_8_pct": 10.893,
+          "mean_absolute_rgb_error": 4.915
         },
         "controls": {
           "changed_pixels_over_8_pct": 0.0,
@@ -189,12 +189,12 @@
       "zones": {},
       "previous_run_drift": {
         "header": {
-          "changed_pixels_over_8_pct": 0.0,
-          "mean_absolute_rgb_error": 0.0
+          "changed_pixels_over_8_pct": 9.377,
+          "mean_absolute_rgb_error": 14.356
         },
         "content": {
-          "changed_pixels_over_8_pct": 0.0,
-          "mean_absolute_rgb_error": 0.0
+          "changed_pixels_over_8_pct": 16.331,
+          "mean_absolute_rgb_error": 16.258
         },
         "controls": {
           "changed_pixels_over_8_pct": 0.0,
@@ -212,12 +212,12 @@
       "zones": {},
       "previous_run_drift": {
         "header": {
-          "changed_pixels_over_8_pct": 0.0,
-          "mean_absolute_rgb_error": 0.0
+          "changed_pixels_over_8_pct": 10.905,
+          "mean_absolute_rgb_error": 12.44
         },
         "content": {
-          "changed_pixels_over_8_pct": 0.0,
-          "mean_absolute_rgb_error": 0.0
+          "changed_pixels_over_8_pct": 11.002,
+          "mean_absolute_rgb_error": 6.024
         },
         "controls": {
           "changed_pixels_over_8_pct": 0.0,
@@ -235,12 +235,12 @@
       "zones": {},
       "previous_run_drift": {
         "header": {
-          "changed_pixels_over_8_pct": 0.0,
-          "mean_absolute_rgb_error": 0.0
+          "changed_pixels_over_8_pct": 11.522,
+          "mean_absolute_rgb_error": 18.331
         },
         "content": {
-          "changed_pixels_over_8_pct": 0.0,
-          "mean_absolute_rgb_error": 0.0
+          "changed_pixels_over_8_pct": 12.616,
+          "mean_absolute_rgb_error": 9.755
         },
         "controls": {
           "changed_pixels_over_8_pct": 0.0,
@@ -258,12 +258,12 @@
       "zones": {},
       "previous_run_drift": {
         "header": {
-          "changed_pixels_over_8_pct": 0.0,
-          "mean_absolute_rgb_error": 0.0
+          "changed_pixels_over_8_pct": 9.555,
+          "mean_absolute_rgb_error": 14.626
         },
         "content": {
-          "changed_pixels_over_8_pct": 0.0,
-          "mean_absolute_rgb_error": 0.0
+          "changed_pixels_over_8_pct": 15.712,
+          "mean_absolute_rgb_error": 20.976
         },
         "controls": {
           "changed_pixels_over_8_pct": 0.0,
@@ -291,6 +291,34 @@
         "controls": {
           "changed_pixels_over_8_pct": 0.0,
           "mean_absolute_rgb_error": 0.0
+        }
+      }
+    },
+    {
+      "file": "11-p2p-sender.png",
+      "size": [
+        1080,
+        2400
+      ],
+      "reference_type": "real_device_only",
+      "zones": {},
+      "previous_run_drift": "unavailable",
+      "marketing_reference": {
+        "file": "03-podijeli-1080x1920.png",
+        "approximate_comparison_only": true,
+        "roi": {
+          "header": {
+            "changed_pixels_over_8_pct": 99.259,
+            "mean_absolute_rgb_error": 99.634
+          },
+          "content": {
+            "changed_pixels_over_8_pct": 98.62,
+            "mean_absolute_rgb_error": 195.752
+          },
+          "controls": {
+            "changed_pixels_over_8_pct": 100.0,
+            "mean_absolute_rgb_error": 183.829
+          }
         }
       }
     }
