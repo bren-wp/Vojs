@@ -16,7 +16,7 @@ Reci to svojim glasom. VOJS je nativna Android aplikacija za jednostavno snimanj
 🔒 Bez VOJS korisničkog računa, VOJS clouda ili oglasa.
 ✈️ Snimanje i slušanje rade bez interneta.
 
-Snimke se privremeno pohranjuju lokalno, u privatni cache aplikacije, da bi Android mogao dijeliti datoteku. Vanjska aplikacija koju izabereš za slanje može koristiti internet i spremiti svoju kopiju. Kada to izričito odabereš, VOJS može prenijeti snimku na vojs.com.hr i stvoriti poveznicu koja istječe nakon 24 sata.
+Snimke se privremeno pohranjuju lokalno, u privatni cache aplikacije, da bi Android mogao dijeliti datoteku. Vanjska aplikacija koju izabereš za slanje može koristiti internet i spremiti svoju kopiju. Kada to izričito odabereš, VOJS može stvoriti kratkotrajnu P2P poveznicu. Audio se prenosi izravno primatelju putem WebRTC-a, bez spremanja na VOJS poslužitelj. Pošiljatelj mora ostati online; sesija istječe za 15 minuta.
 
 VOJS — BRENDIGO. brendigo.com
 
