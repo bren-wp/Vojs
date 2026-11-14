@@ -18,7 +18,7 @@ VOJS omogućuje snimanje glasovnih poruka do pet minuta, pauziranje, preslušava
 
 | 📱 Android | 🌐 VOJS web |
 | --- | --- |
-| Nativni Kotlin + Jetpack Compose | Responzivni snimač u pregledniku |
+| Nativni Kotlin + Jetpack Compose | Responzivni web snimač s osnovnom PWA offline podrškom |
 | Snimanje i M4A preslušavanje bez interneta | Snimanje u pregledniku i lokalno preuzimanje |
 | Android Sharesheet za slanje datoteke | Web Share API kada je podržan |
 | Izravni WebRTC prijenos iz Android aplikacije | P2P primanje u pregledniku bez instalacije |

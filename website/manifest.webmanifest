@@ -1,0 +1,20 @@
+{
+  "name": "VOJS — Neke stvari bolje zvuče",
+  "short_name": "VOJS",
+  "id": "/snimi/",
+  "start_url": "/snimi/",
+  "scope": "/",
+  "display": "standalone",
+  "description": "Snimi glasovnu poruku offline i podijeli je izravno P2P, bez računa.",
+  "lang": "hr",
+  "background_color": "#20213b",
+  "theme_color": "#7868ff",
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
