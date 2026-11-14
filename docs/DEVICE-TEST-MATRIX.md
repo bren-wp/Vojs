@@ -25,3 +25,7 @@ Android `uiautomator` mora odabrati stvarni gumb `▶ Preslušaj`, a ne informat
 Svježa instalacija uvijek koristi tamnu temu neovisno o temi Android sustava. Postojeći korisnički izbor (svijetla ili sistemska) ostaje spremljen. Odvojeni `VojsAppearance.kt` čuva zadanu vrijednost, logiku prikaza i spremanje postavki. Multi-device CI koristi `--fresh-install` **samo na čistom emulatoru**, bilježi stvarnu PNG snimku i provjerava RGB boju pozadine, potom testira svijetlu i vraća tamnu temu. Na stvarnom fizičkom uređaju bez oznake `--fresh-install` korisnički podaci se ne brišu.
 
 Precizna pixel-perfect usporedba svih stanja zahtijeva izravne referentne slike istih dimenzija i DPI-ja; marketinške kompozicije nisu identične nativnim snimkama, pa njihova aproksimacija ne dokazuje 1:1.
+
+## Prilagodba postavki
+
+Izbornik postavki izdvojen je u `VojsSettingsSheet.kt`. Ograničen je na najviše 82% visine zaslona i može se pomicati kako 125–200% font ili landscape ne bi odsjekli izbor teme i pravila privatnosti. Funkcionalnost, izvorni VOJS brand i spremljene postavke zadržani su.

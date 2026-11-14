@@ -8,41 +8,16 @@ import androidx.activity.compose.setContent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import kotlinx.coroutines.delay
-import kotlin.math.abs
-import kotlin.math.sin
 
 internal val Violet = Color(0xFF7868FF)
 internal val VioletDark = Color(0xFF5145CB)
@@ -51,7 +26,6 @@ internal val Muted = Color(0xFF777783)
 internal val Paper = Color(0xFFFFFFFF)
 internal val Night = Color(0xFF20213B)
 
-@OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
     private val voice by lazy { VoiceRecorder(this) }
 
@@ -137,63 +111,24 @@ class MainActivity : ComponentActivity() {
                     onDiscard = { voice.discardCurrent() }
                 )
                 if (showSettings) {
-                    ModalBottomSheet(onDismissRequest = { showSettings = false }) {
-                        Column(
-                            Modifier.fillMaxWidth().padding(horizontal = 25.dp)
-                                .padding(bottom = 36.dp)
-                        ) {
-                            Text("Postavke", style = MaterialTheme.typography.headlineSmall,
-                                fontWeight = FontWeight.Bold)
-                            Spacer(Modifier.height(14.dp))
-                            Text("Izgled aplikacije", color = secondary)
-                            Text(
-                                "Zadano: tamna tema. Tvoj izbor ostaje spremljen.",
-                                color = secondary, fontSize = 12.sp
-                            )
-                            listOf(VojsAppearance.DARK to "Tamna tema (zadana)",
-                                   VojsAppearance.LIGHT to "Svijetla tema",
-                                   VojsAppearance.SYSTEM to "Prema postavkama uređaja").forEach { (key, title) ->
-                                Row(
-                                    Modifier.fillMaxWidth().clickable {
-                                        appearance = key
-                                        VojsAppearance.save(this@MainActivity, key)
-                                    }
-                                        .padding(vertical = 13.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    RadioButton(selected = appearance == key,
-                                        onClick = {
-                                            appearance = key
-                                            VojsAppearance.save(this@MainActivity, key)
-                                        })
-                                    Spacer(Modifier.width(10.dp))
-                                    Text(title)
-                                }
-                            }
-                            HorizontalDivider()
-                            Spacer(Modifier.height(18.dp))
-                            Text("Privatnost", fontWeight = FontWeight.SemiBold)
-                            Spacer(Modifier.height(8.dp))
-                            Text(
-                                "Snimanje i dijeljenje datoteke radi offline. Izravna web poveznica " +
-                                "koristi WebRTC i kratkotrajne JSON podatke za uspostavu veze. " +
-                                "VOJS poslužitelj ne prima audio. Za prijenos primatelj i " +
-                                "pošiljatelj moraju biti online u isto vrijeme.",
-                                color = secondary, fontSize = 13.sp, lineHeight = 19.sp
-                            )
-                            Spacer(Modifier.height(12.dp))
-                            TextButton(onClick = {
-                                startActivity(
-                                    android.content.Intent(
-                                        android.content.Intent.ACTION_VIEW,
-                                        android.net.Uri.parse("https://vojs.com.hr/privatnost/")
-                                    )
+                    VojsSettingsSheet(
+                        appearance = appearance,
+                        dark = dark,
+                        secondary = secondary,
+                        onDismiss = { showSettings = false },
+                        onAppearanceChange = { value ->
+                            appearance = value
+                            VojsAppearance.save(this@MainActivity, value)
+                        },
+                        onPrivacy = {
+                            startActivity(
+                                android.content.Intent(
+                                    android.content.Intent.ACTION_VIEW,
+                                    android.net.Uri.parse("https://vojs.com.hr/privatnost/")
                                 )
-                            }) {
-                                Text("Pravila privatnosti", color = Violet)
-                            }
+                            )
                         }
-                    }
+                    )
                 }
                 }
             }
