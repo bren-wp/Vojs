@@ -38,12 +38,12 @@
       "zones": {},
       "previous_run_drift": {
         "header": {
-          "changed_pixels_over_8_pct": 99.93,
-          "mean_absolute_rgb_error": 17.371
+          "changed_pixels_over_8_pct": 99.931,
+          "mean_absolute_rgb_error": 17.538
         },
         "content": {
-          "changed_pixels_over_8_pct": 98.78,
-          "mean_absolute_rgb_error": 24.552
+          "changed_pixels_over_8_pct": 98.789,
+          "mean_absolute_rgb_error": 24.585
         },
         "controls": {
           "changed_pixels_over_8_pct": 99.974,
@@ -61,12 +61,12 @@
       "zones": {},
       "previous_run_drift": {
         "header": {
-          "changed_pixels_over_8_pct": 9.142,
-          "mean_absolute_rgb_error": 14.114
+          "changed_pixels_over_8_pct": 7.498,
+          "mean_absolute_rgb_error": 12.751
         },
         "content": {
-          "changed_pixels_over_8_pct": 12.353,
-          "mean_absolute_rgb_error": 12.739
+          "changed_pixels_over_8_pct": 12.3,
+          "mean_absolute_rgb_error": 12.637
         },
         "controls": {
           "changed_pixels_over_8_pct": 0.0,
@@ -78,12 +78,12 @@
         "approximate_comparison_only": true,
         "roi": {
           "header": {
-            "changed_pixels_over_8_pct": 9.568,
-            "mean_absolute_rgb_error": 15.156
+            "changed_pixels_over_8_pct": 9.546,
+            "mean_absolute_rgb_error": 15.153
           },
           "content": {
-            "changed_pixels_over_8_pct": 14.669,
-            "mean_absolute_rgb_error": 14.523
+            "changed_pixels_over_8_pct": 11.054,
+            "mean_absolute_rgb_error": 7.752
           },
           "controls": {
             "changed_pixels_over_8_pct": 16.401,
@@ -102,12 +102,12 @@
       "zones": {},
       "previous_run_drift": {
         "header": {
-          "changed_pixels_over_8_pct": 11.403,
-          "mean_absolute_rgb_error": 18.037
+          "changed_pixels_over_8_pct": 9.861,
+          "mean_absolute_rgb_error": 16.826
         },
         "content": {
-          "changed_pixels_over_8_pct": 12.516,
-          "mean_absolute_rgb_error": 8.224
+          "changed_pixels_over_8_pct": 12.662,
+          "mean_absolute_rgb_error": 8.237
         },
         "controls": {
           "changed_pixels_over_8_pct": 0.0,
@@ -119,12 +119,12 @@
         "approximate_comparison_only": true,
         "roi": {
           "header": {
-            "changed_pixels_over_8_pct": 18.134,
-            "mean_absolute_rgb_error": 21.758
+            "changed_pixels_over_8_pct": 17.257,
+            "mean_absolute_rgb_error": 20.589
           },
           "content": {
-            "changed_pixels_over_8_pct": 30.977,
-            "mean_absolute_rgb_error": 10.393
+            "changed_pixels_over_8_pct": 27.55,
+            "mean_absolute_rgb_error": 9.964
           },
           "controls": {
             "changed_pixels_over_8_pct": 41.149,
@@ -143,16 +143,16 @@
       "zones": {},
       "previous_run_drift": {
         "header": {
-          "changed_pixels_over_8_pct": 10.462,
-          "mean_absolute_rgb_error": 5.353
+          "changed_pixels_over_8_pct": 9.545,
+          "mean_absolute_rgb_error": 4.993
         },
         "content": {
-          "changed_pixels_over_8_pct": 35.118,
-          "mean_absolute_rgb_error": 46.47
+          "changed_pixels_over_8_pct": 7.377,
+          "mean_absolute_rgb_error": 2.428
         },
         "controls": {
-          "changed_pixels_over_8_pct": 97.846,
-          "mean_absolute_rgb_error": 167.548
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
         }
       }
     },
@@ -166,12 +166,12 @@
       "zones": {},
       "previous_run_drift": {
         "header": {
-          "changed_pixels_over_8_pct": 10.775,
-          "mean_absolute_rgb_error": 12.239
+          "changed_pixels_over_8_pct": 9.797,
+          "mean_absolute_rgb_error": 11.417
         },
         "content": {
-          "changed_pixels_over_8_pct": 10.893,
-          "mean_absolute_rgb_error": 4.915
+          "changed_pixels_over_8_pct": 11.036,
+          "mean_absolute_rgb_error": 4.922
         },
         "controls": {
           "changed_pixels_over_8_pct": 0.0,
@@ -189,12 +189,12 @@
       "zones": {},
       "previous_run_drift": {
         "header": {
-          "changed_pixels_over_8_pct": 9.377,
-          "mean_absolute_rgb_error": 14.356
+          "changed_pixels_over_8_pct": 7.799,
+          "mean_absolute_rgb_error": 13.056
         },
         "content": {
-          "changed_pixels_over_8_pct": 16.331,
-          "mean_absolute_rgb_error": 16.258
+          "changed_pixels_over_8_pct": 16.27,
+          "mean_absolute_rgb_error": 16.151
         },
         "controls": {
           "changed_pixels_over_8_pct": 0.0,
@@ -212,12 +212,12 @@
       "zones": {},
       "previous_run_drift": {
         "header": {
-          "changed_pixels_over_8_pct": 10.905,
-          "mean_absolute_rgb_error": 12.44
+          "changed_pixels_over_8_pct": 9.866,
+          "mean_absolute_rgb_error": 11.652
         },
         "content": {
-          "changed_pixels_over_8_pct": 11.002,
-          "mean_absolute_rgb_error": 6.024
+          "changed_pixels_over_8_pct": 11.144,
+          "mean_absolute_rgb_error": 6.041
         },
         "controls": {
           "changed_pixels_over_8_pct": 0.0,
@@ -235,12 +235,12 @@
       "zones": {},
       "previous_run_drift": {
         "header": {
-          "changed_pixels_over_8_pct": 11.522,
-          "mean_absolute_rgb_error": 18.331
+          "changed_pixels_over_8_pct": 9.916,
+          "mean_absolute_rgb_error": 17.17
         },
         "content": {
-          "changed_pixels_over_8_pct": 12.616,
-          "mean_absolute_rgb_error": 9.755
+          "changed_pixels_over_8_pct": 12.762,
+          "mean_absolute_rgb_error": 9.781
         },
         "controls": {
           "changed_pixels_over_8_pct": 0.0,
@@ -258,12 +258,12 @@
       "zones": {},
       "previous_run_drift": {
         "header": {
-          "changed_pixels_over_8_pct": 9.555,
-          "mean_absolute_rgb_error": 14.626
+          "changed_pixels_over_8_pct": 7.927,
+          "mean_absolute_rgb_error": 13.39
         },
         "content": {
-          "changed_pixels_over_8_pct": 15.712,
-          "mean_absolute_rgb_error": 20.976
+          "changed_pixels_over_8_pct": 15.647,
+          "mean_absolute_rgb_error": 20.862
         },
         "controls": {
           "changed_pixels_over_8_pct": 0.0,
@@ -302,25 +302,21 @@
       ],
       "reference_type": "real_device_only",
       "zones": {},
-      "previous_run_drift": "unavailable",
-      "marketing_reference": {
-        "file": "03-podijeli-1080x1920.png",
-        "approximate_comparison_only": true,
-        "roi": {
-          "header": {
-            "changed_pixels_over_8_pct": 99.259,
-            "mean_absolute_rgb_error": 99.634
-          },
-          "content": {
-            "changed_pixels_over_8_pct": 98.62,
-            "mean_absolute_rgb_error": 195.752
-          },
-          "controls": {
-            "changed_pixels_over_8_pct": 100.0,
-            "mean_absolute_rgb_error": 183.829
-          }
+      "previous_run_drift": {
+        "header": {
+          "changed_pixels_over_8_pct": 67.394,
+          "mean_absolute_rgb_error": 100.971
+        },
+        "content": {
+          "changed_pixels_over_8_pct": 59.532,
+          "mean_absolute_rgb_error": 26.42
+        },
+        "controls": {
+          "changed_pixels_over_8_pct": 20.835,
+          "mean_absolute_rgb_error": 11.059
         }
-      }
+      },
+      "reference_status": "no_equivalent_P2P_design_reference"
     }
   ],
   "exact_original_splash_report": {
