@@ -240,8 +240,8 @@ internal class VoiceRecorder(private val context: Context) {
         }
     }
 
-    /** A ready, private local file. Creating an upload is always a separate user action. */
-    fun currentAudioForUpload(): File? = workingFile?.takeIf {
+    /** A ready, private local file. WebRTC transfer never uploads it to VOJS. */
+    fun currentAudioForTransfer(): File? = workingFile?.takeIf {
         stage == RecordingStage.READY && it.isFile && it.length() > 0L
     }
 

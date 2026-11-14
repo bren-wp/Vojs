@@ -41,7 +41,6 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.sin
 
@@ -73,10 +72,6 @@ class MainActivity : ComponentActivity() {
                 else -> isSystemInDarkTheme()
             }
             var showSettings by remember { mutableStateOf(false) }
-            val scope = rememberCoroutineScope()
-            var shareLink by remember { mutableStateOf<VojsShareLink?>(null) }
-            var linkBusy by remember { mutableStateOf(false) }
-            var linkError by remember { mutableStateOf<String?>(null) }
             var brandedSplash by remember { mutableStateOf(true) }
             LaunchedEffect(Unit) {
                 // 2.5 seconds: the complete, genuine VOJS splash is readable.
@@ -135,57 +130,18 @@ class MainActivity : ComponentActivity() {
                     secondary = secondary,
                     onSettings = { showSettings = true },
                     onRecord = requestStart,
-                    shareLink = shareLink,
-                    linkBusy = linkBusy,
-                    linkError = linkError,
                     onCreateLink = {
-                        if (!linkBusy) {
-                            val file = voice.currentAudioForUpload()
-                            if (file == null) {
-                                linkError = "Snimka više nije dostupna."
-                            } else {
-                                linkBusy = true
-                                linkError = null
-                                scope.launch {
-                                    try {
-                                        shareLink = VoiceLinkService.create(file)
-                                    } catch (_: Exception) {
-                                        linkError = "Poveznica nije stvorena. Provjeri internet i dostupnost poslužitelja."
-                                    } finally {
-                                        linkBusy = false
-                                    }
-                                }
-                            }
+                        val audio = voice.currentAudioForTransfer()
+                        if (audio == null) {
+                            voice.showError("Snimka više nije dostupna.")
+                        } else {
+                            startActivity(
+                                android.content.Intent(this@MainActivity, PeerSenderActivity::class.java)
+                                    .putExtra(PeerSenderActivity.EXTRA_AUDIO_PATH, audio.absolutePath)
+                            )
                         }
                     },
-                    onCopyLink = {
-                        shareLink?.let { VoiceLinkService.copy(this@MainActivity, it.url) }
-                    },
-                    onShareLink = {
-                        shareLink?.let { VoiceLinkService.share(this@MainActivity, it.url) }
-                    },
-                    onRevokeLink = {
-                        val old = shareLink
-                        if (old != null && !linkBusy) {
-                            linkBusy = true
-                            linkError = null
-                            scope.launch {
-                                try {
-                                    VoiceLinkService.revoke(old)
-                                    shareLink = null
-                                } catch (_: Exception) {
-                                    linkError = "Brisanje nije uspjelo. Pokušaj ponovno dok poveznica ne istekne."
-                                } finally {
-                                    linkBusy = false
-                                }
-                            }
-                        }
-                    },
-                    onDiscard = {
-                        voice.discardCurrent()
-                        shareLink = null
-                        linkError = null
-                    }
+                    onDiscard = { voice.discardCurrent() }
                 )
                 if (showSettings) {
                     ModalBottomSheet(onDismissRequest = { showSettings = false }) {
@@ -224,10 +180,10 @@ class MainActivity : ComponentActivity() {
                             Text("Privatnost", fontWeight = FontWeight.SemiBold)
                             Spacer(Modifier.height(8.dp))
                             Text(
-                                "Snimke nastaju lokalno i mogu se dijeliti offline. " +
-                                "Samo ako odabereš stvaranje poveznice, snimka se šalje na " +
-                                "vojs.com.hr, dostupna je posjednicima poveznice do 24 sata " +
-                                "i može se opozvati tijekom ove sesije.",
+                                "Snimanje i dijeljenje datoteke radi offline. Izravna web poveznica " +
+                                "koristi WebRTC i kratkotrajne JSON podatke za uspostavu veze. " +
+                                "VOJS poslužitelj ne prima audio. Za prijenos primatelj i " +
+                                "pošiljatelj moraju biti online u isto vrijeme.",
                                 color = secondary, fontSize = 13.sp, lineHeight = 19.sp
                             )
                         }
