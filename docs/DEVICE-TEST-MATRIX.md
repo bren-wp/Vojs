@@ -31,3 +31,7 @@ Precizna pixel-perfect usporedba svih stanja zahtijeva izravne referentne slike 
 Izbornik postavki izdvojen je u `VojsSettingsSheet.kt`. Ograničen je na najviše 82% visine zaslona i može se pomicati kako 125–200% font ili landscape ne bi odsjekli izbor teme i pravila privatnosti. Funkcionalnost, izvorni VOJS brand i spremljene postavke zadržani su.
 
 QA nakon dodavanja P2P funkcije provjerava i ulazak u ugrađeni P2P zaslon te povratak na izvornu spremnu snimku, bez potrebe za stvarnim prijenosom tijekom offline emulator smoke testa. End-to-end Android ↔ Web prijenos i dalje zahtijeva aktivan stvarni HTTPS hosting i drugog istodobno spojenog uređaja.
+
+## Ispravljeni screenshot testovi
+
+Za vizualni audit odabir kontrola daje prednost točnoj normaliziranoj oznaci, zatim prefiksu, pa tek generičkom podudaranju. Time se 'Tamna tema (zadana)' ne može zamijeniti opisom 'Zadano: tamna tema', niti '▶ Preslušaj' podnaslovom. Regression test izrađuje lažnu UI hijerarhiju samo za provjeru odabira koordinata; stvarni screenshotovi i dalje nastaju isključivo preko ADB-a. Emulatorski workflow instalira Pillow prije pravih PNG pixel-provjera.
