@@ -45,6 +45,9 @@ def locate(label):
             continue
         values = [node.get("text", ""), node.get("content-desc", "")]
         def normalized(value):
+            # "Ⅱ" is a Unicode letter (numeric category), so the earlier
+            # non-word prefix stripping did NOT remove the pause icon.
+            value = re.sub(r"^[\s▶■◼⏸Ⅱ]+", "", value)
             value = re.sub(r"^[^\w]+", "", value, flags=re.UNICODE)
             return value.strip().casefold()
         if any(normalized(value) == target for value in values):
