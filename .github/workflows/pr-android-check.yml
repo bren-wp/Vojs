@@ -104,6 +104,8 @@ jobs:
           for f in website/recorder.js website/message.js website/sw.js website/p2p.js website/theme.js; do node --check "$f"; done
       - name: Verify dark-first web theme
         run: node scripts/test_web_theme.js
+      - name: Verify Android and P2P pixel-UI contract
+        run: node scripts/test_visual_contract.js
       - name: Integration test for JSON signaling and no audio storage
         run: bash scripts/test_web_link_api.sh
       - name: Fail if server accepts audio storage
