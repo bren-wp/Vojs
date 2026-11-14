@@ -61,6 +61,10 @@ Svih devet snimki dolazi iz **stvarnog izvođenja Android aplikacije na emulator
 
 📷 [Pogledaj sve stvarne snimke zaslona](docs/screenshots/) · [Automatsko testiranje zaslona](https://github.com/bren-wp/Vojs/actions/workflows/screenshots.yml)
 
+## 🎚️ Kalibracija kontrola snimanja
+
+Gumb za snimanje i završetak ostaje na dnu zaslona, a pauza/nastavak nalazi se ispod brojača. Time se zadržava izvorna vizualna hijerarhija iz VOJS reference i ne gubi funkcionalnost pauziranja. Valni prikaz, razmaci i položaj naslova prilagođeni su mjerenjima prema originalnom grafičkom konceptu; njihova stvarna podudarnost ponovno se provjerava kroz Android emulator.
+
 ## 🎯 Mjerljiva 1:1 kalibracija
 
 Automatski test uspoređuje stvarnu snimku zaslona za snimanje s izvornim VOJS konceptom iz `branding/google-play/snimke-zaslona/`. Budući da koncept prikazuje ekran unutar okvira telefona, slika se najprije normalizira na odgovarajući sadržaj zaslona, a zatim se računaju odstupanja po područjima (zaglavlje, valni oblik, vrijeme, kontrole). Dinamičko vrijeme i podaci mikrofona prirodno utječu na pikselnu razliku.

@@ -210,7 +210,7 @@ private fun VoiceScreen(
         Column(
             Modifier.weight(1f).verticalScroll(rememberScrollState())
                 .fillMaxWidth().padding(horizontal = 24.dp)
-                .padding(top = if (compact) 13.dp else 24.dp),
+                .padding(top = if (compact) 8.dp else 12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -235,7 +235,7 @@ private fun VoiceScreen(
                     Text("⚙", fontSize = 21.sp, color = Violet)
                 }
             }
-            Spacer(Modifier.height(if (compact) 20.dp else 40.dp))
+            Spacer(Modifier.height(if (compact) 14.dp else 30.dp))
             Text(
                 when (stage) {
                     RecordingStage.IDLE -> "Dodirni gumb za snimanje"
@@ -251,9 +251,9 @@ private fun VoiceScreen(
                 active = stage == RecordingStage.RECORDING && !recorder.paused,
                 color = if (dark) Color(0xFF978BFF) else Violet,
                 modifier = Modifier.fillMaxWidth()
-                    .height(if (compact) 135.dp else 180.dp)
+                    .height(if (compact) 170.dp else 228.dp)
             )
-            Spacer(Modifier.height(if (compact) 16.dp else 29.dp))
+            Spacer(Modifier.height(if (compact) 12.dp else 20.dp))
             Text(
                 formatTime(recorder.elapsedMs),
                 color = foreground, fontSize = if (compact) 49.sp else 62.sp,
@@ -265,6 +265,17 @@ private fun VoiceScreen(
                 else "najviše 05:00",
                 color = secondary, fontSize = 15.sp
             )
+            // Keep the primary record/stop control near the reference bottom
+            // position. Secondary pause/resume is available under the timer.
+            if (stage == RecordingStage.RECORDING) {
+                Spacer(Modifier.height(5.dp))
+                TextButton(onClick = recorder::togglePause) {
+                    Text(
+                        if (recorder.paused) "▶ Nastavi snimanje" else "Ⅱ Pauziraj",
+                        color = Violet, fontSize = 14.sp
+                    )
+                }
+            }
             if (stage == RecordingStage.READY) {
                 Spacer(Modifier.height(29.dp))
                 OutlinedButton(
@@ -333,11 +344,7 @@ private fun VoiceScreen(
                         Text("Završi snimanje", color = secondary,
                             fontSize = 14.sp, fontWeight = FontWeight.Medium)
                     }
-                    Spacer(Modifier.height(7.dp))
-                    TextButton(onClick = recorder::togglePause) {
-                        Text(if (recorder.paused) "▶ Nastavi snimanje" else "Ⅱ Pauziraj",
-                            color = Violet, fontSize = 14.sp)
-                    }
+
                 }
                 RecordingStage.READY -> {
                     // Use the original VOJS horizontal gradient CTA rather than
@@ -405,7 +412,7 @@ private fun VoiceWaveform(
             // to actual microphone amplitude instead of drawing flat bars.
             val dynamicScale = if (active) 0.72f + 0.28f * measured else 1f
             val height = (.18f + reference[i] * .82f) *
-                size.height * .83f * dynamicScale
+                size.height * .98f * dynamicScale
             val x = (i + 1) * step
             drawLine(
                 color, Offset(x, mid - height / 2f),
