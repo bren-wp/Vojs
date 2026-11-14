@@ -19,3 +19,9 @@ Kratak zvuk od tri sekunde nije prikladan za provjeru stanja gumba „Zaustavi�
 ## Odabir stvarnog gumba u UI testovima
 
 Android `uiautomator` mora odabrati stvarni gumb `▶ Preslušaj`, a ne informativni tekst `Preslušaj pa podijeli`. Provjera sada najprije uspoređuje **točnu normaliziranu oznaku**, uz uklanjanje samo početne ikonice, te u CI zapisuje oznaku i koordinate svakog stvarnog dodira. Ne smije se prijaviti uspjeh ako reprodukcija stvarno nije započela.
+
+## Zadana tamna tema i test na svježoj instalaciji
+
+Svježa instalacija uvijek koristi tamnu temu neovisno o temi Android sustava. Postojeći korisnički izbor (svijetla ili sistemska) ostaje spremljen. Odvojeni `VojsAppearance.kt` čuva zadanu vrijednost, logiku prikaza i spremanje postavki. Multi-device CI koristi `--fresh-install` **samo na čistom emulatoru**, bilježi stvarnu PNG snimku i provjerava RGB boju pozadine, potom testira svijetlu i vraća tamnu temu. Na stvarnom fizičkom uređaju bez oznake `--fresh-install` korisnički podaci se ne brišu.
+
+Precizna pixel-perfect usporedba svih stanja zahtijeva izravne referentne slike istih dimenzija i DPI-ja; marketinške kompozicije nisu identične nativnim snimkama, pa njihova aproksimacija ne dokazuje 1:1.

@@ -61,16 +61,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             var appearance by rememberSaveable {
-                mutableStateOf(
-                    getPreferences(0).getString("vojs_appearance", "dark")
-                        ?.takeIf { it in setOf("system", "light", "dark") } ?: "dark"
-                )
+                mutableStateOf(VojsAppearance.load(this@MainActivity))
             }
-            val dark = when (appearance) {
-                "dark" -> true
-                "light" -> false
-                else -> isSystemInDarkTheme()
-            }
+            val dark = VojsAppearance.isDark(appearance, isSystemInDarkTheme())
             var showSettings by remember { mutableStateOf(false) }
             var brandedSplash by remember { mutableStateOf(true) }
             LaunchedEffect(Unit) {
@@ -153,14 +146,17 @@ class MainActivity : ComponentActivity() {
                                 fontWeight = FontWeight.Bold)
                             Spacer(Modifier.height(14.dp))
                             Text("Izgled aplikacije", color = secondary)
-                            listOf("system" to "Prema postavkama uređaja",
-                                   "light" to "Svijetla tema",
-                                   "dark" to "Tamna tema").forEach { (key, title) ->
+                            Text(
+                                "Zadano: tamna tema. Tvoj izbor ostaje spremljen.",
+                                color = secondary, fontSize = 12.sp
+                            )
+                            listOf(VojsAppearance.DARK to "Tamna tema (zadana)",
+                                   VojsAppearance.LIGHT to "Svijetla tema",
+                                   VojsAppearance.SYSTEM to "Prema postavkama uređaja").forEach { (key, title) ->
                                 Row(
                                     Modifier.fillMaxWidth().clickable {
                                         appearance = key
-                                        getPreferences(0).edit()
-                                            .putString("vojs_appearance", key).apply()
+                                        VojsAppearance.save(this@MainActivity, key)
                                     }
                                         .padding(vertical = 13.dp),
                                     verticalAlignment = Alignment.CenterVertically
@@ -168,8 +164,7 @@ class MainActivity : ComponentActivity() {
                                     RadioButton(selected = appearance == key,
                                         onClick = {
                                             appearance = key
-                                            getPreferences(0).edit()
-                                                .putString("vojs_appearance", key).apply()
+                                            VojsAppearance.save(this@MainActivity, key)
                                         })
                                     Spacer(Modifier.width(10.dp))
                                     Text(title)

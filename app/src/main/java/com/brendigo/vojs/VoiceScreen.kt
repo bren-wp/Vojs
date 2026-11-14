@@ -58,8 +58,13 @@ internal fun VoiceScreen(
 ) {
     val compact = androidx.compose.ui.platform.LocalConfiguration.current.screenHeightDp < 710
     val stage = recorder.stage
+    Box(
+        modifier = Modifier.fillMaxSize().background(background),
+        contentAlignment = Alignment.TopCenter
+    ) {
     Column(
-        Modifier.fillMaxSize().background(background).safeDrawingPadding()
+        Modifier.widthIn(max = 620.dp).fillMaxWidth().fillMaxHeight()
+            .safeDrawingPadding()
     ) {
         Column(
             Modifier.weight(1f).verticalScroll(rememberScrollState())
@@ -292,6 +297,5 @@ internal fun VoiceScreen(
             }
             Spacer(Modifier.height(if (compact) 8.dp else 14.dp))
         }
-    }
+    }    }
 }
-
