@@ -80,6 +80,12 @@ Gumb za snimanje i završetak ostaje na dnu zaslona, a pauza/nastavak nalazi se 
 
 Duljina i razmak 22 valne linije rekonstruirani su iz dostavljene originalne VOJS reference, umjesto približnog algoritamskog profila. Pomičemo valni prikaz u izvornu poziciju i sužavamo raspored linija, bez uklanjanja reagiranja na mikrofon. Nakon svakog izdanja automatski objavljujemo izmjerenu razliku u `recording-pixel-audit.json`; prikaz živog zvuka i promjenjivo vrijeme mogu imati odstupanja od statične reference.
 
+## 📐 Izvještaji za sve zaslone i različite uređaje
+
+[ROI izvještaj za svih 11 stvarnih Android zaslona](docs/screenshots/all-screens-roi-audit.json) automatski uspoređuje nove snimke s prethodnim stvarnim snimkama i zasebno označava usporedbe s originalnim VOJS marketinškim referencama. Taj izvještaj **ne tvrdi da je promjena između dvije snimke isto što i odstupanje od dizajna**.
+
+[Provjere na više Android uređaja](docs/DEVICE-TEST-MATRIX.md) pokreću stvarno snimanje, pauziranje, reprodukciju, dijeljenje i promjenu teme na manjem telefonu, standardnom telefonu i tabletu. Snimke se spremaju kao stvarni GitHub Actions artefakti. Testiranje na fizičkim uređajima nije potvrđeno.
+
 ## 🎯 Mjerljiva 1:1 kalibracija
 
 Automatski test uspoređuje stvarnu snimku zaslona za snimanje s izvornim VOJS konceptom iz `branding/google-play/snimke-zaslona/`. Budući da koncept prikazuje ekran unutar okvira telefona, slika se najprije normalizira na odgovarajući sadržaj zaslona, a zatim se računaju odstupanja po područjima (zaglavlje, valni oblik, vrijeme, kontrole). Dinamičko vrijeme i podaci mikrofona prirodno utječu na pikselnu razliku.

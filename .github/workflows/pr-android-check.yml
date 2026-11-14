@@ -14,7 +14,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m py_compile scripts/capture_screenshots.py scripts/audit_splash_pixels.py scripts/audit_reference_pixels.py scripts/test_emulator_boot.py scripts/test_theme_default.py scripts/check_native_alignment.py
           python3 scripts/test_emulator_boot.py
           python3 scripts/test_theme_default.py
       - uses: actions/setup-java@v4

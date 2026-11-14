@@ -1,8 +1,12 @@
 {
   "source": "Android emulator; real adb screencap screenshots",
   "device": "Pixel 6 profile, Android API 35 emulator",
-  "captured_at_utc": "2026-11-14T00:50:37.721270+00:00",
+  "captured_at_utc": "2026-11-14T00:59:53.521377+00:00",
   "screenshots": [
+    {
+      "file": "10-splash-dark.png",
+      "screen": "Genuine VOJS dark splash"
+    },
     {
       "file": "00-splash-light.png",
       "screen": "Genuine VOJS light splash"
