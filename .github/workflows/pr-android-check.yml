@@ -34,6 +34,25 @@ jobs:
           "$SDKMANAGER" --install "platforms;android-36" "build-tools;35.0.0"
       - name: Build Android APK and AAB
         run: gradle --no-daemon --stacktrace :app:assembleDebug :app:assembleRelease :app:bundleRelease :app:lintDebug :app:lintRelease
+      - name: Verify release permissions and 16 KB native-library constraints
+        shell: bash
+        run: |
+          set -euo pipefail
+          BT="$ANDROID_HOME/build-tools/35.0.0"
+          "$BT/aapt" dump badging app/build/outputs/apk/debug/app-debug.apk | grep -q "sdkVersion:'24'"
+          "$BT/aapt" dump badging app/build/outputs/apk/debug/app-debug.apk | grep -q "targetSdkVersion:'36'"
+          if "$BT/aapt" dump permissions app/build/outputs/apk/debug/app-debug.apk | grep -q 'android.permission.INTERNET'; then
+            echo "::error::Unexpected internet permission in merged APK"
+            exit 1
+          fi
+          python3 - <<'PY'
+          import zipfile
+          from pathlib import Path
+          for path in ("app/build/outputs/apk/debug/app-debug.apk", "app/build/outputs/bundle/release/app-release.aab"):
+              with zipfile.ZipFile(path) as archive:
+                  native = [x for x in archive.namelist() if x.endswith(".so")]
+                  assert not native, f"Manual 16 KB native library audit required for {path}: {native}"
+          PY
       - name: Verify source logo and clean VOJS user interface
         shell: bash
         run: |
