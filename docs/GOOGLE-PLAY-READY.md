@@ -5,7 +5,7 @@ Datum provjere: 14. studenoga 2026.
 ## Automatski provjerljive stavke
 
 - Android aplikacija: `com.brendigo.vojs`, `minSdk=24` i `targetSdk=36`. Google Play od 31. kolovoza 2026. zahtijeva API 36 za nove telefonske aplikacije i ažuriranja.
-- Nema deklariranog `INTERNET` dopuštenja ni aplikacijskog analitičkog/oglasnog SDK-a.
+- Deklariran je INTERNET za dobrovoljno dijeljenje poveznice te RECORD_AUDIO za snimanje; ne koristi se ugrađeni analitički/oglasni SDK.
 - Dopuštenje `RECORD_AUDIO` zatraženo tijekom uporabe; korisniku je pružena funkcija odbijanja i poruka o nedostupnom mikrofonu.
 - `FileProvider` nije izvezen i dijeli samo privatni privremeni audio cache.
 - `allowBackup=false` i `usesCleartextTraffic=false` u manifestu.
@@ -17,8 +17,8 @@ Datum provjere: 14. studenoga 2026.
 
 - Konfigurirati **vlastiti dugoročno čuvani production upload ključ** kroz GitHub Secrets. Nepotpisani AAB nije za Play. Verificirati potpis i povećanje `versionCode`.
 - Koristiti **Google Play App Signing** i potvrditi preostale zahtjeve za registraciju/potpisivanje na konkretnom računu.
-- U **App content** ispuniti Data safety, Content rating, Target audience, Ads, App access, deklaracije dopuštenja, te po potrebi dodatne obrasce. U obrascu Data safety navesti stvarno postupanje s podacima prema primateljskim aplikacijama; bez automatske tvrdnje 'no data collected' bez provjere.
-- Objaviti [pravila privatnosti](PRIVACY-POLICY.md) na **trajnoj javnoj URL adresi** i postaviti je u Google Play listing. Ovaj repozitorij ne objavljuje web putem GitHub Pages.
+- U **App content** ispuniti Data safety (dobrovoljni prijenos audio datoteka i sigurnosna obrada IP adresa), Content rating, Target audience, Ads, App access, deklaracije dopuštenja, te po potrebi dodatne obrasce. U obrascu Data safety navesti stvarno postupanje s podacima prema primateljskim aplikacijama; bez automatske tvrdnje 'no data collected' bez provjere.
+- Objaviti ažurirana [pravila privatnosti](PRIVACY-POLICY.md) na https://vojs.com.hr/privatnost/ i unijeti URL u Play listing. Web se ne postavlja automatski.
 - Testirati Android 7/10/13/15/16, telefon i tablet, svijetlu/tamnu temu, dopuštenje/odbijanje mikrofona, 5-minutni limit, prekid snimanja, pauzu/nastavak, reprodukciju, pozadinsko ponašanje i FileProvider sa stvarnim aplikacijama za dijeljenje.
 - Uz statičku provjeru ELF/ZIP poravnanja, testirati instalaciju i korištenje aplikacije na **stvarnom ili emulatornom Android uređaju s memorijskim stranicama od 16 KB**, uključujući RELRO granice. Potvrditi rezultat Google Play pre-launch reporta.
 - Za trgovinu su potrebne **stvarne snimke zaslona**, ne konceptualni mockupovi; dostupne su u `docs/screenshots/`. Za dokaz 1:1 provjeriti stvarne ROI razlike na različitim gustoćama i omjerima zaslona.
@@ -31,3 +31,10 @@ Datum provjere: 14. studenoga 2026.
 - https://developer.android.com/jetpack/androidx/releases/core
 - https://developer.android.com/jetpack/androidx/releases/activity
 - https://developer.android.com/develop/ui/compose/setup-compose-dependencies-and-compiler
+
+## Dobrovoljno online dijeljenje
+
+- Provesti QA stvarnog HTTPS hostinga i stvarne sinkronizacije poveznica Android ↔ Web.
+- Provjeriti pravila za korisnički generiran sadržaj (UGC), postupke prijave zloupotrebe i uklanjanja.
+- Ne označiti automatski 'no data collected': online upload prenosi audio i koristi sigurnosnu obradu IP-a.
+- Offline način mora raditi bez internetske veze. [Upute za deployment](SHARING-DEPLOYMENT.md).

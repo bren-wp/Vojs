@@ -1,26 +1,27 @@
-# Pravila privatnosti – VOJS
+# VOJS — Pravila privatnosti
 
-**Posljednje ažuriranje:** 14. studenoga 2026.
+**Ažurirano: 14. studenoga 2026.**
 
-VOJS je lokalna Android aplikacija za snimanje, preslušavanje i dijeljenje M4A glasovnih poruka.
+VOJS je BRENDIGO aplikacija za snimanje, preslušavanje i dijeljenje glasovnih poruka. Web i Android aplikacija ne zahtijevaju registraciju niti korisnički račun.
 
-## Podaci i mikrofon
+## Mikrofon i lokalno snimanje
 
-- Za snimanje aplikacija traži Android dopuštenje `RECORD_AUDIO`. Korisnik ga može odbiti ili opozvati u postavkama uređaja.
-- Snimke se privremeno čuvaju u privatnom cacheu aplikacije na uređaju. VOJS ne izrađuje korisničke račune, udaljenu audio bazu ni vlastitu uslugu pohrane.
-- VOJS ne sadrži oglasni ili analitički SDK i ne šalje audiozapise na server koji kontrolira VOJS.
-- Aplikacija po pokretanju pokušava obrisati lokalne privremene M4A datoteke starije od 24 sata; cache može ostati do sljedećeg pokretanja aplikacije. Deinstalacija aplikacije uklanja njezine privatne lokalne podatke u skladu s Android ponašanjem.
+Android koristi dopuštenje RECORD_AUDIO samo za snimanje. Snimke se nalaze u privatnom privremenom cacheu do dijeljenja; nepodijeljene snimke se uklanjaju prilikom novog snimanja, a privremene podijeljene datoteke starije od približno 24 sata pokušavaju se očistiti pri sljedećem pokretanju. Vanjska aplikacija može zadržati vlastitu kopiju.
 
-## Dijeljenje
+Web snimač uz dopuštenje preglednika koristi MediaRecorder. Lokalni audio postoji u memoriji otvorene stranice i moguće ga je preuzeti. Offline service worker predmemorira samo statične web resurse, nikada audio snimke ni API odgovore.
 
-Audiozapis se može predati drugim aplikacijama putem Androidova izbornika dijeljenja. Korisnik bira primateljsku aplikaciju. Ta aplikacija može koristiti mrežu i zadržati svoju kopiju, na što se primjenjuju njezina pravila privatnosti. VOJS ne može opozvati datoteku nakon predaje.
+## Dobrovoljno dijeljenje poveznicom
 
-## Sigurnost i pohrana
+Samo izričitim odabirom gumba za stvaranje web poveznice audio se prenosi preko HTTPS-a na vojs.com.hr. Poslužitelj pohranjuje sadržaj izvan javnog web korijena najviše 24 sata, uz nasumični identifikator i zasebni tajni token za opoziv. **Svatko tko ima poveznicu može preslušati audio i sačuvati kopiju.** Riječ nije o end-to-end šifriranju.
 
-Aplikacija ne zahtijeva Android internetsko dopuštenje i ne omogućuje promet nekriptiranog HTTP-a. Pristup privremenim datotekama kod dijeljenja daje se preko Android FileProvidera odabranoj aplikaciji. Sigurnost samog prijenosa dalje ovisi o odabranoj aplikaciji.
+Pošiljatelj može opozvati poveznicu tijekom sesije u kojoj je nastala. Nakon isteka 24 sata poslužitelj odbija pristup; stvarni diskovni podaci čiste se cron procesom ili prilikom novih učitavanja. Nije moguće opozvati prethodno preuzete kopije.
 
-## Kontakt i izmjene
+## Sigurnost, obrada IP adresa i ostali podaci
 
-Izdavač: **BRENDIGO** · [brendigo.com](https://brendigo.com). Za prijavu problema u aplikaciji koristi [VOJS GitHub Issues](https://github.com/bren-wp/Vojs/issues), bez javnog priloženja privatnih audiozapisa.
+Usluga ograničava učitavanja na 8 MB po datoteci i broj novih učitavanja po izvornoj IP adresi. Za sigurnosno ograničavanje zahtjeva obrađuje IP adresu i kratkotrajno pohranjuje njezin HMAC hash; hosting može voditi pristupne i sigurnosne logove, uključujući IP adrese. Nema ugrađenih oglasnih ili analitičkih SDK-ova niti korisničkih profila. Privatnost primateljske aplikacije kod offline dijeljenja uređena je pravilima te aplikacije.
 
-Ova pravila mogu se dopuniti ako se promijene mogućnosti aplikacije. Prije objave na Google Playu potrebno je objaviti ovaj tekst na javno dostupnoj stabilnoj URL adresi, unijeti tu adresu u Play Console te potvrditi prijavljene podatke u obrascu Data safety.
+## Opoziv, prijava zloupotrebe i kontakt
+
+Korisnik može opozvati svoju trenutačnu poveznicu pomoću posebnog tokena prikazanog samo u sesiji učitavanja. Bez tog tokena poveznica prestaje raditi nakon isteka najviše 24 sata. Zlouporabu ili neprimjeren sadržaj moguće je prijaviti putem https://vojs.com.hr/prijava-sadrzaja/ i https://vojs.com.hr/kontakt/. Nemoj slati privatni audio u javni GitHub issue.
+
+Izdavač: BRENDIGO, https://brendigo.com. Prije produkcijske objave ova politika mora biti javno dostupna na https://vojs.com.hr/privatnost/ i usklađena sa stvarnim hosting logovima te Google Play Data safety prijavom.
