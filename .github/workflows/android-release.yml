@@ -73,10 +73,17 @@ jobs:
             echo "::error::Network permission found in built APK"
             exit 1
           fi
+          if [[ "${SIGNING_READY:-false}" == "true" ]]; then
+            RELEASE_FILE="app/build/outputs/apk/release/app-release.apk"
+          else
+            RELEASE_FILE="app/build/outputs/apk/release/app-release-unsigned.apk"
+          fi
           python3 scripts/check_native_alignment.py \
             app/build/outputs/apk/debug/app-debug.apk \
+            "$RELEASE_FILE" \
             app/build/outputs/bundle/release/app-release.aab
           "$BT/zipalign" -c -P 16 -v 4 app/build/outputs/apk/debug/app-debug.apk
+          "$BT/zipalign" -c -P 16 -v 4 "$RELEASE_FILE"
           "$BT/apksigner" verify --print-certs app/build/outputs/apk/debug/app-debug.apk > /dev/null
           if [[ "${SIGNING_READY:-false}" == "true" ]]; then
             "$BT/apksigner" verify --print-certs app/build/outputs/apk/release/app-release.apk > /dev/null

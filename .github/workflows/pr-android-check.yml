@@ -47,8 +47,10 @@ jobs:
           fi
           python3 scripts/check_native_alignment.py \
             app/build/outputs/apk/debug/app-debug.apk \
+            app/build/outputs/apk/release/app-release-unsigned.apk \
             app/build/outputs/bundle/release/app-release.aab
           "$BT/zipalign" -c -P 16 -v 4 app/build/outputs/apk/debug/app-debug.apk
+          "$BT/zipalign" -c -P 16 -v 4 app/build/outputs/apk/release/app-release-unsigned.apk
       - name: Verify source logo and clean VOJS user interface
         shell: bash
         run: |
