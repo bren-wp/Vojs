@@ -112,3 +112,18 @@ html[data-theme="light"] .voice-panel .voice-error { color: #b92342; }
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important;transition-duration:0ms!important}
 }
+
+/* Prevent long Croatian titles/labels from widening 320px viewports. */
+.content-page h1,.info-card h2 {
+  overflow-wrap:anywhere;
+  hyphens:auto;
+}
+@media(max-width:420px){
+  .content-page h1 {
+    font-size:clamp(28px,9vw,40px);
+    letter-spacing:-.035em;
+    line-height:1.14;
+  }
+  .info-card,.voice-panel { min-width:0; }
+  .page-action a,.info-card a { overflow-wrap:anywhere; }
+}
