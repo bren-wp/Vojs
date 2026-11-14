@@ -29,3 +29,5 @@ Precizna pixel-perfect usporedba svih stanja zahtijeva izravne referentne slike 
 ## Prilagodba postavki
 
 Izbornik postavki izdvojen je u `VojsSettingsSheet.kt`. Ograničen je na najviše 82% visine zaslona i može se pomicati kako 125–200% font ili landscape ne bi odsjekli izbor teme i pravila privatnosti. Funkcionalnost, izvorni VOJS brand i spremljene postavke zadržani su.
+
+QA nakon dodavanja P2P funkcije provjerava i ulazak u ugrađeni P2P zaslon te povratak na izvornu spremnu snimku, bez potrebe za stvarnim prijenosom tijekom offline emulator smoke testa. End-to-end Android ↔ Web prijenos i dalje zahtijeva aktivan stvarni HTTPS hosting i drugog istodobno spojenog uređaja.
