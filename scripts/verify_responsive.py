@@ -43,7 +43,7 @@ def locate(label):
         values = [node.get("text", ""), node.get("content-desc", "")]
         def normalized(value):
             # Android renders a leading play/stop/gear icon in some labels.
-            return re.sub(r"^[^\\w]+", "", value, flags=re.UNICODE).strip().casefold()
+            return re.sub(r"^[^\w]+", "", value, flags=re.UNICODE).strip().casefold()
         exact = any(normalized(value) == target for value in values)
         partial = any(target in value.casefold() for value in values)
         if exact or partial:
