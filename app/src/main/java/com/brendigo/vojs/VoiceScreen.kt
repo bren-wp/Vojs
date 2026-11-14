@@ -297,5 +297,6 @@ internal fun VoiceScreen(
             }
             Spacer(Modifier.height(if (compact) 8.dp else 14.dp))
         }
-    }    }
+    }
+    }
 }

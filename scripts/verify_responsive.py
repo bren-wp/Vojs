@@ -136,7 +136,7 @@ def main():
             with Image.open(dest / "01-dark-home.png") as screenshot:
                 rgb = screenshot.convert("RGB")
                 width, height = rgb.size
-                probe = rgb.getpixel((width // 2, height // 4))
+                probe = rgb.getpixel((max(2, width // 30), height // 3))
                 assert max(probe) < 85, "Fresh install did not start in dark mode: " + str(probe)
             verified("fresh-install dark theme rendered")
         verified("home + native record controls")
