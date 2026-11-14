@@ -50,6 +50,11 @@ jobs:
           fi
           "$SDKMANAGER" --install "platforms;android-36.1" "build-tools;35.0.0"
           gradle --no-daemon :app:assembleDebug
+      - name: Install image pixel verification tools
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check --no-cache-dir 'Pillow>=11.3,<13'
+          python3 -c 'from PIL import Image; print("Pillow screenshot verification ready")'
       - name: KVM support
         run: |
           if [[ -e /dev/kvm ]]; then sudo chmod 666 /dev/kvm; fi
