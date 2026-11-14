@@ -114,15 +114,18 @@ def main():
         capture("03-paused.png")
         verified("pause recording")
         tap("Nastavi snimanje")
-        time.sleep(3)
+        # ADB uiautomator dumps may take seconds on slower emulators.
+        # Keep a long enough M4A recording so playback is still active
+        # when the next UI hierarchy is queried.
+        time.sleep(18)
         tap("Završi snimanje")
         wait("Poruka je spremna")
         wait("Preslušaj")
         capture("04-ready.png")
         verified("finish with playable M4A")
         tap("Preslušaj")
-        wait("Zaustavi")
-        tap("Zaustavi")
+        wait("Zaustavi", seconds=10)
+        tap("Zaustavi", seconds=10)
         verified("playback start and stop")
         tap("Podijeli glasovnu poruku")
         time.sleep(1.5)
