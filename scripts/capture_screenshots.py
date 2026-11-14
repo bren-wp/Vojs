@@ -90,11 +90,21 @@ def capture_branded_splash(name, mode):
             difference = ImageChops.difference(sample, reference)
             score = sum(ImageStat.Stat(difference).mean) / 3
             best_score = min(best_score, score)
-            if score <= 6.0:
-                (OUT / name).write_bytes(data)
-                saved.append({"file": name, "screen": f"Genuine VOJS {mode} splash"})
-                print("Captured", name, "RGB reference MAE", round(score, 3), flush=True)
-                return
+            # Reject Android's *system* splash icon: on the light theme it
+            # resembles VOJS artwork, but differs by ~6.5% of pixels.
+            # Only accept the exact native original bitmap (minus OS bars).
+            if score <= 2.0:
+                full = ImageChops.difference(image.crop(region), expected.crop(region))
+                red, green, blue = full.split()
+                maximum = ImageChops.lighter(ImageChops.lighter(red, green), blue)
+                changed = maximum.point(lambda value: 255 if value > 4 else 0)
+                percent = 100 * changed.histogram()[255] / (full.width * full.height)
+                if percent <= 1.0:
+                    (OUT / name).write_bytes(data)
+                    saved.append({"file": name, "screen": f"Genuine VOJS {mode} splash"})
+                    print("Captured", name, "pixel divergence", round(percent, 4),
+                          "RGB MAE", round(score, 3), flush=True)
+                    return
             time.sleep(0.08)
         if attempt < 2:
             print("Retrying splash capture after non-reference frame", mode,
