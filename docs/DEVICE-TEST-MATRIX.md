@@ -11,3 +11,7 @@ Za svaki test snimaju se **stvarni ADB PNG zasloni** i zapisuje manifest s rezul
     python3 scripts/verify_responsive.py --profile fizicki-test
 
 Skripta pokreće stvarno snimanje zvuka, reprodukciju i Android izbornik dijeljenja. Ne briše korisničke podatke ni ne mijenja font ako nije naveden --font-scale. Za fizički test posebno zabilježiti dopuštenje mikrofona, prekid pozivom, 5-minutno ograničenje, 16 KB memorijske stranice, rotaciju, Android 7/10/13/15/16 i kompatibilnost aplikacije primatelja. Potrebna je potvrda na stvarnim uređajima prije jamčenja produkcijske stabilnosti.
+
+## Napomena o vremenu reprodukcije u CI-ju
+
+Kratak zvuk od tri sekunde nije prikladan za provjeru stanja gumba „Zaustavi” jer sam Androidov `uiautomator dump` na sporijim emulatorima može trajati dulje od reprodukcije. Automatizirani test zato snima oko 18 sekundi zvuka; **to ne mijenja korisničko maksimalno trajanje snimke (5 minuta)**. Test i dalje izričito mora vidjeti gumb za zaustavljanje i potvrditi njegov rad, bez lažno pozitivnih rezultata.
