@@ -16,7 +16,7 @@ assert(header.includes("R.drawable.vojs_logo_light"));
 assert(header.includes("Modifier.size(48.dp)"), "Native settings target must be >=48dp");
 assert(!screen.includes('Text("⚙"'),"Emoji gear varies by vendor and breaks pixel matching");
 assert(wave.includes("VOJS_REFERENCE_BARS") && wave.includes(".963f"));
-assert(screen.includes("0.84f") && screen.includes("0.92f"),"Waveform reference geometry lost");
+assert(screen.includes(".height(if (compact) 170.dp else 228.dp)"),"Measured reference waveform height was regressed");
 assert(capture.includes('screenshot("11-p2p-sender.png"'),"Real P2P capture missing");
 assert(capture.includes('wait_ui("Poruka je spremna", 15)'),"Back navigation must preserve ready audio");
 assert(audit.includes('"11-p2p-sender.png"'),"Full visual audit must include P2P");

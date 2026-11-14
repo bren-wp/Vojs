@@ -24,8 +24,7 @@ REGIONS = {
 }
 CONCEPT = {
     "02-recording.png": "01-snimi-1080x1920.png",
-    "03-ready.png": "03-podijeli-1080x1920.png",
-    "11-p2p-sender.png": "03-podijeli-1080x1920.png"
+    "03-ready.png": "03-podijeli-1080x1920.png"
 }
 
 def roi(size, fractions):
@@ -91,6 +90,10 @@ def main():
                 "roi": {name: difference(scaled, phone, roi(phone.size, bounds))
                         for name, bounds in REGIONS.items()},
             }
+        elif filename == "11-p2p-sender.png":
+            # Legacy hosted-audio marketing link is NOT a P2P sender reference.
+            entry["reference_type"] = "real_device_only"
+            entry["reference_status"] = "no_equivalent_P2P_design_reference"
         elif "splash" in filename:
             entry["reference_type"] = "exact_original_fullframe"
         result["screens"].append(entry)
