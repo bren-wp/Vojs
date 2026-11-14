@@ -41,15 +41,16 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.sin
 
-private val Violet = Color(0xFF7868FF)
-private val VioletDark = Color(0xFF5145CB)
-private val Ink = Color(0xFF20213B)
-private val Muted = Color(0xFF777783)
-private val Paper = Color(0xFFFFFFFF)
-private val Night = Color(0xFF20213B)
+internal val Violet = Color(0xFF7868FF)
+internal val VioletDark = Color(0xFF5145CB)
+internal val Ink = Color(0xFF20213B)
+internal val Muted = Color(0xFF777783)
+internal val Paper = Color(0xFFFFFFFF)
+internal val Night = Color(0xFF20213B)
 
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
@@ -72,6 +73,10 @@ class MainActivity : ComponentActivity() {
                 else -> isSystemInDarkTheme()
             }
             var showSettings by remember { mutableStateOf(false) }
+            val scope = rememberCoroutineScope()
+            var shareLink by remember { mutableStateOf<VojsShareLink?>(null) }
+            var linkBusy by remember { mutableStateOf(false) }
+            var linkError by remember { mutableStateOf<String?>(null) }
             var brandedSplash by remember { mutableStateOf(true) }
             LaunchedEffect(Unit) {
                 // 2.5 seconds: the complete, genuine VOJS splash is readable.
@@ -129,7 +134,58 @@ class MainActivity : ComponentActivity() {
                     background = background,
                     secondary = secondary,
                     onSettings = { showSettings = true },
-                    onRecord = requestStart
+                    onRecord = requestStart,
+                    shareLink = shareLink,
+                    linkBusy = linkBusy,
+                    linkError = linkError,
+                    onCreateLink = {
+                        if (!linkBusy) {
+                            val file = voice.currentAudioForUpload()
+                            if (file == null) {
+                                linkError = "Snimka više nije dostupna."
+                            } else {
+                                linkBusy = true
+                                linkError = null
+                                scope.launch {
+                                    try {
+                                        shareLink = VoiceLinkService.create(file)
+                                    } catch (_: Exception) {
+                                        linkError = "Poveznica nije stvorena. Provjeri internet i dostupnost poslužitelja."
+                                    } finally {
+                                        linkBusy = false
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    onCopyLink = {
+                        shareLink?.let { VoiceLinkService.copy(this@MainActivity, it.url) }
+                    },
+                    onShareLink = {
+                        shareLink?.let { VoiceLinkService.share(this@MainActivity, it.url) }
+                    },
+                    onRevokeLink = {
+                        val old = shareLink
+                        if (old != null && !linkBusy) {
+                            linkBusy = true
+                            linkError = null
+                            scope.launch {
+                                try {
+                                    VoiceLinkService.revoke(old)
+                                    shareLink = null
+                                } catch (_: Exception) {
+                                    linkError = "Brisanje nije uspjelo. Pokušaj ponovno dok poveznica ne istekne."
+                                } finally {
+                                    linkBusy = false
+                                }
+                            }
+                        }
+                    },
+                    onDiscard = {
+                        voice.discardCurrent()
+                        shareLink = null
+                        linkError = null
+                    }
                 )
                 if (showSettings) {
                     ModalBottomSheet(onDismissRequest = { showSettings = false }) {
@@ -168,8 +224,10 @@ class MainActivity : ComponentActivity() {
                             Text("Privatnost", fontWeight = FontWeight.SemiBold)
                             Spacer(Modifier.height(8.dp))
                             Text(
-                                "Snimke se privremeno čuvaju na uređaju radi dijeljenja. " +
-                                "Odabrana aplikacija može spremiti svoju kopiju.",
+                                "Snimke nastaju lokalno i mogu se dijeliti offline. " +
+                                "Samo ako odabereš stvaranje poveznice, snimka se šalje na " +
+                                "vojs.com.hr, dostupna je posjednicima poveznice do 24 sata " +
+                                "i može se opozvati tijekom ove sesije.",
                                 color = secondary, fontSize = 13.sp, lineHeight = 19.sp
                             )
                         }
@@ -193,284 +251,3 @@ class MainActivity : ComponentActivity() {
 
 private fun VoiceRecorder.errorMessage(text: String) = showError(text)
 
-@Composable
-private fun VoiceScreen(
-    recorder: VoiceRecorder,
-    dark: Boolean,
-    foreground: Color,
-    background: Color,
-    secondary: Color,
-    onSettings: () -> Unit,
-    onRecord: () -> Unit
-) {
-    val compact = androidx.compose.ui.platform.LocalConfiguration.current.screenHeightDp < 710
-    val stage = recorder.stage
-    Column(
-        Modifier.fillMaxSize().background(background).safeDrawingPadding()
-    ) {
-        Column(
-            Modifier.weight(1f).verticalScroll(rememberScrollState())
-                .fillMaxWidth().padding(horizontal = 24.dp)
-                .padding(top = if (compact) 8.dp else 12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            // Original VOJS wordmark is unmodified. Keep it in a dedicated
-            // compact toolbar so "Poruka je spremna" never wraps or collides
-            // with the logo/gear on 360dp+ screens or with large text scaling.
-            Row(
-                Modifier.fillMaxWidth().height(38.dp),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painter = painterResource(
-                        if (dark) R.drawable.vojs_logo_dark else R.drawable.vojs_logo_light
-                    ),
-                    contentDescription = "VOJS",
-                    modifier = Modifier.width(102.dp).height(38.dp),
-                    contentScale = ContentScale.Fit
-                )
-                TextButton(onClick = onSettings,
-                    modifier = Modifier.semantics {
-                        contentDescription = "Postavke aplikacije"
-                    }) {
-                    Text("⚙", fontSize = 21.sp, color = Violet)
-                }
-            }
-            Spacer(Modifier.height(5.dp))
-            Text(
-                if (stage == RecordingStage.READY) "Poruka je spremna" else "Nova poruka",
-                color = foreground, fontSize = if (compact) 25.sp else 28.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.fillMaxWidth(),
-                maxLines = 2
-            )
-            Spacer(Modifier.height(if (compact) 9.dp else 17.dp))
-            if (stage == RecordingStage.READY) {
-                // Original share reference uses concise cards instead of the
-                // large recording-only waveform. There is no fake public URL
-                // or expiry selector: the native app shares an actual M4A.
-                Text(
-                    "Preslušaj pa podijeli",
-                    color = secondary, fontSize = 15.sp,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(Modifier.height(if (compact) 20.dp else 34.dp))
-                Row(
-                    Modifier.fillMaxWidth()
-                        .background(
-                            if (dark) Color(0xFF302D52) else Color(0xFFF4F2FF),
-                            RoundedCornerShape(16.dp)
-                        )
-                        .border(
-                            1.dp, if (dark) Color(0xFF6256B5) else Color(0xFFE0DDF3),
-                            RoundedCornerShape(16.dp)
-                        )
-                        .padding(horizontal = 20.dp, vertical = 24.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("Glasovna poruka", color = foreground,
-                        fontWeight = FontWeight.Bold, fontSize = 17.sp,
-                        modifier = Modifier.weight(1f))
-                    Text("M4A", color = Violet, fontWeight = FontWeight.SemiBold)
-                }
-                Spacer(Modifier.height(14.dp))
-                Row(
-                    Modifier.fillMaxWidth()
-                        .border(
-                            1.dp, if (dark) Color(0xFF625F79) else Color(0xFFDAD9E3),
-                            RoundedCornerShape(16.dp)
-                        )
-                        .padding(horizontal = 20.dp, vertical = 21.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("Trajanje snimke", color = secondary,
-                        modifier = Modifier.weight(1f), fontSize = 15.sp)
-                    Text(formatTime(recorder.elapsedMs), color = foreground,
-                        fontWeight = FontWeight.SemiBold, fontSize = 17.sp)
-                }
-                Spacer(Modifier.height(if (compact) 20.dp else 30.dp))
-                OutlinedButton(
-                    onClick = recorder::togglePlayback,
-                    shape = RoundedCornerShape(17.dp),
-                    modifier = Modifier.fillMaxWidth().height(53.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Violet)
-                ) {
-                    Text(if (recorder.playing) "■  Zaustavi" else "▶  Preslušaj",
-                        fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-                }
-            } else {
-                Text(
-                    if (stage == RecordingStage.IDLE) "Dodirni gumb za snimanje"
-                    else if (recorder.paused) "Snimanje je pauzirano" else "",
-                    color = secondary, fontSize = 15.sp,
-                    textAlign = TextAlign.Center
-                )
-                Spacer(Modifier.height(if (compact) 12.dp else 26.dp))
-                VoiceWaveform(
-                    values = recorder.waveform.toList(),
-                    active = stage == RecordingStage.RECORDING && !recorder.paused,
-                    color = if (dark) Color(0xFF978BFF) else Violet,
-                    modifier = Modifier.fillMaxWidth()
-                        .padding(horizontal = 8.dp)
-                        .height(if (compact) 170.dp else 228.dp)
-                )
-                Spacer(Modifier.height(if (compact) 12.dp else 20.dp))
-                Text(
-                    formatTime(recorder.elapsedMs),
-                    color = foreground, fontSize = if (compact) 49.sp else 62.sp,
-                    fontWeight = FontWeight.Bold, letterSpacing = (-2).sp
-                )
-                Text("najviše 05:00", color = secondary, fontSize = 15.sp)
-                if (stage == RecordingStage.RECORDING) {
-                    Spacer(Modifier.height(5.dp))
-                    TextButton(onClick = recorder::togglePause) {
-                        Text(
-                            if (recorder.paused) "▶ Nastavi snimanje" else "Ⅱ Pauziraj",
-                            color = Violet, fontSize = 14.sp
-                        )
-                    }
-                }
-            }
-            if (recorder.error != null) {
-                Spacer(Modifier.height(20.dp))
-                Text(
-                    recorder.error ?: "",
-                    color = if (dark) Color(0xFFFFA3B3) else Color(0xFFB92342),
-                    fontSize = 13.sp, textAlign = TextAlign.Center
-                )
-            }
-        }
-        Column(
-            modifier = Modifier.fillMaxWidth()
-                .padding(horizontal = 24.dp)
-                .padding(bottom = if (compact) 10.dp else 23.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            when (stage) {
-                RecordingStage.IDLE -> {
-                    Box(
-                        modifier = Modifier
-                            .size(if (compact) 94.dp else 112.dp)
-                            .background(Brush.linearGradient(listOf(Violet, VioletDark)), CircleShape)
-                            .clickable(
-                                role = androidx.compose.ui.semantics.Role.Button,
-                                onClick = onRecord
-                            )
-                            .semantics { contentDescription = "Započni snimanje" },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Box(Modifier.size(32.dp).background(Paper, CircleShape))
-                    }
-                    Spacer(Modifier.height(13.dp))
-                    TextButton(onClick = onRecord) {
-                        Text("Započni snimanje", color = secondary,
-                            fontSize = 14.sp, fontWeight = FontWeight.Medium)
-                    }
-                }
-                RecordingStage.RECORDING -> {
-                    Box(
-                        modifier = Modifier
-                            .size(if (compact) 94.dp else 112.dp)
-                            .background(Brush.linearGradient(listOf(Violet, VioletDark)), CircleShape)
-                            .clickable(
-                                role = androidx.compose.ui.semantics.Role.Button,
-                                onClick = recorder::finish
-                            )
-                            .semantics { contentDescription = "Završi snimanje" },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Box(Modifier.width(29.dp).height(40.dp)
-                            .background(Paper, RoundedCornerShape(22.dp)))
-                    }
-                    Spacer(Modifier.height(10.dp))
-                    TextButton(onClick = recorder::finish) {
-                        Text("Završi snimanje", color = secondary,
-                            fontSize = 14.sp, fontWeight = FontWeight.Medium)
-                    }
-
-                }
-                RecordingStage.READY -> {
-                    // Use the original VOJS horizontal gradient CTA rather than
-                    // a generic flat Material button; preserve native ShareSheet.
-                    Box(
-                        modifier = Modifier.fillMaxWidth().height(58.dp)
-                            .background(
-                                Brush.horizontalGradient(listOf(Violet, VioletDark)),
-                                RoundedCornerShape(18.dp)
-                            )
-                            .clickable(
-                                role = androidx.compose.ui.semantics.Role.Button,
-                                onClick = recorder::share
-                            )
-                            .semantics {
-                                contentDescription = "Podijeli glasovnu poruku"
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            "Podijeli glasovnu poruku",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Paper
-                        )
-                    }
-                    Spacer(Modifier.height(4.dp))
-                    TextButton(onClick = recorder::discardCurrent) {
-                        Text("Snimi novu poruku", color = Violet)
-                    }
-                }
-            }
-            Spacer(Modifier.height(if (compact) 8.dp else 14.dp))
-        }
-    }
-}
-
-@Composable
-private fun VoiceWaveform(
-    values: List<Float>, active: Boolean, color: Color,
-    modifier: Modifier = Modifier
-) {
-    Canvas(
-        modifier.semantics {
-            contentDescription =
-                if (active) "Prikaz jakosti zvuka tijekom snimanja"
-                else "Valni prikaz glasovne poruke"
-        }
-    ) {
-        // Original VOJS concept has 22 separated rounded waveform bars.
-        // Heights measured from all 22 purple bars in the original VOJS
-        // 1080×1920 concept (the phone's white display area), normalized
-        // to its tallest bar. Preserve contour instead of adding a base
-        // floor that made all shorter bars substantially too tall.
-        val reference = floatArrayOf(
-            .187f, .351f, .545f, .313f, .709f, .918f, .478f, .754f,
-            1.000f, .604f, .418f, .836f, .649f, .963f, .373f, .560f,
-            .791f, .455f, .896f, .627f, .291f, .731f
-        )
-        val count = reference.size
-        val step = size.width / (count + 1)
-        val mid = size.height / 2f
-        val cap = 5.dp.toPx()
-        for (i in 0 until count) {
-            val amplitudeIndex = i * (values.size - 1).coerceAtLeast(0) / (count - 1)
-            val measured = (values.getOrNull(amplitudeIndex) ?: 0.12f)
-                .coerceIn(0.09f, 1f)
-            // Preserve the reference contour at low volumes while reacting
-            // to actual microphone amplitude instead of drawing flat bars.
-            val dynamicScale = if (active) 0.72f + 0.28f * measured else 1f
-            val height = reference[i] * size.height * .98f * dynamicScale
-            val x = (i + 1) * step
-            drawLine(
-                color, Offset(x, mid - height / 2f),
-                Offset(x, mid + height / 2f),
-                strokeWidth = cap, cap = StrokeCap.Round
-            )
-        }
-    }
-}
-
-private fun formatTime(ms: Long): String {
-    val seconds = (ms / 1000).coerceIn(0L, 300L)
-    return "%02d:%02d".format(seconds / 60, seconds % 60)
-}

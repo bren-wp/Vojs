@@ -240,6 +240,11 @@ internal class VoiceRecorder(private val context: Context) {
         }
     }
 
+    /** A ready, private local file. Creating an upload is always a separate user action. */
+    fun currentAudioForUpload(): File? = workingFile?.takeIf {
+        stage == RecordingStage.READY && it.isFile && it.length() > 0L
+    }
+
     fun showError(message: String) { error = message }
 
     fun discardCurrent() {
