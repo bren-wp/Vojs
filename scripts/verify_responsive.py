@@ -32,14 +32,30 @@ def center(node):
     return ((x1+x2)//2, (y1+y2)//2) if x2 > x1 and y2 > y1 else None
 
 def locate(label):
-    candidates = [
-        node for node in nodes()
-        if label.casefold() in (
-            node.get("text", "") + " " + node.get("content-desc", "")
-        ).casefold() and center(node)
-    ]
-    candidates.sort(key=lambda n: n.get("clickable") != "true")
-    return candidates[0] if candidates else None
+    # Do not confuse the 'Preslušaj' playback BUTTON with the static subtitle
+    # 'Preslušaj pa podijeli'. Compose semantics can report clickable=false for
+    # a child text node even when its parent is a button.
+    target = label.strip().casefold()
+    candidates = []
+    for node in nodes():
+        if not center(node):
+            continue
+        values = [node.get("text", ""), node.get("content-desc", "")]
+        def normalized(value):
+            # Android renders a leading play/stop/gear icon in some labels.
+            return re.sub(r"^[^\w]+", "", value, flags=re.UNICODE).strip().casefold()
+        exact = any(normalized(value) == target for value in values)
+        partial = any(target in value.casefold() for value in values)
+        if exact or partial:
+            candidates.append((node, exact))
+    if not candidates:
+        return None
+    candidates.sort(key=lambda entry: (
+        not entry[1],
+        entry[0].get("clickable") != "true",
+        len(entry[0].get("text", "") + entry[0].get("content-desc", ""))
+    ))
+    return candidates[0][0]
 
 def wait(label, seconds=28):
     end = time.monotonic() + seconds
@@ -51,7 +67,11 @@ def wait(label, seconds=28):
     raise AssertionError("VOJS control not available: " + label)
 
 def tap(label, seconds=28):
-    x,y = center(wait(label, seconds))
+    node = wait(label, seconds)
+    x,y = center(node)
+    print("TAP", repr(label), "actual text:", repr(node.get("text", "")),
+          "description:", repr(node.get("content-desc", "")),
+          "coordinates:", (x, y), flush=True)
     shell("input", "tap", str(x), str(y))
 
 def shot(folder, filename):
