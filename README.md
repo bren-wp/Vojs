@@ -147,3 +147,7 @@ Android emulator može tijekom pokretanja prikazati sistemsku poruku "Quickstep 
 ## 🧪 Kontrola izvornog vizualnog identiteta
 
 Android koristi **originalne logotipe** iz `branding/logotip/` u svijetloj i tamnoj temi. Oni se kopiraju pri svakom Gradle buildu. Iz aplikacije su uklonjeni marketinški potpisi i tehničke poruke. Stvarne snimke Android zaslona ostaju u `docs/screenshots/` i obnavljaju se emulator workflowom. 0 % pikselnog odstupanja još nije potvrđeno usporednim mjerenjem.
+
+## ✅ Google Play spremnost i nadograđene ovisnosti
+
+Projekt koristi kompatibilan stabilni alatni lanac: AGP 8.13.2, Gradle 8.13, Kotlin 2.4.21, Compose BOM 2026.09.00, Activity 1.13.0, Core 1.19.1 i Core SplashScreen 1.2.0. `targetSdk=36` zadovoljava trenutačni Google Play cilj za telefone. Detalji i preostale ručne provjere nalaze se u [Google Play popisu provjera](docs/GOOGLE-PLAY-READY.md) i [pravilima privatnosti](docs/PRIVACY-POLICY.md). Potpisani produkcijski AAB zahtijeva zaseban ključ i Play Console provjere. Nepotpisani AAB nije spreman za slanje u Google Play.

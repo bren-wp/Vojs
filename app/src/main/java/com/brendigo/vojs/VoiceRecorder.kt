@@ -98,6 +98,14 @@ internal class VoiceRecorder(private val context: Context) {
                         mainHandler.post { finish() }
                     }
                 }
+                setOnErrorListener { _, _, _ ->
+                    mainHandler.post {
+                        if (stage == RecordingStage.RECORDING) {
+                            finish()
+                            error = "Mikrofon je prekinuo snimanje. Pokušaj ponovno."
+                        }
+                    }
+                }
                 setOutputFile(audio.absolutePath)
                 prepare()
                 start()
