@@ -34,3 +34,11 @@ Rate-limit je 10 anonimnih učitavanja po IP-u u 24 sata; globalna diskovna kvot
 6. Objaviti stvarnu politiku privatnosti i uskladiti Google Play Data safety s dobrovoljnim učitavanjem audija i sigurnosnom obradom IP adresa.
 
 Ne tvrdi se da je produkcijski deployment, pen-test, Play pre-launch ili fizički uređaj test već potvrđen.
+
+## Administrativno uklanjanje prijavljenih snimki
+
+Prijavljenu poveznicu administrator može ukloniti bez korisničkog računa isključivo iz CLI okruženja, uz poznati 48-znamenkasti ID:
+
+    VOJS_DOCUMENT_ROOT=/home/USER/public_html VOJS_PRIVATE_STORAGE=/home/USER/vojs-private /usr/bin/php /home/USER/public_html/api/moderate.php ID
+
+Izravni web zahtjevi za moderate.php su odbijeni. Postupak treba uključiti provjeru prijave, evidentiranje radnje u zaštićenom administrativnom sustavu i odgovarajući kontaktni kanal.

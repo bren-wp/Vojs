@@ -313,7 +313,7 @@ internal fun VoiceScreen(
                         )
                     }
                     Spacer(Modifier.height(4.dp))
-                    TextButton(onClick = onDiscard) {
+                    TextButton(onClick = onDiscard, enabled = !linkBusy) {
                         Text("Snimi novu poruku", color = Violet)
                     }
                 }

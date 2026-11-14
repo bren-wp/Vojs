@@ -47,4 +47,14 @@ status=$(curl -sS -o /dev/null -w '%{http_code}' -H 'Content-Type: application/j
 test "$status" = "204"
 status=$(curl -sS -o /dev/null -w '%{http_code}' "$BASE/api/audio.php?id=$ID")
 test "$status" = "404"
+status=$(curl -sS -o /dev/null -w '%{http_code}' -H 'Content-Type: application/json' \
+  --data '{"id":"111111111111111111111111111111111111111111111111","delete_token":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}' \
+  "$BASE/api/delete.php")
+test "$status" = "404"
+# First valid upload consumed one of ten slots. Nine more are allowed.
+for i in {1..9}; do
+  curl -fsS -F "audio=@$TMP/valid.m4a;type=audio/mp4" "$BASE/api/upload.php" > /dev/null
+done
+status=$(curl -sS -o /dev/null -w '%{http_code}' -F "audio=@$TMP/valid.m4a;type=audio/mp4" "$BASE/api/upload.php")
+test "$status" = "429"
 echo "VOJS PHP API integration test passed"
