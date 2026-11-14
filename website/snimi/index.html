@@ -1,12 +1,12 @@
 <!doctype html><html lang="hr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="referrer" content="no-referrer"><meta name="theme-color" content="#20213b">
-<title>Snimi glasovnu poruku — VOJS</title><meta name="description" content="Snimi glasovnu poruku u pregledniku. Dijeli datoteku offline ili privremenu poveznicu. Bez prijave.">
-<link rel="icon" href="../logo.svg"><link rel="stylesheet" href="../style.css"></head>
+<title>Snimi glasovnu poruku — VOJS</title><meta name="description" content="Snimi glasovnu poruku u pregledniku. Dijeli datoteku offline ili izravno uživo preko P2P veze. Bez prijave.">
+<link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../logo.svg"><link rel="stylesheet" href="../style.css"></head>
 <body><header class="nav"><a class="brand" href="../"><img src="../logo.svg" alt="">VOJS</a>
 <nav><a href="../">Naslovnica</a><a href="../privatnost/">Privatnost</a><a href="https://github.com/bren-wp/Vojs/releases">Android</a></nav></header>
 <main class="content-page vojs-recorder"><p class="eyebrow">VOJS · Web snimač</p>
 <h1>Tvoj glas.<br><span>Jedan klik dalje.</span></h1>
-<p class="intro">Snimi i preslušaj poruku bez računa. Snimanje ostaje lokalno dok samostalno ne odabereš stvaranje web poveznice.</p>
+<p class="intro">Snimi i preslušaj poruku bez računa. Snimanje ostaje na uređaju. Kod P2P dijeljenja audio se šalje izravno primatelju, bez pohrane na VOJS poslužitelju.</p>
 <section class="voice-panel" aria-label="Snimač glasovnih poruka">
 <p class="timer" id="timer" aria-live="off">00:00 / 05:00</p>
 <p id="state" role="status" aria-live="polite">Spremno za snimanje.</p>
@@ -14,11 +14,12 @@
 <div id="finished" hidden>
 <audio id="preview" controls preload="metadata" aria-label="Preslušaj snimku"></audio>
 <div class="button-row"><button id="download">Spremi datoteku (offline)</button><button id="share-file">Podijeli datoteku</button></div>
-<p>Za poveznicu se snimka prenosi na VOJS poslužitelj <strong>samo kad odabereš</strong> gumb ispod. Svatko s poveznicom može je preslušati do 24 sata ili do opoziva.</p>
-<div class="button-row"><button id="upload" class="record-action">Stvori web poveznicu</button></div>
+<p>Poveznica služi za <strong>izravni prijenos uživo</strong>. Pošiljatelj mora ostati na stranici dok primatelj preuzme snimku. Server sprema samo kratkotrajne JSON podatke za povezivanje (najviše 15 minuta), <strong>nikad audio</strong>. Neke mreže bez TURN servera ne podržavaju P2P povezivanje.</p>
+<label class="voice-consent"><input type="checkbox" id="accept-terms"> Prihvaćam <a href="../uvjeti/" target="_blank" rel="noopener noreferrer">pravila korištenja</a> i neću dijeliti nezakonit, nasilni ili uznemirujući sadržaj.</label>
+<div class="button-row"><button id="upload" class="record-action" disabled>P2P poveznica (bez pohrane)</button></div>
 <div id="link-result" hidden><label for="link">Privatna poveznica</label><input id="link" readonly>
-<div class="button-row"><button id="copy">Kopiraj</button><button id="share-link">Podijeli poveznicu</button><button id="revoke">Opozovi i izbriši</button></div></div>
+<div class="button-row"><button id="copy">Kopiraj</button><button id="share-link">Podijeli poveznicu</button><button id="revoke">Prekini povezivanje</button></div></div>
 </div><p id="error" class="voice-error" role="alert" hidden></p></section>
-<p class="meta">Nakon prvog otvaranja web snimač može raditi offline u preglednicima s podrškom za offline cache. Poveznice uvijek zahtijevaju internet.</p>
+<p class="meta">Nakon prvog otvaranja web snimač može raditi offline u preglednicima s podrškom za offline cache. P2P povezivanje zahtijeva internet i prisutnost oba uređaja u istom trenutku. Nema trajno spremljenih poruka.</p>
 </main><footer>VOJS · by <a href="https://brendigo.com">BRENDIGO</a> · <a href="../privatnost/">Privatnost</a></footer>
-<script src="../recorder.js" defer></script></body></html>
+<script src="../p2p.js" defer></script><script src="../recorder.js" defer></script></body></html>

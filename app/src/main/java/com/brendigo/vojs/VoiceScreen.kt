@@ -53,13 +53,7 @@ internal fun VoiceScreen(
     secondary: Color,
     onSettings: () -> Unit,
     onRecord: () -> Unit,
-    shareLink: VojsShareLink?,
-    linkBusy: Boolean,
-    linkError: String?,
     onCreateLink: () -> Unit,
-    onCopyLink: () -> Unit,
-    onShareLink: () -> Unit,
-    onRevokeLink: () -> Unit,
     onDiscard: () -> Unit
 ) {
     val compact = androidx.compose.ui.platform.LocalConfiguration.current.screenHeightDp < 710
@@ -150,23 +144,11 @@ internal fun VoiceScreen(
                 }
                 Spacer(Modifier.height(if (compact) 20.dp else 30.dp))
                 Text(
-                    "Dijeljenje datoteke radi i bez interneta. Za web poveznicu " +
-                    "snimka se uz tvoj odabir prenosi na poslužitelj i dostupna je do 24 sata.",
+                    "Datoteka se može podijeliti offline. P2P poveznica služi za izravni " +
+                    "prijenos u preglednik bez spremanja audija na VOJS server. " +
+                    "Oba uređaja moraju biti online dok prijenos traje.",
                     color = secondary, fontSize = 13.sp, lineHeight = 19.sp
                 )
-                if (shareLink != null) {
-                    Spacer(Modifier.height(12.dp))
-                    Text("Privatna poveznica:", color = foreground, fontWeight = FontWeight.SemiBold)
-                    Text(shareLink.url, color = Violet, fontSize = 12.sp)
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        TextButton(onClick = onCopyLink) { Text("Kopiraj poveznicu") }
-                        TextButton(onClick = onRevokeLink, enabled = !linkBusy) { Text("Opozovi") }
-                    }
-                }
-                if (linkError != null) {
-                    Text(linkError, color = if (dark) Color(0xFFFFA3B3) else Color(0xFFB92342),
-                        fontSize = 13.sp)
-                }
                 Spacer(Modifier.height(12.dp))
                 OutlinedButton(
                     onClick = recorder::togglePlayback,
@@ -295,25 +277,15 @@ internal fun VoiceScreen(
                     }
                     Spacer(Modifier.height(8.dp))
                     OutlinedButton(
-                        onClick = if (shareLink == null) onCreateLink else onShareLink,
-                        enabled = !linkBusy,
+                        onClick = onCreateLink,
                         modifier = Modifier.fillMaxWidth().height(52.dp),
                         shape = RoundedCornerShape(17.dp),
                         colors = ButtonDefaults.outlinedButtonColors(contentColor = Violet)
                     ) {
-                        if (linkBusy) {
-                            CircularProgressIndicator(modifier = Modifier.size(22.dp),
-                                strokeWidth = 2.dp)
-                            Spacer(Modifier.width(10.dp))
-                        }
-                        Text(
-                            if (linkBusy) "Pričekaj…" else if (shareLink == null)
-                                "Stvori web poveznicu" else "Podijeli poveznicu",
-                            fontWeight = FontWeight.SemiBold
-                        )
+                        Text("Podijeli izravno (P2P)", fontWeight = FontWeight.SemiBold)
                     }
                     Spacer(Modifier.height(4.dp))
-                    TextButton(onClick = onDiscard, enabled = !linkBusy) {
+                    TextButton(onClick = onDiscard) {
                         Text("Snimi novu poruku", color = Violet)
                     }
                 }

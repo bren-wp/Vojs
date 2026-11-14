@@ -17,3 +17,6 @@
 .voice-panel .voice-error{color:#b92342}
 .voice-panel button:focus-visible,.voice-panel a:focus-visible,.voice-panel input:focus-visible{outline:3px solid #ff7c91;outline-offset:3px}
 @media(max-width:560px){.button-row{align-items:stretch;flex-direction:column}.button-row button{width:100%}.content-page .intro{font-size:17px}.voice-panel{border-radius:18px}}
+
+.voice-panel #received-download{display:inline-block;margin-top:12px}
+.voice-panel #received-download[hidden]{display:none}

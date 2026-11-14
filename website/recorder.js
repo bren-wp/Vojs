@@ -3,7 +3,7 @@
   const el = id => document.getElementById(id);
   const MAX_MS = 300000, MAX_BYTES = 8 * 1024 * 1024;
   let stream = null, recorder = null, file = null, fileUrl = null, chunks = [], timerHandle = null;
-  let startedAt = 0, pausedAt = 0, pausedTotal = 0, link = null;
+  let startedAt = 0, pausedAt = 0, pausedTotal = 0, link = null, session = null;
   function message(value) { el("state").textContent = value; }
   function error(value) { el("error").textContent = value; el("error").hidden = !value; }
   function stopTracks() {
@@ -13,6 +13,7 @@
     stream = null;
   }
   function resetFile() {
+    if (session) { session.close(); session = null; }
     file = null;
     link = null;
     el("finished").hidden = true;
@@ -20,7 +21,7 @@
     if (fileUrl) URL.revokeObjectURL(fileUrl);
     fileUrl = null;
     el("preview").removeAttribute("src");
-    el("upload").disabled = false;
+    el("upload").disabled = !el("accept-terms").checked;
     el("pause").textContent = "Pauziraj";
   }
   function updateTimer() {
@@ -62,6 +63,7 @@
         fileUrl = URL.createObjectURL(file);
         el("preview").src = fileUrl;
         el("finished").hidden = false;
+        el("upload").disabled = !el("accept-terms").checked;
         message("Snimka je spremna za dijeljenje.");
       };
       recorder.start(250);
@@ -103,24 +105,23 @@
     } else { download(); message("Datoteka je spremna za lokalno spremanje."); }
   }
   async function upload() {
-    if (!file || link) return;
-    if (!navigator.onLine) { error("Za poveznicu je potreban internet. Datoteku možeš dijeliti offline."); return; }
-    error(""); el("upload").disabled = true; message("Snimka se prenosi…");
+    if (!file || link || !el('accept-terms').checked) return;
+    if (!navigator.onLine) {
+      error("Za P2P poveznicu potreban je internet. Datoteka se može dijeliti offline.");
+      return;
+    }
+    error(""); el("upload").disabled = true;
+    message("Stvaranje privatne P2P sesije…");
     try {
-      const form = new FormData(); form.append("audio", file, file.name);
-      const response = await fetch("../api/upload.php", { method: "POST", body: form, cache: "no-store", credentials: "omit" });
-      if (response.status !== 201) throw Error("Usluga nije dostupna ili je dosegnuto ograničenje.");
-      const payload = await response.json();
-      const parsed = new URL(payload.url);
-      if (parsed.origin !== "https://vojs.com.hr" || parsed.pathname !== "/poruka/" ||
-          !/^[a-f0-9]{48}$/.test(payload.id) || parsed.searchParams.get("id") !== payload.id ||
-          !/^[a-f0-9]{64}$/.test(payload.delete_token)) throw Error("Neispravan odgovor poslužitelja.");
-      link = payload;
-      el("link").value = payload.url; el("link-result").hidden = false;
-      message("Poveznica je spremna. Vrijedi najviše 24 sata.");
+      session = await window.VojsPeer.create(file, text => message(text));
+      link = session;
+      el("link").value = session.url;
+      el("link-result").hidden = false;
+      message("Poveznica je spremna. Ostani na stranici dok primatelj ne preuzme poruku.");
     } catch (e) {
-      error(e.message || "Prijenos nije uspio."); message("Lokalna snimka je i dalje dostupna.");
-    } finally { el("upload").disabled = !!link; }
+      error(e.message || "P2P povezivanje nije uspjelo.");
+      el("upload").disabled = false;
+    }
   }
   async function copy() {
     if (!link) return;
@@ -135,21 +136,21 @@
     } else copy();
   }
   async function revoke() {
-    if (!link) return;
+    if (!session) return;
     error(""); el("revoke").disabled = true;
     try {
-      const response = await fetch("../api/delete.php", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: link.id, delete_token: link.delete_token }),
-        cache: "no-store", credentials: "omit"
-      });
-      if (response.status !== 204) throw Error("Brisanje nije uspjelo.");
-      link = null; el("link").value = "";
-      el("link-result").hidden = true; el("upload").disabled = false;
-      message("Poveznica je opozvana. Lokalna datoteka ostaje na uređaju.");
-    } catch { error("Opoziv nije uspio. Pokušaj ponovno dok poveznica ne istekne."); }
+      await session.close();
+      session = null; link = null;
+      el("link").value = "";
+      el("link-result").hidden = true;
+      el("upload").disabled = !el("accept-terms").checked;
+      message("P2P sesija je zatvorena. Lokalna snimka ostaje.");
+    } catch { error("Prekidanje veze nije uspjelo."); }
     finally { el("revoke").disabled = false; }
   }
+  el("accept-terms").addEventListener("change", () => {
+    el("upload").disabled = !file || !!link || !el("accept-terms").checked;
+  });
   for (const [id, fn] of [["start",start],["stop",finish],["pause",pause],["download",download],
     ["share-file",shareFile],["upload",upload],["copy",copy],["share-link",shareLink],["revoke",revoke]]) {
     el(id).addEventListener("click", fn);

@@ -1,27 +1,29 @@
-# VOJS — Pravila privatnosti
+# Pravila privatnosti — VOJS
 
 **Ažurirano: 14. studenoga 2026.**
 
-VOJS je BRENDIGO aplikacija za snimanje, preslušavanje i dijeljenje glasovnih poruka. Web i Android aplikacija ne zahtijevaju registraciju niti korisnički račun.
+VOJS by BRENDIGO snima i dijeli glasovne poruke u Android aplikaciji i web pregledniku. Ne zahtijeva račun. Nema VOJS pohrane audio snimki na web serveru.
 
-## Mikrofon i lokalno snimanje
+## Audiozapisi i mikrofon
 
-Android koristi dopuštenje RECORD_AUDIO samo za snimanje. Snimke se nalaze u privatnom privremenom cacheu do dijeljenja; nepodijeljene snimke se uklanjaju prilikom novog snimanja, a privremene podijeljene datoteke starije od približno 24 sata pokušavaju se očistiti pri sljedećem pokretanju. Vanjska aplikacija može zadržati vlastitu kopiju.
+Android za snimanje traži dopuštenje RECORD_AUDIO. Snimka se lokalno sprema u privatni cache uređaja za reprodukciju i dijeljenje. Nepodijeljena snimka briše se pri novom snimanju. Podijeljene privremene M4A datoteke starije od 24 sata pokušavaju se ukloniti na idućem pokretanju aplikacije. Odabrane vanjske aplikacije mogu pohraniti vlastitu kopiju.
 
-Web snimač uz dopuštenje preglednika koristi MediaRecorder. Lokalni audio postoji u memoriji otvorene stranice i moguće ga je preuzeti. Offline service worker predmemorira samo statične web resurse, nikada audio snimke ni API odgovore.
+Web traži dopuštenje mikrofona preko MediaRecorder API-ja i privremeno drži zvuk u memoriji preglednika. Lokalno spremanje i dijeljenje preko uređaja ne zahtijevaju prijenos na VOJS server. Offline service worker predmemorira samo statičke web datoteke, a ne audio ili API odgovore.
 
-## Dobrovoljno dijeljenje poveznicom
+## Izravno P2P dijeljenje
 
-Samo izričitim odabirom gumba za stvaranje web poveznice audio se prenosi preko HTTPS-a na vojs.com.hr. Poslužitelj pohranjuje sadržaj izvan javnog web korijena najviše 24 sata, uz nasumični identifikator i zasebni tajni token za opoziv. **Svatko tko ima poveznicu može preslušati audio i sačuvati kopiju.** Riječ nije o end-to-end šifriranju.
+Ako korisnik odabere izravno dijeljenje, VOJS stvara vremenski ograničenu poveznicu. PHP poslužitelj prima i privremeno pohranjuje **samo WebRTC SDP JSON podatke za uspostavu veze**, ne prima audio. SDP može sadržavati mrežne adrese i informacije o mrežnoj vezi. WebRTC audio datoteka prenosi se kroz šifrirani DataChannel izravno između uređaja. Korisnik mora ostati online tijekom prijenosa. Primatelj može sačuvati preuzetu datoteku.
 
-Pošiljatelj može opozvati poveznicu tijekom sesije u kojoj je nastala. Nakon isteka 24 sata poslužitelj odbija pristup; stvarni diskovni podaci čiste se cron procesom ili prilikom novih učitavanja. Nije moguće opozvati prethodno preuzete kopije.
+Server čuva nasumični ID, hash vlasničkog tokena, SDP offer i answer te rok valjanosti do 15 minuta. Nakon isteka pristup JSON sesiji odbija se, a datoteke se fizički čiste prilikom stvaranja idućih sesija. Bez prometa JSON može ostati na disku dulje, ali nakon isteka nije dostupan putem API-ja. Ne koristi se cron ni SQL.
 
-## Sigurnost, obrada IP adresa i ostali podaci
+P2P veza koristi javni STUN poslužitelj za pronalazak mrežnih putanja; STUN poslužitelj može vidjeti javnu IP adresu i mrežne informacije. TURN relay zasad nije uključen, pa povezivanje ne uspijeva na svim mrežama. Podaci nisu namijenjeni profiliranju ili oglašavanju.
 
-Usluga ograničava učitavanja na 8 MB po datoteci i broj novih učitavanja po izvornoj IP adresi. Za sigurnosno ograničavanje zahtjeva obrađuje IP adresu i kratkotrajno pohranjuje njezin HMAC hash; hosting može voditi pristupne i sigurnosne logove, uključujući IP adrese. Nema ugrađenih oglasnih ili analitičkih SDK-ova niti korisničkih profila. Privatnost primateljske aplikacije kod offline dijeljenja uređena je pravilima te aplikacije.
+## IP adrese i server logovi
 
-## Opoziv, prijava zloupotrebe i kontakt
+Poslužitelj obrađuje IP adresu radi ograničavanja anonimnih sesija i privremeno pohranjuje pseudonimizirani HMAC identifikator i broj pokušaja tijekom razdoblja do 24 sata. Hosting pružatelj može imati dodatne pristupne i sigurnosne logove, čija se stvarna konfiguracija mora provjeriti prije javnog pokretanja. Nema ugrađenih oglasnih ili analitičkih SDK-ova.
 
-Korisnik može opozvati svoju trenutačnu poveznicu pomoću posebnog tokena prikazanog samo u sesiji učitavanja. Bez tog tokena poveznica prestaje raditi nakon isteka najviše 24 sata. Zlouporabu ili neprimjeren sadržaj moguće je prijaviti putem https://vojs.com.hr/prijava-sadrzaja/ i https://vojs.com.hr/kontakt/. Nemoj slati privatni audio u javni GitHub issue.
+## Uklanjanje i prijava
 
-Izdavač: BRENDIGO, https://brendigo.com. Prije produkcijske objave ova politika mora biti javno dostupna na https://vojs.com.hr/privatnost/ i usklađena sa stvarnim hosting logovima te Google Play Data safety prijavom.
+Pošiljatelj može zatvoriti trenutačnu P2P sesiju, a sesija svakako prestaje biti dostupna nakon 15 minuta. Nakon što primatelj preuzme datoteku, VOJS ne može izbrisati tu kopiju. Na stranici primljene poruke korisnik može blokirati poveznicu; odabrani ID može se sačuvati samo u lokalnom spremištu preglednika (localStorage). Štetan sadržaj ili zloupotrebu moguće je prijaviti preko https://vojs.com.hr/prijava-sadrzaja/ ili https://vojs.com.hr/kontakt/. Nemoj javno objavljivati privatne snimke u prijavama.
+
+Izdavač: **BRENDIGO** — https://brendigo.com. Ova pravila trebaju biti dostupna na https://vojs.com.hr/privatnost/ i u Android aplikaciji te u Google Play listingu, nakon usklađivanja s konkretnim hostingom i provedene produkcijske provjere.
