@@ -7,6 +7,8 @@ import subprocess
 import time
 from pathlib import Path
 import xml.etree.ElementTree as ET
+from io import BytesIO
+from PIL import Image, ImageChops, ImageStat
 
 OUT = Path("docs/screenshots")
 OUT.mkdir(parents=True, exist_ok=True)
@@ -60,6 +62,50 @@ def tap(label):
     time.sleep(0.8)
     return True
 
+def capture_branded_splash(name, mode):
+    """Save only a real device frame showing the original full splash.
+
+    ADB UI hierarchy queries can take several seconds. A former script
+    queried UI before taking the shot, so the 2.5-second splash had already
+    disappeared. Capture several real frames immediately, compare a cheap
+    thumbnail against the source artwork and retry a fresh launch if needed.
+    """
+    source = Path("branding/pocetni-zaslon") / (
+        "pocetni-zaslon-tamni-1080x2400.png" if mode == "dark"
+        else "pocetni-zaslon-svijetli-1080x2400.png"
+    )
+    expected = Image.open(source).convert("RGB")
+    region = (0, 115, 1080, 2260)
+    reference = expected.crop(region).resize((108, 214), Image.Resampling.BILINEAR)
+    best_score = float("inf")
+    for attempt in range(3):
+        for frame in range(9):
+            data = adb("exec-out", "screencap", "-p", timeout=15).stdout
+            if not data.startswith(b"\x89PNG\r\n\x1a\n"):
+                continue
+            image = Image.open(BytesIO(data)).convert("RGB")
+            if image.size != expected.size:
+                raise RuntimeError(f"Unexpected emulator resolution {image.size}")
+            sample = image.crop(region).resize(reference.size, Image.Resampling.BILINEAR)
+            difference = ImageChops.difference(sample, reference)
+            score = sum(ImageStat.Stat(difference).mean) / 3
+            best_score = min(best_score, score)
+            if score <= 6.0:
+                (OUT / name).write_bytes(data)
+                saved.append({"file": name, "screen": f"Genuine VOJS {mode} splash"})
+                print("Captured", name, "RGB reference MAE", round(score, 3), flush=True)
+                return
+            time.sleep(0.08)
+        if attempt < 2:
+            print("Retrying splash capture after non-reference frame", mode,
+                  "best RGB MAE", round(best_score, 2), flush=True)
+            recover_launcher_anr()
+            adb("shell", "am", "force-stop", "com.brendigo.vojs")
+            adb("shell", "am", "start", "-n", "com.brendigo.vojs/.MainActivity")
+            time.sleep(0.1)
+    fail(f"Did not capture original {mode} splash; best RGB MAE {best_score:.2f}")
+
+
 def recover_launcher_anr():
     """Dismiss only system-launcher ANRs, not actual VOJS crashes."""
     for package in ("Quickstep", "Pixel Launcher"):
@@ -103,11 +149,9 @@ for launcher in ("com.android.launcher3", "com.google.android.apps.nexuslauncher
     except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
         pass
 adb("shell","am","start","-n","com.brendigo.vojs/.MainActivity")
-# Real screenshot of the native full-frame VOJS splash, while it is visible.
-time.sleep(1.1)
-if recover_launcher_anr():
-    time.sleep(0.8)
-screenshot("00-splash-light.png", "Original VOJS splash - light")
+# Capture a real frame before the short-lived 2.5-second splash ends.
+# Never query uiautomator before this capture.
+capture_branded_splash("00-splash-light.png", "light")
 time.sleep(2.5)
 # Older emulator images may display Android's immersive tutorial left
 # behind by an earlier build; dismiss only this system prompt, if present.
@@ -174,10 +218,7 @@ if tap("Započni snimanje") and wait_ui("Završi snimanje", 12):
             # Confirm dark theme persisted across a fresh app launch.
             adb("shell", "am", "force-stop", "com.brendigo.vojs")
             adb("shell", "am", "start", "-n", "com.brendigo.vojs/.MainActivity")
-            time.sleep(1.1)
-            if recover_launcher_anr():
-                time.sleep(0.8)
-            screenshot("10-splash-dark.png", "Original VOJS splash - dark")
+            capture_branded_splash("10-splash-dark.png", "dark")
 
 # A successful UI flow must also be free of app-process Java crashes.
 crashes = adb("logcat", "-d", "-s", "AndroidRuntime:E", "*:S").stdout.decode(

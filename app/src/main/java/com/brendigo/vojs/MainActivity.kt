@@ -298,7 +298,10 @@ private fun VoiceScreen(
                         modifier = Modifier
                             .size(if (compact) 94.dp else 112.dp)
                             .background(Brush.linearGradient(listOf(Violet, VioletDark)), CircleShape)
-                            .clickable(onClick = onRecord)
+                            .clickable(
+                                role = androidx.compose.ui.semantics.Role.Button,
+                                onClick = onRecord
+                            )
                             .semantics { contentDescription = "Započni snimanje" },
                         contentAlignment = Alignment.Center
                     ) {
@@ -315,7 +318,10 @@ private fun VoiceScreen(
                         modifier = Modifier
                             .size(if (compact) 94.dp else 112.dp)
                             .background(Brush.linearGradient(listOf(Violet, VioletDark)), CircleShape)
-                            .clickable(onClick = recorder::finish)
+                            .clickable(
+                                role = androidx.compose.ui.semantics.Role.Button,
+                                onClick = recorder::finish
+                            )
                             .semantics { contentDescription = "Završi snimanje" },
                         contentAlignment = Alignment.Center
                     ) {
@@ -334,14 +340,29 @@ private fun VoiceScreen(
                     }
                 }
                 RecordingStage.READY -> {
-                    Button(
-                        onClick = recorder::share,
-                        shape = RoundedCornerShape(18.dp),
-                        modifier = Modifier.fillMaxWidth().height(58.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Violet)
+                    // Use the original VOJS horizontal gradient CTA rather than
+                    // a generic flat Material button; preserve native ShareSheet.
+                    Box(
+                        modifier = Modifier.fillMaxWidth().height(58.dp)
+                            .background(
+                                Brush.horizontalGradient(listOf(Violet, VioletDark)),
+                                RoundedCornerShape(18.dp)
+                            )
+                            .clickable(
+                                role = androidx.compose.ui.semantics.Role.Button,
+                                onClick = recorder::share
+                            )
+                            .semantics {
+                                contentDescription = "Podijeli glasovnu poruku"
+                            },
+                        contentAlignment = Alignment.Center
                     ) {
-                        Text("Podijeli glasovnu poruku", fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold, color = Paper)
+                        Text(
+                            "Podijeli glasovnu poruku",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Paper
+                        )
                     }
                     Spacer(Modifier.height(4.dp))
                     TextButton(onClick = recorder::discardCurrent) {
