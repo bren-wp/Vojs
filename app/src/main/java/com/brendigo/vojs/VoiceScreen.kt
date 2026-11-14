@@ -287,7 +287,7 @@ internal fun VoiceScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            "Podijeli datoteku (offline)",
+                            "Podijeli glasovnu poruku",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
                             color = Paper

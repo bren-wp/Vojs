@@ -44,7 +44,14 @@ internal object VoiceLinkService {
             }
             if (connection.responseCode != 201) throw IOException("Upload rejected")
             val payload = connection.inputStream.use { stream ->
-                val bytes = stream.readNBytes(MAX_RESPONSE_BYTES + 1)
+                val data = java.io.ByteArrayOutputStream()
+                val buffer = ByteArray(1024)
+                while (data.size() <= MAX_RESPONSE_BYTES) {
+                    val n = stream.read(buffer)
+                    if (n < 0) break
+                    data.write(buffer, 0, n)
+                }
+                val bytes = data.toByteArray()
                 if (bytes.size > MAX_RESPONSE_BYTES) throw IOException("Oversized response")
                 String(bytes, StandardCharsets.UTF_8)
             }
