@@ -73,18 +73,10 @@ jobs:
             echo "::error::Network permission found in built APK"
             exit 1
           fi
-          python3 - <<'PY'
-          import zipfile
-          from pathlib import Path
-          apk = Path("app/build/outputs/apk/debug/app-debug.apk")
-          aab = Path("app/build/outputs/bundle/release/app-release.aab")
-          for file in (apk, aab):
-              with zipfile.ZipFile(file) as z:
-                  libs = [n for n in z.namelist() if n.endswith(".so")]
-                  if libs:
-                      raise SystemExit(f"Native libraries require 16 KB page-size audit: {file}: {libs}")
-                  print(f"PASS: {file} contains no native .so libraries")
-          PY
+          python3 scripts/check_native_alignment.py \
+            app/build/outputs/apk/debug/app-debug.apk \
+            app/build/outputs/bundle/release/app-release.aab
+          "$BT/zipalign" -c -P 16 -v 4 app/build/outputs/apk/debug/app-debug.apk
           "$BT/apksigner" verify --print-certs app/build/outputs/apk/debug/app-debug.apk > /dev/null
           if [[ "${SIGNING_READY:-false}" == "true" ]]; then
             "$BT/apksigner" verify --print-certs app/build/outputs/apk/release/app-release.apk > /dev/null

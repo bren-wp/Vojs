@@ -14,7 +14,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m py_compile scripts/capture_screenshots.py scripts/audit_splash_pixels.py scripts/audit_reference_pixels.py scripts/test_emulator_boot.py
+          python3 -m py_compile scripts/capture_screenshots.py scripts/audit_splash_pixels.py scripts/audit_reference_pixels.py scripts/test_emulator_boot.py scripts/check_native_alignment.py
           python3 scripts/test_emulator_boot.py
       - uses: actions/setup-java@v4
         with:
@@ -45,14 +45,10 @@ jobs:
             echo "::error::Unexpected internet permission in merged APK"
             exit 1
           fi
-          python3 - <<'PY'
-          import zipfile
-          from pathlib import Path
-          for path in ("app/build/outputs/apk/debug/app-debug.apk", "app/build/outputs/bundle/release/app-release.aab"):
-              with zipfile.ZipFile(path) as archive:
-                  native = [x for x in archive.namelist() if x.endswith(".so")]
-                  assert not native, f"Manual 16 KB native library audit required for {path}: {native}"
-          PY
+          python3 scripts/check_native_alignment.py \
+            app/build/outputs/apk/debug/app-debug.apk \
+            app/build/outputs/bundle/release/app-release.aab
+          "$BT/zipalign" -c -P 16 -v 4 app/build/outputs/apk/debug/app-debug.apk
       - name: Verify source logo and clean VOJS user interface
         shell: bash
         run: |
