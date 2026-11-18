@@ -7,6 +7,7 @@ on:
       - 'website/**'
       - 'scripts/capture_web_screenshots.mjs'
       - 'scripts/audit_web_visual.py'
+      - 'scripts/test_p2p_browser.mjs'
       - '.github/workflows/web-visual.yml'
   push:
     branches: [main]
@@ -50,6 +51,10 @@ jobs:
           curl -fsS http://127.0.0.1:8765/ > /dev/null
       - name: Capture all web routes in dark and light across 4 sizes
         run: node scripts/capture_web_screenshots.mjs
+        env:
+          VOJS_VISUAL_BASE_URL: http://127.0.0.1:8765
+      - name: End-to-end P2P transfer across 2 real Chromium pages
+        run: node scripts/test_p2p_browser.mjs
         env:
           VOJS_VISUAL_BASE_URL: http://127.0.0.1:8765
       - name: Audit exact reference matches when available
