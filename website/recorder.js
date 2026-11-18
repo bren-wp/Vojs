@@ -4,6 +4,7 @@
   const MAX_MS = 300000, MAX_BYTES = 8 * 1024 * 1024;
   let stream = null, recorder = null, file = null, fileUrl = null, chunks = [], timerHandle = null;
   let startedAt = 0, pausedAt = 0, pausedTotal = 0, link = null, session = null;
+  let starting = false, processing = false;
   function message(value) { el("state").textContent = value; }
   function error(value) { el("error").textContent = value; el("error").hidden = !value; }
   function stopTracks() {
@@ -41,17 +42,27 @@
     if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) {
       error("Snimanje nije podržano. Otvori stranicu preko HTTPS-a u modernom pregledniku."); return;
     }
-    if (recorder && recorder.state !== "inactive") return;
+    if (starting || processing || (recorder && recorder.state !== "inactive")) return;
+    starting = true;
+    el("start").disabled = true;
     resetFile();
     try {
       stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // A second click while permission was pending cannot open a second microphone.
       const mime = chooseMime();
       recorder = new MediaRecorder(stream, { ...(mime ? { mimeType: mime } : {}), audioBitsPerSecond: 96000 });
       chunks = [];
       recorder.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
-      recorder.onerror = () => { error("Snimanje je prekinuto."); stopTracks(); };
+      recorder.onerror = () => {
+        error("Snimanje je prekinuto.");
+        try { if (recorder.state !== "inactive") recorder.stop(); }
+        catch { stopTracks(); processing = false; el("start").disabled = false; }
+      };
       recorder.onstop = () => {
         stopTracks();
+        processing = false;
+        starting = false;
+        el("start").disabled = false;
         const type = recorder.mimeType.split(";")[0] || "audio/webm";
         const blob = new Blob(chunks, { type });
         chunks = [];
@@ -69,16 +80,23 @@
       recorder.start(250);
       startedAt = Date.now(); pausedAt = 0; pausedTotal = 0;
       timerHandle = setInterval(updateTimer, 250);
+      starting = false;
       el("start").disabled = true; el("stop").disabled = false; el("pause").disabled = false;
       message("Snimanje je u tijeku.");
     } catch {
-      stopTracks(); error("Pristup mikrofonu nije dostupan. Provjeri dopuštenje i HTTPS.");
+      starting = false; processing = false;
+      stopTracks();
+      el("start").disabled = false;
+      el("stop").disabled = true;
+      el("pause").disabled = true;
+      error("Pristup mikrofonu nije dostupan. Provjeri dopuštenje i HTTPS.");
     }
   }
   function finish() {
     if (!recorder || recorder.state === "inactive") return;
+    processing = true;
     recorder.stop();
-    el("start").disabled = false; el("stop").disabled = true; el("pause").disabled = true;
+    el("start").disabled = true; el("stop").disabled = true; el("pause").disabled = true;
     message("Obrada snimke…");
   }
   function pause() {
