@@ -27,6 +27,14 @@ assert(sender.includes('role="status"') && sender.includes('aria-live="polite"')
 assert(sender.includes('aria-label="Uvjeti prijenosa"'));
 assert(sender.includes("15 min"),"Match real 15-minute signaling expiry");
 assert(sender.includes("Bez pohrane zvuka"));
+const websiteStyle = fs.readFileSync("website/style.css","utf8");
+const nativeTheme = fs.readFileSync("app/src/main/java/com/brendigo/vojs/MainActivity.kt","utf8");
+const webManifest = JSON.parse(fs.readFileSync("website/manifest.webmanifest","utf8"));
+assert(nativeTheme.includes("internal val Night = Color(0xFF20213B)"));
+assert(websiteStyle.includes("--vojs-bg: #20213b;"),"Web dark background must match Android");
+assert(websiteStyle.includes("--vojs-card: #302d52;"),"Web card must match native ready card");
+assert(webManifest.background_color === "#20213b");
+assert(webManifest.theme_color === "#20213b");
 assert(sender.includes("@media(max-width:340px)"),"Compact Android WebView requires adaptation");
 assert(sender.includes("@media(max-height:700px)"),"Short display requires adaptation");
 assert(!sender.includes("1 dan") && !sender.includes("Nikada"),

@@ -68,7 +68,7 @@ try {
               missing_images:[...document.images].filter(i=>!i.complete||i.naturalWidth===0).length
             };
           });
-          const expectedColor=theme==="dark"?"rgb(23, 24, 43)":"rgb(248, 247, 255)";
+          const expectedColor=theme==="dark"?"rgb(32, 33, 59)":"rgb(248, 247, 255)";
           if(measured.theme!==theme) throw Error("Wrong theme "+measured.theme);
           if(measured.background!==expectedColor) throw Error("Wrong background "+measured.background);
           if(measured.document_width>device.width+2)

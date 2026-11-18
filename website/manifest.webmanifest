@@ -7,7 +7,7 @@
   "display": "standalone",
   "description": "Snimi glasovnu poruku offline i podijeli je izravno P2P, bez računa.",
   "lang": "hr",
-  "background_color": "#17182b",
+  "background_color": "#20213b",
   "theme_color": "#20213b",
   "icons": [
     {
