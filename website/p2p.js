@@ -5,6 +5,7 @@
  */
 window.VojsPeer = (() => {
   const API = "/api/signal.php";
+  const PROTOCOL = "vojs-p2p-v1";
   const MAX_BYTES = 8 * 1024 * 1024;
   const CHUNK = 16 * 1024;
   const LIMIT = 1024 * 1024;
@@ -14,7 +15,10 @@ window.VojsPeer = (() => {
   const MIME = /^(audio\/(mp4|webm|ogg))$/;
   // STUN discovers peers. Strict NATs may need an operator-hosted TURN relay.
   // TURN is not bundled: a relay could see encrypted WebRTC packets, not plaintext audio.
-  const ICE = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
+  // Localhost E2E tests have host candidates and do not require an external STUN call.
+  // Production retains the original STUN configuration; no third-party audio hosting.
+  const localHost = ["127.0.0.1", "localhost"].includes(location.hostname);
+  const ICE = { iceServers: localHost ? [] : [{ urls: "stun:stun.l.google.com:19302" }] };
   let active = null;
   const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
   const ensure = condition => { if (!condition) throw Error("Neispravni podaci sesije."); };
@@ -31,14 +35,33 @@ window.VojsPeer = (() => {
     if (response.status === 204) return {};
     return response.json();
   }
+  async function assertProtocol() {
+    let details;
+    try {
+      const response = await fetch("/api/status.php", {
+        method: "GET", cache: "no-store", credentials: "omit",
+        signal: AbortSignal.timeout(15000)
+      });
+      if (!response.ok) throw Error("HTTP "+response.status);
+      details = await response.json();
+    } catch {
+      throw Error("VOJS poslužitelj nije dostupan. Snimku možeš podijeliti lokalno.");
+    }
+    if (details?.protocol !== PROTOCOL || details.p2p !== true ||
+        details.audio_storage !== false || details.database !== false ||
+        details.cron_required !== false || details.session_seconds !== 900) {
+      throw Error("VOJS aplikacija i web nisu usklađeni. Potrebno je ažurirati web poslužitelj.");
+    }
+  }
   function session(id, token, peer) {
     let stopped = false;
-    return {
+    const current = {
       id, token, peer,
       get closed() { return stopped; },
       async close() {
         if (stopped) return;
         stopped = true;
+        if (active === current) active = null;
         peer.close();
         if (token) {
           try {
@@ -47,6 +70,7 @@ window.VojsPeer = (() => {
         }
       }
     };
+    return current;
   }
   async function iceReady(peer) {
     if (peer.iceGatheringState === "complete") return;
@@ -117,9 +141,11 @@ window.VojsPeer = (() => {
     notify("Snimka je poslana. Čekam potvrdu.");
   }
   async function create(file, notify = () => {}) {
+    if (active && !active.closed) throw Error("Već postoji aktivna P2P sesija.");
     if (!window.RTCPeerConnection || !crypto.subtle) throw Error("WebRTC nije podržan.");
     if (!(file instanceof Blob) || file.size < 64 || file.size > MAX_BYTES ||
         !MIME.test(file.type)) throw Error("Nepodržana datoteka (maks. 8 MB).");
+    await assertProtocol();
     const created = await api("POST", null, { action: "create" });
     ensure(ID.test(created.id) && TOKEN.test(created.owner_token));
     const link = new URL(created.url);
@@ -161,8 +187,10 @@ window.VojsPeer = (() => {
     }
   }
   async function receive(id, onStatus, onAudio) {
+    if (active && !active.closed) throw Error("Već postoji aktivna P2P sesija.");
     ensure(ID.test(id) && typeof onAudio === "function");
     if (!window.RTCPeerConnection || !crypto.subtle) throw Error("WebRTC nije podržan.");
+    await assertProtocol();
     const peer = new RTCPeerConnection(ICE);
     const current = session(id, null, peer);
     active = current;
@@ -228,10 +256,10 @@ window.VojsPeer = (() => {
     }
   });
   function closeActive() {
-    if (active) {
-      active.close();
-      active = null;
-    }
+    if (!active) return Promise.resolve();
+    const current = active;
+    active = null;
+    return current.close();
   }
   return { create, receive, closeActive };
 })();

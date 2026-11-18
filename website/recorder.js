@@ -4,6 +4,7 @@
   const MAX_MS = 300000, MAX_BYTES = 8 * 1024 * 1024;
   let stream = null, recorder = null, file = null, fileUrl = null, chunks = [], timerHandle = null;
   let startedAt = 0, pausedAt = 0, pausedTotal = 0, link = null, session = null;
+  let starting = false, processing = false, linkTimer = null;
   function message(value) { el("state").textContent = value; }
   function error(value) { el("error").textContent = value; el("error").hidden = !value; }
   function stopTracks() {
@@ -12,10 +13,38 @@
     if (stream) stream.getTracks().forEach(track => track.stop());
     stream = null;
   }
-  function resetFile() {
-    if (session) { session.close(); session = null; }
-    file = null;
+  function clearLinkTimer() {
+    if (linkTimer !== null) clearInterval(linkTimer);
+    linkTimer = null;
+  }
+  function clearSessionUi() {
+    clearLinkTimer();
     link = null;
+    session = null;
+    el("link").value = "";
+    el("link-result").hidden = true;
+    el("link-expiry").textContent = "";
+    el("upload").disabled = !file || !el("accept-terms").checked;
+  }
+  function tickLinkExpiry() {
+    if (!link) return;
+    const remaining = Math.max(0, Math.ceil((link.expires * 1000 - Date.now()) / 1000));
+    if (!remaining) {
+      const stale = session;
+      clearSessionUi();
+      message("P2P poveznica je istekla. Možeš stvoriti novu.");
+      stale?.close().catch(() => {});
+      return;
+    }
+    const minutes = Math.floor(remaining / 60);
+    const seconds = remaining % 60;
+    el("link-expiry").textContent = "Preostalo vrijeme: " +
+      String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0");
+  }
+  function resetFile() {
+    if (session) session.close().catch(() => {});
+    clearSessionUi();
+    file = null;
     el("finished").hidden = true;
     el("link-result").hidden = true;
     if (fileUrl) URL.revokeObjectURL(fileUrl);
@@ -41,17 +70,27 @@
     if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) {
       error("Snimanje nije podržano. Otvori stranicu preko HTTPS-a u modernom pregledniku."); return;
     }
-    if (recorder && recorder.state !== "inactive") return;
+    if (starting || processing || (recorder && recorder.state !== "inactive")) return;
+    starting = true;
+    el("start").disabled = true;
     resetFile();
     try {
       stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // A second click while permission was pending cannot open a second microphone.
       const mime = chooseMime();
       recorder = new MediaRecorder(stream, { ...(mime ? { mimeType: mime } : {}), audioBitsPerSecond: 96000 });
       chunks = [];
       recorder.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
-      recorder.onerror = () => { error("Snimanje je prekinuto."); stopTracks(); };
+      recorder.onerror = () => {
+        error("Snimanje je prekinuto.");
+        try { if (recorder.state !== "inactive") recorder.stop(); }
+        catch { stopTracks(); processing = false; el("start").disabled = false; }
+      };
       recorder.onstop = () => {
         stopTracks();
+        processing = false;
+        starting = false;
+        el("start").disabled = false;
         const type = recorder.mimeType.split(";")[0] || "audio/webm";
         const blob = new Blob(chunks, { type });
         chunks = [];
@@ -69,16 +108,23 @@
       recorder.start(250);
       startedAt = Date.now(); pausedAt = 0; pausedTotal = 0;
       timerHandle = setInterval(updateTimer, 250);
+      starting = false;
       el("start").disabled = true; el("stop").disabled = false; el("pause").disabled = false;
       message("Snimanje je u tijeku.");
     } catch {
-      stopTracks(); error("Pristup mikrofonu nije dostupan. Provjeri dopuštenje i HTTPS.");
+      starting = false; processing = false;
+      stopTracks();
+      el("start").disabled = false;
+      el("stop").disabled = true;
+      el("pause").disabled = true;
+      error("Pristup mikrofonu nije dostupan. Provjeri dopuštenje i HTTPS.");
     }
   }
   function finish() {
     if (!recorder || recorder.state === "inactive") return;
+    processing = true;
     recorder.stop();
-    el("start").disabled = false; el("stop").disabled = true; el("pause").disabled = true;
+    el("start").disabled = true; el("stop").disabled = true; el("pause").disabled = true;
     message("Obrada snimke…");
   }
   function pause() {
@@ -117,6 +163,8 @@
       link = session;
       el("link").value = session.url;
       el("link-result").hidden = false;
+      tickLinkExpiry();
+      linkTimer = setInterval(tickLinkExpiry, 1000);
       message("Poveznica je spremna. Ostani na stranici dok primatelj ne preuzme poruku.");
     } catch (e) {
       error(e.message || "P2P povezivanje nije uspjelo.");
@@ -140,10 +188,7 @@
     error(""); el("revoke").disabled = true;
     try {
       await session.close();
-      session = null; link = null;
-      el("link").value = "";
-      el("link-result").hidden = true;
-      el("upload").disabled = !el("accept-terms").checked;
+      clearSessionUi();
       message("P2P sesija je zatvorena. Lokalna snimka ostaje.");
     } catch { error("Prekidanje veze nije uspjelo."); }
     finally { el("revoke").disabled = false; }
@@ -155,6 +200,7 @@
     ["share-file",shareFile],["upload",upload],["copy",copy],["share-link",shareLink],["revoke",revoke]]) {
     el(id).addEventListener("click", fn);
   }
+  window.addEventListener("pagehide", clearLinkTimer);
   if ("serviceWorker" in navigator && location.protocol === "https:") {
     navigator.serviceWorker.register("/sw.js").catch(() => {});
   }

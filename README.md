@@ -101,3 +101,7 @@ Stvarne slike zaslona i pixel ROI audit dostupni su u `docs/screenshots/`, a CI 
 ## Pixel-by-pixel pregled svih web stranica
 
 Automatski browser workflow snima svih **14 stranica u 4 veličine zaslona i 2 teme (112 stvarnih Chromium snimki)**, provjerava mobile overflow i funkcionalnost teme te izrađuje usporedbu s izvornim referencama kad su one dostupne. Nema tvrdnje o 0% odstupanja za nepotvrđene zaslone. Više: [WEB-VISUAL-QA](docs/WEB-VISUAL-QA.md).
+
+## Sinkronizirani Android i web prijenos
+
+Dijeljenje koristi zajednički protokol `vojs-p2p-v1`. WebRTC skripta zapakirana u Android APK bajtno je identična web klijentu, a oba provjeravaju kompatibilnost privatnog PHP JSON API-ja prije povezivanja. Nema SQL-a, crona, računa ni spremanja zvuka na server. Obje platforme pokazuju istek poveznice nakon 15 minuta. Testni Chromium stvara pravi snimljeni audio, šalje ga drugom Chromium klijentu i uspoređuje duljinu, MIME i SHA-256. Uspješan lokalni test nije potvrda da je produkcijska web stranica ažurirana. [Dokumentacija provjere](docs/P2P-TESTING.md).

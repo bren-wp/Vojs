@@ -50,6 +50,14 @@ jobs:
             app/build/outputs/bundle/release/app-release.aab
           "$BT/zipalign" -c -P 16 -v 4 app/build/outputs/apk/debug/app-debug.apk
           "$BT/zipalign" -c -P 16 -v 4 app/build/outputs/apk/release/app-release-unsigned.apk
+      - name: Ensure Android and web P2P protocol versions are byte-identical
+        shell: bash
+        run: |
+          set -euo pipefail
+          cmp website/p2p.js app/src/main/assets/p2p.js
+          grep -Fq 'assets.open("p2p.js")' app/src/main/java/com/brendigo/vojs/PeerSenderActivity.kt
+          grep -Fq '"vojs-p2p-v1"' website/p2p.js
+          grep -Fq "'vojs-p2p-v1'" website/api/status.php
       - name: Verify source logo and clean VOJS user interface
         shell: bash
         run: |

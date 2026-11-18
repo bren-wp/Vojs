@@ -24,3 +24,7 @@
 PHP pohranjuje samo signalizacijski JSON, ne audio. Poveznica radi samo kada je pošiljatelj online; bez poslužiteljske pohrane **ne može se otvoriti kasnije kada je pošiljatelj offline**. Do 8 MB, max 5 minuta snimanja i 15 minuta valjanosti P2P signalizacije. U vrlo ograničenim mrežama može biti potreban TURN relay (nije dio ovog izdanja).
 
 **Status:** GitHub repozitorij nije potvrda da je aplikacija zaista postavljena na javni hosting ili da je prošao Play Console review.
+
+## Provjera usklađenosti nakon postavljanja hostinga
+
+Novi web klijent i Android APK zahtijevaju `GET https://vojs.com.hr/api/status.php` s `protocol: vojs-p2p-v1`, `p2p: true`, `audio_storage: false`, `database: false`, `cron_required: false` te `session_seconds: 900`. Novi Android APK sadrži lokalni `p2p.js` kako javni web ne bi tiho promijenio njegovu verziju. Bez raspoređenog PHP backend-a i aktualne stranice `/poruka/` stvarni Android–Web prijenos neće raditi. Paket na GitHubu **ne ažurira** automatski web hosting.

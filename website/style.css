@@ -24,12 +24,12 @@
 /* Design tokens: dark is the default on EVERY VOJS website page. */
 :root {
   color-scheme: dark;
-  --vojs-bg: #17182b;
-  --vojs-text: #f7f5ff;
-  --vojs-card: #252643;
-  --vojs-secondary: #cbc8e0;
+  --vojs-bg: #20213b;
+  --vojs-text: #ffffff;
+  --vojs-card: #302d52;
+  --vojs-secondary: #b3b0c8;
   --vojs-link: #afa6ff;
-  --vojs-border: #474665;
+  --vojs-border: #6256b5;
   --vojs-input: #20213b;
   --vojs-input-text: #ffffff;
   --vojs-phone-border: #9b91f4;

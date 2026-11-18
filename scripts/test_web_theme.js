@@ -6,10 +6,10 @@ const src = fs.readFileSync("website/theme.js", "utf8");
 const css = fs.readFileSync("website/style.css", "utf8");
 const sw = fs.readFileSync("website/sw.js", "utf8");
 const manifest = JSON.parse(fs.readFileSync("website/manifest.webmanifest", "utf8"));
-assert(css.includes("--vojs-bg: #17182b"));
+assert(css.includes("--vojs-bg: #20213b"));
 assert(css.includes('html[data-theme="light"]'));
 assert(sw.includes('"/theme.js"'), "Theme script must work offline");
-assert.equal(manifest.background_color, "#17182b");
+assert.equal(manifest.background_color, "#20213b");
 const pages = fs.readdirSync("website", { withFileTypes: true })
   .filter(e => e.isDirectory()).map(e => "website/"+e.name+"/index.html")
   .filter(file => fs.existsSync(file));

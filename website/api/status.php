@@ -7,6 +7,7 @@ vojs_store();
 header('Content-Type: application/json; charset=utf-8');
 echo json_encode([
     'available' => true, 'anonymous' => true, 'p2p' => true,
+    'protocol' => 'vojs-p2p-v1',
     'audio_storage' => false, 'database' => false, 'cron_required' => false,
     'session_seconds' => VOJS_ROOM_TTL
 ]);

@@ -18,7 +18,7 @@ import json,sys
 from pathlib import Path
 p=Path(sys.argv[1])
 s=json.loads((p/'status.json').read_text())
-assert s['p2p'] is True and s['audio_storage'] is False
+assert s['p2p'] is True and s['protocol'] == 'vojs-p2p-v1' and s['audio_storage'] is False
 assert s['cron_required'] is False and s['database'] is False
 assert s['session_seconds'] == 900
 offer={'type':'offer','sdp':'v=0\r\no=- 0 0 IN IP4 127.0.0.1\r\ns=VOJS\r\nt=0 0\r\na=group:BUNDLE 0\r\n'}
