@@ -5,6 +5,7 @@
   const player = document.getElementById("shared-audio");
   const download = document.getElementById("received-download");
   let blockedByUser = false;
+  let url = null;
   const blockButton = document.getElementById("block");
   const report = document.getElementById("report");
   report.href = "../prijava-sadrzaja/?id=" + encodeURIComponent(id);
@@ -34,9 +35,9 @@
   } catch { /* Proceed without persistent block in private browsing. */ }
   if (!/^[a-f0-9]{48}$/.test(id)) {
     state.textContent = "Poveznica nije valjana. Zatraži novu od pošiljatelja.";
+    blockButton.disabled = true;
     return;
   }
-  let url = null;
   try {
     await window.VojsPeer.receive(id,
       text => { if (!blockedByUser) state.textContent = text; },
