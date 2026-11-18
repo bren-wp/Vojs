@@ -38,4 +38,6 @@ new Function(inline[0]);  // Syntax validation without executing browser code.
 assert(inline[0].includes("session.expires * 1000"));
 assert(inline[0].includes("const totalSeconds = Math.ceil(remaining / 1000)"));
 assert(inline[0].includes("if (!canCreate()) return"));
+assert(require("node:fs").readFileSync("website/recorder.js","utf8").includes("link.expires * 1000"));
+assert(require("node:fs").readFileSync("website/snimi/index.html","utf8").includes('id="link-expiry"'));
 console.log("PASS visual UI contracts, accessible P2P, genuine screenshot coverage and JS syntax");
