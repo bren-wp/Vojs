@@ -119,6 +119,18 @@ class PeerSenderActivity : ComponentActivity() {
         browser.webViewClient = object : WebViewClient() {
             override fun shouldInterceptRequest(view: WebView?, request: WebResourceRequest?): WebResourceResponse? {
                 val uri = request?.url ?: return null
+                if (uri.scheme == "https" && uri.host == HOST && uri.path == "/p2p.js") {
+                    // The Android sender runs the protocol client bundled with
+                    // this APK, not a potentially incompatible CDN/script version.
+                    return WebResourceResponse(
+                        "application/javascript", "UTF-8", assets.open("p2p.js")
+                    ).apply {
+                        responseHeaders = mapOf(
+                            "Cache-Control" to "no-store",
+                            "X-Content-Type-Options" to "nosniff"
+                        )
+                    }
+                }
                 if (uri.scheme == "https" && uri.host == HOST && uri.path == SENDER_PATH) {
                     return WebResourceResponse(
                         "text/html", "UTF-8",

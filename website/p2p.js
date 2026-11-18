@@ -5,6 +5,7 @@
  */
 window.VojsPeer = (() => {
   const API = "/api/signal.php";
+  const PROTOCOL = "vojs-p2p-v1";
   const MAX_BYTES = 8 * 1024 * 1024;
   const CHUNK = 16 * 1024;
   const LIMIT = 1024 * 1024;
@@ -33,6 +34,24 @@ window.VojsPeer = (() => {
     if (!response.ok) throw Error("Sesija nije dostupna (" + response.status + ").");
     if (response.status === 204) return {};
     return response.json();
+  }
+  async function assertProtocol() {
+    let details;
+    try {
+      const response = await fetch("/api/status.php", {
+        method: "GET", cache: "no-store", credentials: "omit",
+        signal: AbortSignal.timeout(15000)
+      });
+      if (!response.ok) throw Error("HTTP "+response.status);
+      details = await response.json();
+    } catch {
+      throw Error("VOJS poslužitelj nije dostupan. Snimku možeš podijeliti lokalno.");
+    }
+    if (details?.protocol !== PROTOCOL || details.p2p !== true ||
+        details.audio_storage !== false || details.database !== false ||
+        details.cron_required !== false || details.session_seconds !== 900) {
+      throw Error("VOJS aplikacija i web nisu usklađeni. Potrebno je ažurirati web poslužitelj.");
+    }
   }
   function session(id, token, peer) {
     let stopped = false;
@@ -126,6 +145,7 @@ window.VojsPeer = (() => {
     if (!window.RTCPeerConnection || !crypto.subtle) throw Error("WebRTC nije podržan.");
     if (!(file instanceof Blob) || file.size < 64 || file.size > MAX_BYTES ||
         !MIME.test(file.type)) throw Error("Nepodržana datoteka (maks. 8 MB).");
+    await assertProtocol();
     const created = await api("POST", null, { action: "create" });
     ensure(ID.test(created.id) && TOKEN.test(created.owner_token));
     const link = new URL(created.url);
@@ -170,6 +190,7 @@ window.VojsPeer = (() => {
     if (active && !active.closed) throw Error("Već postoji aktivna P2P sesija.");
     ensure(ID.test(id) && typeof onAudio === "function");
     if (!window.RTCPeerConnection || !crypto.subtle) throw Error("WebRTC nije podržan.");
+    await assertProtocol();
     const peer = new RTCPeerConnection(ICE);
     const current = session(id, null, peer);
     active = current;
