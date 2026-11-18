@@ -16,3 +16,9 @@
 **Abuse controls:** randomized 192-bit IDs and 256-bit owner tokens, 15-minute expiry, only one answer, owner-only offer/close, max 100 rooms, max 20 new rooms/IP/day. WAF rate-limiting on polling and traffic is still recommended for shared hosting. These server-side records may contain IP/network details inside SDP and must be disclosed in privacy policy.
 
 **Play Console:** Target SDK 36 and data safety disclosures must reflect actual data flow. No false claims of universally reliable connection or full Play approval without real device/host testing.
+
+## Verzija protokola i end-to-end QA
+
+Klijentski protokol `vojs-p2p-v1` provjerava se prije uporabe P2P signalizacije preko `/api/status.php`. Android u APK-u isporučuje svoju identičnu, verzioniranu kopiju `p2p.js`, a CI provjerava njen hash/neizmijenjen sadržaj naspram web skripte. Web i Android otkrivaju istek nakon 900 s i uklanjaju zastarjele poveznice. CI potvrđuje stvarno snimanje Chromium testnog mikrofona i izravni prijenos bajtno identičnog zvuka do drugog preglednika, kao i opoziv JSON sesije. Detalji u [P2P-TESTING.md](P2P-TESTING.md).
+
+**Produkcija:** objava nove Android verzije NE postavlja web kod na vojs.com.hr. Ažurirani `website/` treba rasporediti na hosting, uz privatnu `VOJS_SIGNAL_STORAGE` putanju; nakon toga testirati stvarni Android i web prijenos. Ako backend prijavi drugačiji protokol, korisnik dobiva poruku o neusklađenosti umjesto pokvarenog P2P linka.
