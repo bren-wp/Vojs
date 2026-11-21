@@ -32,7 +32,7 @@
     if (!remaining) {
       const stale = session;
       clearSessionUi();
-      message("P2P poveznica je istekla. Možeš stvoriti novu.");
+      message("Poveznica je istekla. Možeš stvoriti novu.");
       stale?.close().catch(() => {});
       return;
     }
@@ -153,11 +153,11 @@
   async function upload() {
     if (!file || link || !el('accept-terms').checked) return;
     if (!navigator.onLine) {
-      error("Za P2P poveznicu potreban je internet. Datoteka se može dijeliti offline.");
+      error("Za poveznicu je potreban internet. Datoteku možeš podijeliti i bez njega.");
       return;
     }
     error(""); el("upload").disabled = true;
-    message("Stvaranje privatne P2P sesije…");
+    message("Stvaranje privatne poveznice…");
     try {
       session = await window.VojsPeer.create(file, text => message(text));
       link = session;
@@ -167,7 +167,7 @@
       linkTimer = setInterval(tickLinkExpiry, 1000);
       message("Poveznica je spremna. Ostani na stranici dok primatelj ne preuzme poruku.");
     } catch (e) {
-      error(e.message || "P2P povezivanje nije uspjelo.");
+      error(e.message || "Povezivanje nije uspjelo.");
       el("upload").disabled = false;
     }
   }
@@ -189,7 +189,7 @@
     try {
       await session.close();
       clearSessionUi();
-      message("P2P sesija je zatvorena. Lokalna snimka ostaje.");
+      message("Poveznica je zatvorena. Snimka ostaje na uređaju.");
     } catch { error("Prekidanje veze nije uspjelo."); }
     finally { el("revoke").disabled = false; }
   }

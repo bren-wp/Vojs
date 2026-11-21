@@ -7,6 +7,13 @@ const screen = read("app/src/main/java/com/brendigo/vojs/VoiceScreen.kt");
 const header = read("app/src/main/java/com/brendigo/vojs/VojsHeader.kt");
 const wave = read("app/src/main/java/com/brendigo/vojs/VoiceWaveform.kt");
 const sender = read("app/src/main/assets/p2p-android-sender.html");
+const peerProtocol = read("app/src/main/assets/p2p.js");
+const webRecorder = read("website/recorder.js");
+assert.equal(peerProtocol, read("website/p2p.js"),
+  "Android and web must use the exact same transfer protocol");
+const internalError = /(?:throw\s+Error|reject\(\s*Error|notify|message|error)\(\s*"[^"]*(?:P2P|WebRTC|TURN|ICE)\b/;
+assert(!internalError.test(peerProtocol), "Network errors must be understandable without protocol jargon");
+assert(!internalError.test(webRecorder), "Web recorder must not show implementation terms in its error/status text");
 const capture = read("scripts/capture_screenshots.py");
 const audit = read("scripts/audit_all_screens.py");
 
