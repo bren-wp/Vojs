@@ -1,6 +1,17 @@
 name: Capture real Android screenshots
 
 on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'app/**'
+      - 'scripts/capture_screenshots.py'
+      - 'scripts/audit_splash_pixels.py'
+      - 'scripts/audit_reference_pixels.py'
+      - 'scripts/audit_all_screens.py'
+      - 'scripts/prepare_play_assets.py'
+      - 'scripts/test_play_assets.py'
+      - '.github/workflows/screenshots.yml'
   push:
     branches: [main]
     paths:
@@ -14,6 +25,12 @@ on:
 
 permissions:
   contents: write
+
+# Only the most recent screenshot run for each PR/branch is relevant.
+# Prevent parallel Gradle artifact resolution and redundant emulator jobs.
+concurrency:
+  group: vojs-screens-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   screenshots:
@@ -29,7 +46,7 @@ jobs:
           java-version: '17'
       - uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: '8.14.4'
+          gradle-version: '9.6.0'
       - name: Prepare SDK and build installable APK
         run: |
           set -euo pipefail
@@ -38,8 +55,20 @@ jobs:
           if [ ! -x "$SDKMANAGER" ]; then
             SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -Vr | head -1)"
           fi
-          "$SDKMANAGER" --install "platforms;android-36.1" "build-tools;35.0.0"
-          gradle --no-daemon :app:assembleDebug
+          "$SDKMANAGER" --install "platforms;android-37.0" "build-tools;35.0.0"
+          # Maven Central occasionally returns HTTP 429 during simultaneous CI
+          # workflows. Retry only a bounded number of times; never mark a
+          # failed compilation as successful.
+          for attempt in 1 2 3; do
+            if gradle --no-daemon --stacktrace :app:assembleDebug; then
+              break
+            fi
+            if [[ "$attempt" -eq 3 ]]; then
+              echo "::error::Android APK build failed after three attempts."
+              exit 1
+            fi
+            sleep $((attempt * 20))
+          done
       - name: Enable KVM
         run: |
           if [[ -e /dev/kvm ]]; then sudo chmod 666 /dev/kvm; fi
@@ -51,7 +80,7 @@ jobs:
           arch: x86_64
           profile: pixel_6
           disable-animations: true
-          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -no-boot-anim -cores 2 -memory 3072
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -no-boot-anim -cores 2 -memory 4096
           script: |
             python3 -m venv "$RUNNER_TEMP/vojs-splash-audit"
             "$RUNNER_TEMP/vojs-splash-audit/bin/python" -m pip install --disable-pip-version-check "Pillow>=11,<13"
@@ -62,14 +91,24 @@ jobs:
             "$RUNNER_TEMP/vojs-splash-audit/bin/python" scripts/audit_splash_pixels.py
             "$RUNNER_TEMP/vojs-splash-audit/bin/python" scripts/audit_reference_pixels.py
             "$RUNNER_TEMP/vojs-splash-audit/bin/python" scripts/audit_all_screens.py --baseline "$RUNNER_TEMP/vojs-previous-real-screens"
+      - name: Prepare actual Google Play listing assets
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/vojs-play-assets"
+          "$RUNNER_TEMP/vojs-play-assets/bin/python" -m pip install --disable-pip-version-check "Pillow>=11,<13"
+          "$RUNNER_TEMP/vojs-play-assets/bin/python" scripts/prepare_play_assets.py
+          python3 scripts/test_play_assets.py
       - name: Archive real screenshots and diagnostics even on failed UI tests
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: vojs-real-android-screenshots
-          path: docs/screenshots/
+          path: |
+            docs/screenshots/
+            docs/play-store-assets/
           if-no-files-found: warn
       - name: Commit genuine captures for README and Google Play review
+        if: github.event_name == 'push'
         shell: bash
         run: |
           set -euo pipefail
@@ -80,7 +119,7 @@ jobs:
             echo "::notice::Screenshots archived, but not committed: newer main is available."
             exit 0
           fi
-          git add docs/screenshots/
+          git add docs/screenshots/ docs/play-store-assets/
           if ! git diff --cached --quiet; then
             git commit -m "docs: genuine Android emulator screenshots [skip ci]"
             git push origin HEAD:main

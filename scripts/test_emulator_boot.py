@@ -12,4 +12,6 @@ for expected in (
     if expected not in source:
         raise SystemExit(f"Missing safeguard: {expected}")
 assert "VOJS isn't responding" not in source
-print("PASS: launcher recovery and genuine splash capture checks")
+assert "for attempt in range(3):" in source, "Hierarchy retries are required"
+assert "Real Android UI hierarchy unavailable after 3 attempts" in source
+print("PASS: launcher recovery, bounded hierarchy retries and genuine splash checks")

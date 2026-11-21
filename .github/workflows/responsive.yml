@@ -28,6 +28,10 @@ jobs:
             avd_profile: pixel_6
             android_api: 35
             font_scale: "1.0"
+          - profile_name: android16-api36
+            avd_profile: pixel_6
+            android_api: 36
+            font_scale: "1.0"
           - profile_name: tablet-api35
             avd_profile: pixel_c
             android_api: 35
@@ -40,7 +44,7 @@ jobs:
           java-version: '17'
       - uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: '8.14.4'
+          gradle-version: '9.6.0'
       - name: Prepare SDK and VOJS debug APK
         run: |
           set -euo pipefail
@@ -48,7 +52,7 @@ jobs:
           if [ ! -x "$SDKMANAGER" ]; then
             SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -Vr | head -1)"
           fi
-          "$SDKMANAGER" --install "platforms;android-36.1" "build-tools;35.0.0"
+          "$SDKMANAGER" --install "platforms;android-37.0" "build-tools;35.0.0"
           gradle --no-daemon :app:assembleDebug
       - name: Install image pixel verification tools
         run: |

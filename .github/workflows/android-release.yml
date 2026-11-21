@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths-ignore:
       - "docs/screenshots/**"
+      - "docs/play-store-assets/**"
   workflow_dispatch:
 
 permissions:
@@ -25,8 +26,8 @@ jobs:
           java-version: '17'
       - uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: '8.14.4'
-      - name: Prepare Android SDK 36
+          gradle-version: '9.6.0'
+      - name: Prepare Android 17 compile SDK
         shell: bash
         run: |
           set -euo pipefail
@@ -37,7 +38,7 @@ jobs:
             SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -Vr | head -1)"
           fi
           test -x "$SDKMANAGER"
-          "$SDKMANAGER" --install "platforms;android-36.1" "build-tools;35.0.0"
+          "$SDKMANAGER" --install "platforms;android-37.0" "build-tools;35.0.0"
       - name: Prepare optional production key
         env:
           VOJS_KEYSTORE_BASE64: ${{ secrets.VOJS_KEYSTORE_BASE64 }}
@@ -56,6 +57,8 @@ jobs:
           else
             echo "SIGNING_READY=false" >> "$GITHUB_ENV"
           fi
+      - name: Verify Google Play privacy and backup rules
+        run: python3 scripts/test_play_readiness.py
       - name: Build debug APK, release APK and release AAB
         run: |
           gradle --no-daemon --stacktrace :app:assembleDebug :app:assembleRelease :app:bundleRelease :app:lintRelease \

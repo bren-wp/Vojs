@@ -5,6 +5,10 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: vojs-android-pr-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   android:
     runs-on: ubuntu-24.04
@@ -18,14 +22,24 @@ jobs:
           python3 scripts/test_emulator_boot.py
           python3 scripts/test_theme_default.py
           python3 scripts/test_ui_locator.py
+          python3 scripts/test_play_readiness.py
+          python3 scripts/test_play_assets.py
+      - name: Generate and validate Play media without altering original pixels
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/vojs-play-qa"
+          "$RUNNER_TEMP/vojs-play-qa/bin/python" -m pip install --disable-pip-version-check "Pillow>=11,<13"
+          "$RUNNER_TEMP/vojs-play-qa/bin/python" scripts/prepare_play_assets.py
+          python3 scripts/test_play_assets.py
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
       - uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: '8.14.4'
-      - name: Install Android SDK 36
+          gradle-version: '9.6.0'
+      - name: Install Android 17 compile SDK (target remains Android 16)
         shell: bash
         run: |
           set -euo pipefail
@@ -33,7 +47,7 @@ jobs:
           if [ ! -x "$SDKMANAGER" ]; then
             SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -Vr | head -1)"
           fi
-          "$SDKMANAGER" --install "platforms;android-36.1" "build-tools;35.0.0"
+          "$SDKMANAGER" --install "platforms;android-37.0" "build-tools;35.0.0"
       - name: Build Android APK and AAB
         run: gradle --no-daemon --stacktrace :app:assembleDebug :app:assembleRelease :app:bundleRelease :app:lintDebug :app:lintRelease
       - name: Verify release permissions and 16 KB native-library constraints

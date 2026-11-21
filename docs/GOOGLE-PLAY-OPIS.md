@@ -2,7 +2,7 @@
 
 ## Kratki opis (do 80 znakova)
 
-Snimi, preslušaj i podijeli glasovne poruke. Bez računa i VOJS servera.
+Snimi glasovnu poruku offline, preslušaj i podijeli. Bez korisničkog računa.
 
 ## Puni opis
 

@@ -17,6 +17,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.content.FileProvider
 import java.io.File
+import java.util.UUID
 import kotlin.math.sqrt
 
 internal enum class RecordingStage { IDLE, RECORDING, READY }
@@ -78,7 +79,7 @@ internal class VoiceRecorder(private val context: Context) {
         if (stage == RecordingStage.RECORDING) return false
         discardCurrent()
         val audio = try {
-            File(directory(), "vojs-${System.currentTimeMillis()}.m4a")
+            File(directory(), "vojs-${UUID.randomUUID()}.m4a")
         } catch (_: Exception) {
             error = "Nije moguće pristupiti privremenoj pohrani uređaja."
             return false
