@@ -62,12 +62,21 @@ jobs:
             "$RUNNER_TEMP/vojs-splash-audit/bin/python" scripts/audit_splash_pixels.py
             "$RUNNER_TEMP/vojs-splash-audit/bin/python" scripts/audit_reference_pixels.py
             "$RUNNER_TEMP/vojs-splash-audit/bin/python" scripts/audit_all_screens.py --baseline "$RUNNER_TEMP/vojs-previous-real-screens"
+      - name: Prepare actual Google Play listing assets
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/vojs-play-assets"
+          "$RUNNER_TEMP/vojs-play-assets/bin/python" -m pip install --disable-pip-version-check "Pillow>=11,<13"
+          "$RUNNER_TEMP/vojs-play-assets/bin/python" scripts/prepare_play_assets.py
+          python3 scripts/test_play_assets.py
       - name: Archive real screenshots and diagnostics even on failed UI tests
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: vojs-real-android-screenshots
-          path: docs/screenshots/
+          path: |
+            docs/screenshots/
+            docs/play-store-assets/
           if-no-files-found: warn
       - name: Commit genuine captures for README and Google Play review
         shell: bash
@@ -80,7 +89,7 @@ jobs:
             echo "::notice::Screenshots archived, but not committed: newer main is available."
             exit 0
           fi
-          git add docs/screenshots/
+          git add docs/screenshots/ docs/play-store-assets/
           if ! git diff --cached --quiet; then
             git commit -m "docs: genuine Android emulator screenshots [skip ci]"
             git push origin HEAD:main

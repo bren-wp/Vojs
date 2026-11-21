@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths-ignore:
       - "docs/screenshots/**"
+      - "docs/play-store-assets/**"
   workflow_dispatch:
 
 permissions:

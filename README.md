@@ -109,3 +109,7 @@ Dijeljenje koristi zajednički protokol `vojs-p2p-v1`. WebRTC skripta zapakirana
 ## Google Play 2026 i aktualne ovisnosti
 
 Android se kompilira protiv API-ja 37 uz cilj API 36 za Google Play. Odabrane su stabilne ovisnosti: [detalji i verzije](docs/DEPENDENCIES-2026.md). Novi [Play Console kontrolni popis](docs/PLAY-CONSOLE-SUBMISSION.md) obuhvaća istinita pravila privatnosti, Data safety, zabranu cloud/D2D prijenosa snimki, provjeru potpisa i 16 KiB uređaje. Ni CI ni GitHub izdanje ne jamče Google Play odobrenje. Originalni splash ima strogi pixel gate samo u području koje nije prekriveno Androidovim sistemskim trakama; za ostale zaslone potrebne su usporedive originalne reference.
+
+## Službeni materijali za Play Store
+
+Izvorni brending sadrži [ikonu 512×512](branding/google-play/ikona-512.png) i [istaknutu grafiku 1024×500](branding/google-play/grafika-istaknuto-1024x500.png). Stvarne ADB slike za Play pripremaju se automatizirano, uz **nepromijenjen svaki RGB piksel** i odgovarajući format PNG-a (ikona 32-bit, snimke 24-bit): [docs/play-store-assets](docs/play-store-assets/). Ako mapa još nije prisutna, screenshot workflow mora uspješno izraditi i objaviti te datoteke. Te slike nisu zamjena za vizualnu 1:1 potvrdu svih zaslona.
