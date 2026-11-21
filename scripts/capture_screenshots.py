@@ -27,9 +27,23 @@ def screenshot(name, state):
     print("Captured", name, len(data), "bytes", flush=True)
 
 def bounds_of(label):
-    adb("shell", "uiautomator", "dump", "/sdcard/window.xml", timeout=40)
-    ui = adb("shell", "cat", "/sdcard/window.xml").stdout.decode("utf-8")
-    root = ET.fromstring(ui)
+    # Occasionally Android kills its UI dump with exit 137 under emulator
+    # memory pressure. Retry the SAME real UI tree, never invent coordinates.
+    last_error = None
+    for attempt in range(3):
+        try:
+            adb("shell", "uiautomator", "dump", "/sdcard/window.xml", timeout=40)
+            ui = adb("shell", "cat", "/sdcard/window.xml").stdout.decode("utf-8")
+            root = ET.fromstring(ui)
+            break
+        except (subprocess.CalledProcessError, subprocess.TimeoutExpired,
+                ET.ParseError) as exc:
+            last_error = exc
+            print("UI hierarchy retry", attempt + 1, "of 3:", repr(exc), flush=True)
+            if attempt < 2:
+                time.sleep(2 * (attempt + 1))
+    else:
+        raise RuntimeError("Real Android UI hierarchy unavailable after 3 attempts") from last_error
     matches = []
     query = label.casefold()
     for node in root.iter("node"):
