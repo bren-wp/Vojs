@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'app/**'
+      - 'scripts/capture_screenshots.py'
       - 'scripts/audit_splash_pixels.py'
       - 'scripts/audit_reference_pixels.py'
       - 'scripts/audit_all_screens.py'
