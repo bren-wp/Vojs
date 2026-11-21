@@ -57,3 +57,17 @@ P2P Activity je eksplicitno postavljen na `Theme.Vojs` (ne naslijeđeni SplashSc
 ## Izvorna offline privatnost — 13. stvarni zaslon
 
 Sada se snima i stvarna `12-privacy-offline.png` snimka iz Android Compose prikaza privatnosti. Audit obuhvaća **13 stvarnih Android stanja** (uključujući dva originalna splash ekrana) te privatnost označava kao `no_exact_offline_privacy_design_reference` dok ne postoji odgovarajuća originalna dizajnerska referenca istog stanja i dimenzija. Prethodne splash 0% provjere nisu promijenjene. Zrakoplovni način rada dodatno se provjerava u zasebnom stvarnom ADB testu.
+
+## Post-merge QA: emulator launcher ANR i mali zasloni (22. studenoga 2026.)
+
+Nakon spajanja PR #47, `main` multi-device CI imao je dva različita problema: na Pixel 6 Android 15 emulatoru sistemski Quickstep nije reagirao prije otvaranja VOJS-a; na Pixel 2 s povećanim fontom Compose je izvozio oznaku `Svijetla tema`, ali s nedostupnim granicama jer redak još nije bio u vidljivom dijelu postavki.
+
+`verify_responsive.py` sada oporavlja **isključivo** prepoznat sistemski launcher ANR, ne VOJS-ov ANR; pri svježoj instalaciji na izoliranom emulatoru zatvara launcher prije testiranja. Na malim uređajima test nalazi stvarni pomični prikaz postavki i pomiče ga sve dok kontrola nema pozitivne granice za dodir; ne izmišlja koordinate ni preskače provjeru. Regresijski test `test_ui_locator.py` potvrđuje obje situacije. Produkcijski zasloni i aplikacijske dozvole ostaju nepromijenjeni. Potvrda uspjeha zahtijeva ponovno izvršavanje sva četiri stvarna emulatorska profila.
+
+### Dodatna provjera zatvaranja postavki na API 29
+
+Na malom Pixel 2 emulatoru uspješno su testirani snimanje, dijeljenje, P2P zaslon i odabir svijetle teme, ali se `ModalBottomSheet` nije uvijek zatvarao na Android Back. `dismiss_settings()` prvo koristi standardni Back, a ako je izbornik još otvoren, klikne **stvarnu Androidovu pristupačnu kontrolu „Close sheet”** (scrim), nakon čega provjeri da se zatvorio. Time se testira korisnički dostupan izlaz bez dodavanja novog gumba u dizajn i bez prikrivanja stvarnih kvarova aplikacije.
+
+### Pad emulatorskog UI dumpa na Pixel C (exit 137)
+
+U PR #48 Android 10/15/16 mobilni profili prošli su, ali Pixel C (API 35) bio je prekinut kada je testna naredba `adb shell uiautomator dump` završila s kodom 137 pri ulasku u P2P zaslon. Snimanje, pauza, reprodukcija i zaustavljanje bili su uspješni prije prekida. Nema dokaza da se proces VOJS-a srušio. Novi `nodes()` ponavlja **isključivo** privremeni exit 137 ili nepotpunu XML hijerarhiju, najviše tri pokušaja, te i dalje prijavljuje neuspjeh ako stvarni Android UI nije dohvatljiv. Emulirani Pixel C sada koristi 4 GiB RAM-a umjesto 3 GiB; mobilni profili ostaju na 3 GiB. `test_ui_locator.py` provjerava i oporavak i konačni neuspjeh, bez zamjene stvarnih kontrola lažnima.

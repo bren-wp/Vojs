@@ -20,9 +20,29 @@ def shell(*args):
     return adb("shell", *args).stdout.decode("utf-8", "replace")
 
 def nodes():
-    adb("shell", "uiautomator", "dump", "/sdcard/window.xml", timeout=50)
-    xml = shell("cat", "/sdcard/window.xml")
-    return [element.attrib for element in ET.fromstring(xml).iter("node")]
+    """Read the actual Android hierarchy, retrying only transient UI dump loss.
+
+    Android's uiautomator process can be killed with exit 137 on high-resolution
+    emulators even while the tested application keeps running normally.
+    Never replace the hierarchy with made-up nodes or suppress other errors.
+    """
+    for attempt in range(3):
+        try:
+            adb("shell", "uiautomator", "dump", "/sdcard/window.xml", timeout=50)
+            xml = shell("cat", "/sdcard/window.xml")
+            return [element.attrib for element in ET.fromstring(xml).iter("node")]
+        except subprocess.CalledProcessError as exc:
+            if exc.returncode != 137 or attempt == 2:
+                raise
+            print("Android UI dump exited 137; retry", attempt + 2, "of 3",
+                  flush=True)
+        except ET.ParseError:
+            if attempt == 2:
+                raise
+            print("Android UI dump returned incomplete XML; retry",
+                  attempt + 2, "of 3", flush=True)
+        time.sleep(2 * (attempt + 1))
+    raise AssertionError("Android UI hierarchy could not be read")
 
 def center(node):
     nums = re.findall(r"[0-9]+", node.get("bounds", ""))
@@ -31,7 +51,7 @@ def center(node):
     x1,y1,x2,y2 = map(int, nums)
     return ((x1+x2)//2, (y1+y2)//2) if x2 > x1 and y2 > y1 else None
 
-def locate(label):
+def locate(label, snapshot=None):
     """Match the actual accessible control, never a partial subtitle.
 
     A Compose text child can be clickable=false when its parent handles taps.
@@ -40,7 +60,7 @@ def locate(label):
     """
     target = label.strip().casefold()
     candidates = []
-    for node in nodes():
+    for node in (snapshot if snapshot is not None else nodes()):
         if not center(node):
             continue
         values = [node.get("text", ""), node.get("content-desc", "")]
@@ -60,10 +80,78 @@ def locate(label):
     ))
     return candidates[0]
 
+def recover_launcher_anr(snapshot):
+    """Recover a known *system launcher* ANR; never dismiss an app ANR."""
+    launcher_names = ("Quickstep", "Pixel Launcher", "Launcher3")
+    prompts = [
+        node.get("text", "") for node in snapshot
+        if any(name in node.get("text", "") for name in launcher_names)
+        and "isn't responding" in node.get("text", "")
+    ]
+    if not prompts:
+        return False
+    close = next((
+        node for node in snapshot if node.get("text", "") == "Close app"
+        and center(node) is not None
+    ), None)
+    if close is None:
+        raise AssertionError("Launcher ANR detected but safe dismissal unavailable")
+    x, y = center(close)
+    print("Recovering emulator launcher ANR (not VOJS):", prompts, flush=True)
+    shell("input", "tap", str(x), str(y))
+    time.sleep(1)
+    shell("am", "start", "-n", ACTIVITY)
+    time.sleep(2)
+    return True
+
+
+def scroll_to_visible(label, max_swipes=5):
+    """Reveal a real Compose control in its actual scrollable sheet.
+
+    Offscreen Compose nodes can have zero-area accessibility bounds.
+    A visible text string in the hierarchy alone does not prove it is
+    tappable. Do not synthesize control coordinates or skip the check.
+    """
+    for attempt in range(max_swipes + 1):
+        snapshot = nodes()
+        match = locate(label, snapshot)
+        if match is not None:
+            return match
+        if attempt == max_swipes:
+            break
+        scrolls = [
+            node for node in snapshot
+            if node.get("scrollable") == "true"
+            and node.get("class") == "android.widget.ScrollView"
+        ]
+        if not scrolls:
+            break
+        scroll = max(scrolls, key=lambda n: (
+            (lambda v: (v[2] - v[0]) * (v[3] - v[1]))(
+                [int(x) for x in re.findall(r"[0-9]+", n.get("bounds", ""))]
+            ) if len(re.findall(r"[0-9]+", n.get("bounds", ""))) == 4 else 0
+        ))
+        coordinates = [int(x) for x in re.findall(r"[0-9]+", scroll.get("bounds", ""))]
+        if len(coordinates) != 4:
+            break
+        left, top, right, bottom = coordinates
+        if right <= left or bottom - top < 160:
+            break
+        x = (left + right) // 2
+        height = bottom - top
+        shell("input", "swipe", str(x), str(top + int(height * .78)),
+              str(x), str(top + int(height * .25)), "400")
+        time.sleep(.6)
+    raise AssertionError("Scrollable settings control not visible: " + label)
+
+
 def wait(label, seconds=28):
     end = time.monotonic() + seconds
     while time.monotonic() < end:
-        found = locate(label)
+        snapshot = nodes()
+        if label == "Nova poruka" and recover_launcher_anr(snapshot):
+            continue
+        found = locate(label, snapshot)
         if found:
             return found
         time.sleep(.5)
@@ -83,6 +171,22 @@ def tap(label, seconds=28):
           "description:", repr(node.get("content-desc", "")),
           "coordinates:", (x, y), flush=True)
     shell("input", "tap", str(x), str(y))
+
+def dismiss_settings():
+    """Exercise normal Back, then the real modal scrim if Back is ignored.
+
+    On some API 29 emulator windows Android Back is consumed while a
+    Compose sheet remains open. The accessible Close sheet scrim is the
+    real user dismissal action, not an invented UI coordinate.
+    """
+    shell("input", "keyevent", "4")
+    time.sleep(.7)
+    if locate("Postavke") is not None:
+        tap("Close sheet")
+        time.sleep(.7)
+    if locate("Postavke") is not None:
+        raise AssertionError("Settings modal remained open after dismissal")
+
 
 def shot(folder, filename):
     data = adb("exec-out", "screencap", "-p").stdout
@@ -133,6 +237,14 @@ def main():
         if args.fresh_install:
             shell("pm", "clear", PACKAGE)
         shell("pm", "grant", PACKAGE, "android.permission.RECORD_AUDIO")
+        if args.fresh_install:
+            # Dedicated CI emulator only: Quickstep can ANR immediately
+            # after boot. Never stop the launcher on a physical user device.
+            for launcher in ("com.android.launcher3", "com.google.android.apps.nexuslauncher"):
+                try:
+                    shell("am", "force-stop", launcher)
+                except subprocess.CalledProcessError:
+                    pass
         shell("am", "force-stop", PACKAGE)
         shell("am", "start", "-n", ACTIVITY)
         time.sleep(4)
@@ -187,15 +299,14 @@ def main():
         shell("input", "keyevent", "4")
         time.sleep(.8)
         tap("Postavke aplikacije")
-        wait("Svijetla tema")
         wait("Tamna tema (zadana)")
+        scroll_to_visible("Svijetla tema")
         capture("06-settings.png")
         verified("settings opened")
         tap("Svijetla tema")
         capture("07-settings-light.png")
         verified("select light theme")
-        shell("input", "keyevent", "4")
-        time.sleep(.8)
+        dismiss_settings()
         tap("Snimi novu poruku")
         wait("Nova poruka")
         capture("08-light-home.png")
@@ -208,9 +319,9 @@ def main():
         verified("theme persists after restart")
         # Leave preference dark after test; old users can retain light/system.
         tap("Postavke aplikacije")
-        wait("Tamna tema (zadana)")
+        scroll_to_visible("Tamna tema (zadana)")
         tap("Tamna tema (zadana)")
-        shell("input", "keyevent", "4")
+        dismiss_settings()
         verified("dark theme can be restored")
         check_crash()
         verified("no app fatal exception")

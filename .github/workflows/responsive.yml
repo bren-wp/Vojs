@@ -7,6 +7,13 @@ on:
       - 'app/**'
       - 'scripts/verify_responsive.py'
       - '.github/workflows/responsive.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'app/**'
+      - 'scripts/verify_responsive.py'
+      - 'scripts/test_ui_locator.py'
+      - '.github/workflows/responsive.yml'
   workflow_dispatch:
 
 permissions:
@@ -21,18 +28,22 @@ jobs:
       matrix:
         include:
           - profile_name: small-phone-api29
+            emulator_memory: 3072
             avd_profile: pixel_2
             android_api: 29
             font_scale: "1.25"
           - profile_name: standard-phone-api35
+            emulator_memory: 3072
             avd_profile: pixel_6
             android_api: 35
             font_scale: "1.0"
           - profile_name: android16-api36
+            emulator_memory: 3072
             avd_profile: pixel_6
             android_api: 36
             font_scale: "1.0"
           - profile_name: tablet-api35
+            emulator_memory: 4096
             avd_profile: pixel_c
             android_api: 35
             font_scale: "1.2"
@@ -70,7 +81,7 @@ jobs:
           arch: x86_64
           profile: ${{ matrix.avd_profile }}
           disable-animations: true
-          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -no-boot-anim -cores 2 -memory 3072
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -no-boot-anim -cores 2 -memory ${{ matrix.emulator_memory }}
           script: |
             adb install -r app/build/outputs/apk/debug/app-debug.apk
             python3 scripts/verify_responsive.py --profile ${{ matrix.profile_name }} --font-scale ${{ matrix.font_scale }} --fresh-install
