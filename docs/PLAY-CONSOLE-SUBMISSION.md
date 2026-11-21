@@ -47,3 +47,9 @@ Google Play prima omjere zaslona do 2.3:1; Pixel 6 fotografije 1080 × 2400 udov
 ## Android 16 emulator test
 
 Nakon objave izdanja multi-device workflow uključuje dodatni Pixel 6 profil s **API 36 (Android 16)**, uz postojeći Android 10 telefon, Android 15 telefon i tablet. Time se testira stvarni `targetSdk=36` i pristupačnost kontrola. ELF/ZIP provjera 16 KiB poravnanja zasebna je i **ne znači** da je aplikacija već testirana na fizičkom 16 KiB uređaju; prije Play objave provjeriti i stvarno pokretanje na takvom uređaju ili 16 KiB emulatoru.
+
+## Samostalan rad bez vojs.com.hr
+
+Aplikacija ne otvara URL niti provjerava hosting pri pokretanju, snimanju, preslušavanju, dijeljenju lokalne datoteke ili čitanju pravila privatnosti. Lokalni test na emulatoru namjerno uključuje zrakoplovni način prije prvog pokretanja. Web-stranica i mreža potrebne su **samo** ako korisnik izričito odabere izradu poveznice. Poznata ograničenja P2P-a nisu skrivena u Play opisu.
+
+Uklonjeni su tehnički tekstovi poput *P2P*, *WebRTC* i *JSON* iz vidljivih kontrola aplikacije. Tehnički detalji ostaju u dokumentaciji i javnim pravilima, gdje su potrebni radi transparentnosti. Originalni tamni/svijetli splash i dalje se provjeravaju 1:1 u istom stvarnom mjernom području; za ostale zaslone ne postoji potpuna originalna referenca.
