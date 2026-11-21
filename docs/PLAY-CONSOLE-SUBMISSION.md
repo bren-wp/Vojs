@@ -43,3 +43,7 @@ Dostupne su originalne light/dark splash reference i marketinške kompozicije za
 Izvorni VOJS vizuali uključuju ikonu 512 × 512 i istaknutu grafiku 1024 × 500; njihove dimenzije i granice veličine provjerava CI. Izvorna ikona je RGB PNG, a Google Play traži **32-bitni PNG s alfa-kanalom**. Stvarne ADB snimke su RGBA, dok Play traži **24-bitni RGB PNG bez alfe**. Zato `scripts/prepare_play_assets.py` konvertira **samo kanale**, bez promjene ijednog RGB piksela, proporcija ili izmjene UI-ja. Izvedeni podaci nalaze se u `docs/play-store-assets/` nakon stvarnog emulator screenshot workflowa, gdje se sprema šest stvarnih Android snimki (2–8 dopušteno). Izvorni `branding/` i `docs/screenshots/` ostaju neizmijenjeni. Nikada ne zamjenjivati stvarne snimke marketinškim mockupovima.
 
 Google Play prima omjere zaslona do 2.3:1; Pixel 6 fotografije 1080 × 2400 udovoljavaju tom zahtjevu, ali 9:16 je preporučeno za širu Play promociju. Za 9:16 treba **nova stvarna snimka s odgovarajućeg emuliranog ili fizičkog zaslona**, ne sintetičko rastezanje ili obrezivanje stvarnih kontrola.
+
+## Android 16 emulator test
+
+Nakon objave izdanja multi-device workflow uključuje dodatni Pixel 6 profil s **API 36 (Android 16)**, uz postojeći Android 10 telefon, Android 15 telefon i tablet. Time se testira stvarni `targetSdk=36` i pristupačnost kontrola. ELF/ZIP provjera 16 KiB poravnanja zasebna je i **ne znači** da je aplikacija već testirana na fizičkom 16 KiB uređaju; prije Play objave provjeriti i stvarno pokretanje na takvom uređaju ili 16 KiB emulatoru.
