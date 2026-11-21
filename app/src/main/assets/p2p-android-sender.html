@@ -72,7 +72,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
 </head>
 <body>
 <div class="page">
-<header class="eyebrow"><span>VOJS</span><span>PRIVATNA P2P PORUKA</span></header>
+<header class="eyebrow"><span>VOJS</span><span>PRIVATNA PORUKA</span></header>
 <main>
   <h1>Poruka je spremna</h1>
   <p class="subtitle">Podijeli jednom poveznicom. Bez korisničkog računa.</p>
@@ -82,14 +82,14 @@ button:disabled{opacity:.45;cursor:not-allowed}
     <p id="link-placeholder">Stvorit će se tek kada to odabereš.</p>
     <div id="result" hidden>
       <input id="link" type="text" readonly autocomplete="off" spellcheck="false"
-        aria-label="Privatna VOJS P2P poveznica">
+        aria-label="Privatna poveznica za glasovnu poruku">
       <p class="expiry" id="expires" role="timer" aria-live="off"></p>
     </div>
   </div>
   <div class="features" aria-label="Uvjeti prijenosa">
     <span class="active">15 min</span>
     <span>Bez pohrane zvuka</span>
-    <span>Oba uređaja online</span>
+    <span>Oba uređaja na internetu</span>
   </div>
   <p id="status" role="status" aria-live="polite">Pripremam lokalnu snimku…</p>
   <label class="consent"><input type="checkbox" id="accept">
@@ -98,15 +98,15 @@ button:disabled{opacity:.45;cursor:not-allowed}
   </label>
 </main>
 <div class="actions">
-  <button id="create" type="button" disabled>Stvori P2P poveznicu</button>
+  <button id="create" type="button" disabled>Stvori poveznicu</button>
   <button id="end" type="button" hidden>Prekini dijeljenje</button>
 </div>
 <details class="details">
   <summary>Kako radi privatno dijeljenje?</summary>
   <p>Pošiljatelj mora ostati na ovom zaslonu dok primatelj preuzima snimku.
-  VOJS poslužitelj pohranjuje samo kratkotrajne JSON podatke za povezivanje,
-  ne audio. Na nekim mrežama P2P nije dostupan bez TURN poslužitelja.
-  Za pouzdano offline dijeljenje upotrijebi izvorno Android slanje M4A datoteke.</p>
+  VOJS ne sprema zvuk na svoj poslužitelj. Dijeljenje poveznicom zahtijeva
+  internet na oba uređaja i možda neće uspjeti na svim mrežama.
+  Bez interneta upotrijebi dijeljenje datoteke na prethodnom zaslonu.</p>
 </details>
 <footer class="footer">VOJS by BRENDIGO · vojs.com.hr</footer>
 </div>
@@ -186,7 +186,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
     create.disabled = true;
     say("Pripremam šifriranu vezu između uređaja…");
     try {
-      if (!window.VojsPeer) throw Error("P2P skripta nije dostupna. Provjeri internet.");
+      if (!window.VojsPeer) throw Error("Povezivanje nije dostupno. Provjeri internet.");
       session = await VojsPeer.create(audio, say);
       link.value = session.url;
       placeholder.hidden = true;
@@ -194,7 +194,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
       end.hidden = false;
       tick();
       timer = setInterval(tick, 1000);
-      say("Poveznica je spremna. Na gornjoj traci odaberi Kopiraj link ili Podijeli.");
+      say("Poveznica je spremna. Odaberi Kopiraj ili Podijeli na vrhu zaslona.");
     } catch (error) {
       session = null;
       refresh();
@@ -204,7 +204,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
   end.addEventListener("click", async () => {
     if (!session) return;
     const previous = session;
-    resetUi("P2P sesija je zatvorena. Lokalna snimka ostaje dostupna.");
+    resetUi("Poveznica je zatvorena. Snimka ostaje na uređaju.");
     await previous.close().catch(() => {});
   });
   window.addEventListener("pagehide", stopTimer);

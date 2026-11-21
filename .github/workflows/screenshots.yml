@@ -6,6 +6,7 @@ on:
     paths:
       - 'app/**'
       - 'scripts/capture_screenshots.py'
+      - 'scripts/test_offline_mode.py'
       - 'scripts/audit_splash_pixels.py'
       - 'scripts/audit_reference_pixels.py'
       - 'scripts/audit_all_screens.py'
@@ -91,6 +92,7 @@ jobs:
             "$RUNNER_TEMP/vojs-splash-audit/bin/python" scripts/audit_splash_pixels.py
             "$RUNNER_TEMP/vojs-splash-audit/bin/python" scripts/audit_reference_pixels.py
             "$RUNNER_TEMP/vojs-splash-audit/bin/python" scripts/audit_all_screens.py --baseline "$RUNNER_TEMP/vojs-previous-real-screens"
+            python3 scripts/test_offline_mode.py
       - name: Prepare actual Google Play listing assets
         run: |
           set -euo pipefail
@@ -106,6 +108,7 @@ jobs:
           path: |
             docs/screenshots/
             docs/play-store-assets/
+            docs/offline-qa/
           if-no-files-found: warn
       - name: Commit genuine captures for README and Google Play review
         if: github.event_name == 'push'

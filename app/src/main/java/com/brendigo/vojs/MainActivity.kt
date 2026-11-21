@@ -39,6 +39,7 @@ class MainActivity : ComponentActivity() {
             }
             val dark = VojsAppearance.isDark(appearance, isSystemInDarkTheme())
             var showSettings by remember { mutableStateOf(false) }
+            var showPrivacy by remember { mutableStateOf(false) }
             var brandedSplash by remember { mutableStateOf(true) }
             LaunchedEffect(Unit) {
                 // 2.5 seconds: the complete, genuine VOJS splash is readable.
@@ -121,13 +122,16 @@ class MainActivity : ComponentActivity() {
                             VojsAppearance.save(this@MainActivity, value)
                         },
                         onPrivacy = {
-                            startActivity(
-                                android.content.Intent(
-                                    android.content.Intent.ACTION_VIEW,
-                                    android.net.Uri.parse("https://vojs.com.hr/privatnost/")
-                                )
-                            )
+                            showSettings = false
+                            showPrivacy = true
                         }
+                    )
+                }
+                if (showPrivacy) {
+                    VojsPrivacySheet(
+                        dark = dark,
+                        secondary = secondary,
+                        onDismiss = { showPrivacy = false }
                     )
                 }
                 }

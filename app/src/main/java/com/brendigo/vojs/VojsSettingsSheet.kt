@@ -43,7 +43,12 @@ internal fun VojsSettingsSheet(
         ) {
             Text("Postavke", style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold)
-            Spacer(Modifier.height(14.dp))
+            Spacer(Modifier.height(8.dp))
+            // Keep privacy visible without scrolling even on short phones.
+            TextButton(onClick = onPrivacy, modifier = Modifier.fillMaxWidth()) {
+                Text("Pravila privatnosti", color = Violet)
+            }
+            Spacer(Modifier.height(8.dp))
             Text("Izgled aplikacije", color = secondary)
             Text("Zadano: tamna tema. Tvoj izbor ostaje spremljen.",
                 color = secondary, fontSize = 12.sp)
@@ -71,16 +76,12 @@ internal fun VojsSettingsSheet(
             Text("Privatnost", fontWeight = FontWeight.SemiBold)
             Spacer(Modifier.height(8.dp))
             Text(
-                "Snimanje i dijeljenje datoteke radi offline. Izravna web poveznica " +
-                "koristi WebRTC i kratkotrajne JSON podatke za uspostavu veze. " +
-                "VOJS poslužitelj ne prima audio. Za prijenos primatelj i " +
-                "pošiljatelj moraju biti online u isto vrijeme.",
+                "Snimanje i preslušavanje rade bez interneta i bez web-stranice. " +
+                "Snimku možeš podijeliti kao datoteku putem aplikacija na uređaju. " +
+                "Za izradu i otvaranje poveznice potreban je internet.",
                 color = secondary, fontSize = 13.sp, lineHeight = 19.sp
             )
-            Spacer(Modifier.height(12.dp))
-            TextButton(onClick = onPrivacy) {
-                Text("Pravila privatnosti", color = Violet)
-            }
+
         }
     }
 }

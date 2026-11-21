@@ -112,11 +112,10 @@ internal fun VoiceScreen(
                 Spacer(Modifier.height(if (compact) 20.dp else 30.dp))
                 Text(
                     if (compact)
-                        "Offline poruka ostaje lokalno. P2P zahtijeva oba uređaja online; VOJS ne pohranjuje zvuk."
+                        "Snimka je na uređaju. Za poveznicu je potreban internet."
                     else
-                        "Datoteka se može podijeliti offline. P2P poveznica služi za izravni " +
-                        "prijenos u preglednik bez spremanja audija na VOJS server. " +
-                        "Oba uređaja moraju biti online dok prijenos traje.",
+                        "Snimku možeš preslušati i dijeliti kao datoteku bez VOJS web-stranice. " +
+                        "Za slanje poveznicom oba uređaja moraju biti povezana na internet.",
                     color = secondary, fontSize = 13.sp, lineHeight = 19.sp
                 )
                 Spacer(Modifier.height(12.dp))
@@ -252,7 +251,7 @@ internal fun VoiceScreen(
                         shape = RoundedCornerShape(17.dp),
                         colors = ButtonDefaults.outlinedButtonColors(contentColor = Violet)
                     ) {
-                        Text("Podijeli izravno (P2P)", fontWeight = FontWeight.SemiBold)
+                        Text("Stvori poveznicu (internet)", fontWeight = FontWeight.SemiBold)
                     }
                     Spacer(Modifier.height(4.dp))
                     TextButton(onClick = onDiscard) {

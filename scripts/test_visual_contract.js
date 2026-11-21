@@ -7,6 +7,13 @@ const screen = read("app/src/main/java/com/brendigo/vojs/VoiceScreen.kt");
 const header = read("app/src/main/java/com/brendigo/vojs/VojsHeader.kt");
 const wave = read("app/src/main/java/com/brendigo/vojs/VoiceWaveform.kt");
 const sender = read("app/src/main/assets/p2p-android-sender.html");
+const peerProtocol = read("app/src/main/assets/p2p.js");
+const webRecorder = read("website/recorder.js");
+assert.equal(peerProtocol, read("website/p2p.js"),
+  "Android and web must use the exact same transfer protocol");
+const internalError = /(?:throw\s+Error|reject\(\s*Error|notify|message|error)\(\s*"[^"]*(?:P2P|WebRTC|TURN|ICE)\b/;
+assert(!internalError.test(peerProtocol), "Network errors must be understandable without protocol jargon");
+assert(!internalError.test(webRecorder), "Web recorder must not show implementation terms in its error/status text");
 const capture = read("scripts/capture_screenshots.py");
 const audit = read("scripts/audit_all_screens.py");
 
@@ -20,6 +27,8 @@ assert(screen.includes(".height(if (compact) 170.dp else 228.dp)"),"Measured ref
 assert(capture.includes('screenshot("11-p2p-sender.png"'),"Real P2P capture missing");
 assert(capture.includes('wait_ui("Poruka je spremna", 15)'),"Back navigation must preserve ready audio");
 assert(audit.includes('"11-p2p-sender.png"'),"Full visual audit must include P2P");
+assert(audit.includes('"12-privacy-offline.png"'),"Full visual audit must include privacy");
+assert(capture.includes('screenshot("12-privacy-offline.png"'),"Capture real local privacy screen");
 assert(sender.includes('id="create"') && sender.includes('id="end"'));
 assert(sender.includes('id="link"') && sender.includes('id="result" hidden'));
 assert(sender.includes('id="accept"'),"User consent must be required");
@@ -27,6 +36,18 @@ assert(sender.includes('role="status"') && sender.includes('aria-live="polite"')
 assert(sender.includes('aria-label="Uvjeti prijenosa"'));
 assert(sender.includes("15 min"),"Match real 15-minute signaling expiry");
 assert(sender.includes("Bez pohrane zvuka"));
+const main = read("app/src/main/java/com/brendigo/vojs/MainActivity.kt");
+const privacy = read("app/src/main/java/com/brendigo/vojs/VojsPrivacySheet.kt");
+const settings = read("app/src/main/java/com/brendigo/vojs/VojsSettingsSheet.kt");
+assert(main.includes("VojsPrivacySheet("),"Offline privacy view must be accessible");
+assert(privacy.includes("Snimanje i reprodukcija"));
+assert(privacy.includes("bez interneta"));
+assert(settings.includes("Snimanje i preslušavanje rade bez interneta"));
+assert(screen.includes("Stvori poveznicu (internet)"));
+assert(!screen.includes("P2P") && !settings.includes("WebRTC") && !settings.includes("JSON"));
+assert(!sender.includes("PRIVATNA P2P PORUKA") && !sender.includes("Stvori P2P poveznicu"));
+assert(!sender.includes("TURN poslužitelja") && !sender.includes("kratkotrajne JSON podatke"));
+assert(sender.includes("Stvori poveznicu"));
 const websiteStyle = fs.readFileSync("website/style.css","utf8");
 const nativeTheme = fs.readFileSync("app/src/main/java/com/brendigo/vojs/MainActivity.kt","utf8");
 const webManifest = JSON.parse(fs.readFileSync("website/manifest.webmanifest","utf8"));

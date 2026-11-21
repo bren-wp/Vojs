@@ -21,6 +21,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.WindowCompat
 import java.io.File
 import java.io.FileInputStream
+import java.io.ByteArrayInputStream
 import org.json.JSONTokener
 
 /**
@@ -70,11 +71,23 @@ class PeerSenderActivity : ComponentActivity() {
                         Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        OutlinedButton(onClick = { finish() }) { Text("Natrag") }
-                        Button(onClick = { withLink { VoiceLinkService.copy(this@PeerSenderActivity, it) } },
-                            enabled = browserReady) { Text("Kopiraj link") }
-                        Button(onClick = { withLink { VoiceLinkService.share(this@PeerSenderActivity, it) } },
-                            enabled = browserReady) { Text("Podijeli") }
+                        OutlinedButton(
+                            onClick = { finish() },
+                            modifier = Modifier.weight(1f),
+                            contentPadding = PaddingValues(horizontal = 4.dp)
+                        ) { Text("Natrag", maxLines = 1) }
+                        Button(
+                            onClick = { withLink { VoiceLinkService.copy(this@PeerSenderActivity, it) } },
+                            enabled = browserReady,
+                            modifier = Modifier.weight(1f),
+                            contentPadding = PaddingValues(horizontal = 4.dp)
+                        ) { Text("Kopiraj", maxLines = 1) }
+                        Button(
+                            onClick = { withLink { VoiceLinkService.share(this@PeerSenderActivity, it) } },
+                            enabled = browserReady,
+                            modifier = Modifier.weight(1f),
+                            contentPadding = PaddingValues(horizontal = 4.dp)
+                        ) { Text("Podijeli", maxLines = 1) }
                     }
                     AndroidView(
                         modifier = Modifier.fillMaxSize(),
@@ -145,7 +158,20 @@ class PeerSenderActivity : ComponentActivity() {
                         )
                     }
                 }
-                return null
+                // Browser-local audio must not be exposed to arbitrary
+                // remote subresources. Only our versioned signaling API can
+                // leave the local WebView. WebRTC ICE uses its own transport.
+                val api = uri.scheme == "https" && uri.host == HOST &&
+                    ((uri.path == "/api/status.php" && request.method == "GET") ||
+                     (uri.path == "/api/signal.php" &&
+                         (request.method == "GET" || request.method == "POST")))
+                if (api) return null
+                return WebResourceResponse(
+                    "text/plain", "UTF-8", ByteArrayInputStream(ByteArray(0))
+                ).apply {
+                    setStatusCodeAndReasonPhrase(403, "Forbidden")
+                    responseHeaders = mapOf("Cache-Control" to "no-store")
+                }
             }
             override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
                 val uri = request?.url ?: return true

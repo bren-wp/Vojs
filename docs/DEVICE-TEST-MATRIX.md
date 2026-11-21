@@ -53,3 +53,7 @@ Na svim nativnim zaslonima snimanja koristi se izvorni logo u `VojsHeader.kt` i 
 Brojevi su iz stvarnog GitHub Android screenshot pixela, a ne tvrdnja o 0%: promijenjeni pikseli valnog prikaza u odnosu na koncept porasli su sa 15,302% (v1.0.40) na 21,497% (v1.0.41), a ukupna približna content ROI stopa snimanja s 11,148% na 14,669%. Zbog dokazanog pogoršanja vraćena je izvorna geometrija 170/228 dp i puna širina waveforma, uz zadržavanje boljeg izdvojenog zaglavlja i statički pripremljenog referentnog niza. Referentni crop i dalje je marketinška kompozicija, ne egzaktan native dizajn.
 
 P2P Activity je eksplicitno postavljen na `Theme.Vojs` (ne naslijeđeni SplashScreen theme) i koristi tamne edge-to-edge sistemske trake. Screenshot P2P-a bez ekvivalentne originalne P2P reference označen je kao neusporediv, umjesto besmislenog mjerenja naspram starog 24-satnog serverskog share ekrana.
+
+## Izvorna offline privatnost — 13. stvarni zaslon
+
+Sada se snima i stvarna `12-privacy-offline.png` snimka iz Android Compose prikaza privatnosti. Audit obuhvaća **13 stvarnih Android stanja** (uključujući dva originalna splash ekrana) te privatnost označava kao `no_exact_offline_privacy_design_reference` dok ne postoji odgovarajuća originalna dizajnerska referenca istog stanja i dimenzija. Prethodne splash 0% provjere nisu promijenjene. Zrakoplovni način rada dodatno se provjerava u zasebnom stvarnom ADB testu.

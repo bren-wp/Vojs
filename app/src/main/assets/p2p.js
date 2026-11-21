@@ -31,7 +31,7 @@ window.VojsPeer = (() => {
       signal: AbortSignal.timeout(15000)
     });
     if (response.status === 202) return null;
-    if (!response.ok) throw Error("Sesija nije dostupna (" + response.status + ").");
+    if (!response.ok) throw Error("Poveznica nije dostupna. Pokušaj ponovno.");
     if (response.status === 204) return {};
     return response.json();
   }
@@ -75,7 +75,7 @@ window.VojsPeer = (() => {
   async function iceReady(peer) {
     if (peer.iceGatheringState === "complete") return;
     await new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => { clear(); reject(Error("ICE veza nije spremna.")); }, SDP_TIMEOUT);
+      const timeout = setTimeout(() => { clear(); reject(Error("Veza nije uspostavljena. Pokušaj ponovno.")); }, SDP_TIMEOUT);
       function clear() {
         clearTimeout(timeout);
         peer.removeEventListener("icegatheringstatechange", check);
@@ -104,7 +104,7 @@ window.VojsPeer = (() => {
   function monitor(peer, notify) {
     peer.addEventListener("connectionstatechange", () => {
       if (peer.connectionState === "failed") {
-        notify("Povezivanje nije uspjelo. Neke mreže trebaju TURN poslužitelj.");
+        notify("Povezivanje nije uspjelo. Pokušaj preko druge mreže.");
       } else if (peer.connectionState === "disconnected") {
         notify("Veza s drugim uređajem je prekinuta.");
       }
@@ -141,8 +141,8 @@ window.VojsPeer = (() => {
     notify("Snimka je poslana. Čekam potvrdu.");
   }
   async function create(file, notify = () => {}) {
-    if (active && !active.closed) throw Error("Već postoji aktivna P2P sesija.");
-    if (!window.RTCPeerConnection || !crypto.subtle) throw Error("WebRTC nije podržan.");
+    if (active && !active.closed) throw Error("Poveznica je već aktivna.");
+    if (!window.RTCPeerConnection || !crypto.subtle) throw Error("Ovaj uređaj ne podržava izravno povezivanje.");
     if (!(file instanceof Blob) || file.size < 64 || file.size > MAX_BYTES ||
         !MIME.test(file.type)) throw Error("Nepodržana datoteka (maks. 8 MB).");
     await assertProtocol();
@@ -187,9 +187,9 @@ window.VojsPeer = (() => {
     }
   }
   async function receive(id, onStatus, onAudio) {
-    if (active && !active.closed) throw Error("Već postoji aktivna P2P sesija.");
+    if (active && !active.closed) throw Error("Poveznica je već aktivna.");
     ensure(ID.test(id) && typeof onAudio === "function");
-    if (!window.RTCPeerConnection || !crypto.subtle) throw Error("WebRTC nije podržan.");
+    if (!window.RTCPeerConnection || !crypto.subtle) throw Error("Ovaj uređaj ne podržava izravno povezivanje.");
     await assertProtocol();
     const peer = new RTCPeerConnection(ICE);
     const current = session(id, null, peer);

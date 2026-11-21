@@ -34,7 +34,11 @@ assert "targetSdk = 36" in gradle and "minSdk = 24" in gradle
 assert 'isMinifyEnabled = false' in gradle or 'isMinifyEnabled = true' in gradle
 assert "VOJS_KEYSTORE_PATH" in gradle and "VOJS_KEY_ALIAS" in gradle
 activity = (app / "src/main/java/com/brendigo/vojs/MainActivity.kt").read_text("utf-8")
-assert "https://vojs.com.hr/privatnost/" in activity
+privacy = (app / "src/main/java/com/brendigo/vojs/VojsPrivacySheet.kt").read_text("utf-8")
+assert 'VojsPrivacySheet(' in activity, "Privacy rules must work offline in-app"
+assert '"Snimanje i reprodukcija"' in privacy
+assert 'bez interneta' in privacy
+assert 'vojs.com.hr' in privacy, "Publisher privacy contact must be visible"
 assert 'Manifest.permission.RECORD_AUDIO' in activity
 recording = (app / "src/main/java/com/brendigo/vojs/VoiceRecorder.kt").read_text("utf-8")
 assert "UUID.randomUUID()" in recording
