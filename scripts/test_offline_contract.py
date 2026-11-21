@@ -17,6 +17,8 @@ assert "Stvori poveznicu (internet)" in screen
 assert "onClick = recorder::share" in screen
 assert "onClick = recorder::togglePlayback" in read("VojsPlaybackButton.kt")
 assert "FileProvider.getUriForFile" in recorder
+assert "VOJS P2P poveznica" not in read("VoiceLinkService.kt")
+assert "contentDescription = \"VOJS\"" in read("VojsBrandedSplash.kt")
 assert "MediaRecorder" in recorder and "MediaPlayer" in recorder
 assert "context.startActivity(chooser)" in recorder
 assert not any(x in screen+settings for x in ["P2P","WebRTC","JSON","TURN","DEBUG","Lorem ipsum"])

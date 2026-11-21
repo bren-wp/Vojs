@@ -28,7 +28,7 @@ internal fun VojsBrandedSplash(dark: Boolean) {
             painter = painterResource(
                 if (dark) R.drawable.vojs_splash_dark else R.drawable.vojs_splash_light
             ),
-            contentDescription = if (dark) "VOJS splash tamni" else "VOJS splash svijetli",
+            contentDescription = "VOJS",
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Fit
         )

@@ -22,7 +22,7 @@ internal object VoiceLinkService {
     fun copy(context: Context, url: String) {
         require(isValid(url))
         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        clipboard.setPrimaryClip(ClipData.newPlainText("VOJS P2P poveznica", url))
+        clipboard.setPrimaryClip(ClipData.newPlainText("VOJS poveznica", url))
     }
 
     fun share(context: Context, url: String) {
@@ -31,6 +31,6 @@ internal object VoiceLinkService {
             type = "text/plain"
             putExtra(Intent.EXTRA_TEXT, url)
         }
-        context.startActivity(Intent.createChooser(intent, "Podijeli VOJS P2P poveznicu"))
+        context.startActivity(Intent.createChooser(intent, "Podijeli VOJS poveznicu"))
     }
 }
