@@ -27,6 +27,18 @@ assert(sender.includes('role="status"') && sender.includes('aria-live="polite"')
 assert(sender.includes('aria-label="Uvjeti prijenosa"'));
 assert(sender.includes("15 min"),"Match real 15-minute signaling expiry");
 assert(sender.includes("Bez pohrane zvuka"));
+const main = read("app/src/main/java/com/brendigo/vojs/MainActivity.kt");
+const privacy = read("app/src/main/java/com/brendigo/vojs/VojsPrivacySheet.kt");
+const settings = read("app/src/main/java/com/brendigo/vojs/VojsSettingsSheet.kt");
+assert(main.includes("VojsPrivacySheet("),"Offline privacy view must be accessible");
+assert(privacy.includes("Snimanje i reprodukcija"));
+assert(privacy.includes("bez interneta"));
+assert(settings.includes("Snimanje i preslušavanje rade bez interneta"));
+assert(screen.includes("Stvori poveznicu (internet)"));
+assert(!screen.includes("P2P") && !settings.includes("WebRTC") && !settings.includes("JSON"));
+assert(!sender.includes("PRIVATNA P2P PORUKA") && !sender.includes("Stvori P2P poveznicu"));
+assert(!sender.includes("TURN poslužitelja") && !sender.includes("kratkotrajne JSON podatke"));
+assert(sender.includes("Stvori poveznicu"));
 const websiteStyle = fs.readFileSync("website/style.css","utf8");
 const nativeTheme = fs.readFileSync("app/src/main/java/com/brendigo/vojs/MainActivity.kt","utf8");
 const webManifest = JSON.parse(fs.readFileSync("website/manifest.webmanifest","utf8"));

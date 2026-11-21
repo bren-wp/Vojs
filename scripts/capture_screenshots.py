@@ -242,7 +242,7 @@ if tap("Započni snimanje") and wait_ui("Završi snimanje", 12):
             fail("Stop playback failed")
         # Capture the real, locally bundled P2P interface. This does NOT
         # require or pretend to complete an Internet P2P transfer.
-        if not tap("Podijeli izravno (P2P)"):
+        if not tap("Stvori poveznicu (internet)"):
             fail("P2P sender CTA is not available")
         if not wait_ui("Natrag", 15):
             fail("P2P sender did not render a native back button")
