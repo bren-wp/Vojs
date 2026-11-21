@@ -20,9 +20,29 @@ def shell(*args):
     return adb("shell", *args).stdout.decode("utf-8", "replace")
 
 def nodes():
-    adb("shell", "uiautomator", "dump", "/sdcard/window.xml", timeout=50)
-    xml = shell("cat", "/sdcard/window.xml")
-    return [element.attrib for element in ET.fromstring(xml).iter("node")]
+    """Read the actual Android hierarchy, retrying only transient UI dump loss.
+
+    Android's uiautomator process can be killed with exit 137 on high-resolution
+    emulators even while the tested application keeps running normally.
+    Never replace the hierarchy with made-up nodes or suppress other errors.
+    """
+    for attempt in range(3):
+        try:
+            adb("shell", "uiautomator", "dump", "/sdcard/window.xml", timeout=50)
+            xml = shell("cat", "/sdcard/window.xml")
+            return [element.attrib for element in ET.fromstring(xml).iter("node")]
+        except subprocess.CalledProcessError as exc:
+            if exc.returncode != 137 or attempt == 2:
+                raise
+            print("Android UI dump exited 137; retry", attempt + 2, "of 3",
+                  flush=True)
+        except ET.ParseError:
+            if attempt == 2:
+                raise
+            print("Android UI dump returned incomplete XML; retry",
+                  attempt + 2, "of 3", flush=True)
+        time.sleep(2 * (attempt + 1))
+    raise AssertionError("Android UI hierarchy could not be read")
 
 def center(node):
     nums = re.findall(r"[0-9]+", node.get("bounds", ""))

@@ -115,3 +115,30 @@ def _simulate_settings_close(back_closes):
 _simulate_settings_close(False)
 _simulate_settings_close(True)
 print("PASS native Back or accessibility scrim dismisses settings without losing state")
+
+# High-resolution Android emulator may kill uiautomator with exit code 137.
+# Retry that transient failure, but never hide a permanent dump failure.
+_retry_attempts = {"count": 0}
+def _flaky_dump(*args, **kwargs):
+    _retry_attempts["count"] += 1
+    if _retry_attempts["count"] == 1:
+        raise module.subprocess.CalledProcessError(137, ["adb", *args])
+    return _Namespace(stdout=b"")
+_xml_nodes = '<hierarchy><node text="Natrag" bounds="[20,30][200,70]"/></hierarchy>'
+with _patch.object(module, "adb", side_effect=_flaky_dump), \
+     _patch.object(module, "shell", return_value=_xml_nodes), \
+     _patch.object(module.time, "sleep", return_value=None):
+    _recovered = module.nodes()
+assert _retry_attempts["count"] == 2
+assert _recovered[0]["text"] == "Natrag", "Must return the real parsed UI"
+
+def _permanent_dump_error(*args, **kwargs):
+    raise module.subprocess.CalledProcessError(137, ["adb", *args])
+with _patch.object(module, "adb", side_effect=_permanent_dump_error), \
+     _patch.object(module.time, "sleep", return_value=None):
+    try:
+        module.nodes()
+        raise AssertionError("Permanent uiautomator failure must fail the test")
+    except module.subprocess.CalledProcessError as err:
+        assert err.returncode == 137
+print("PASS emulator UI dump recovery, bounded retries and fail-closed behavior")

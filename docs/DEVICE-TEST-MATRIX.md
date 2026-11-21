@@ -67,3 +67,7 @@ Nakon spajanja PR #47, `main` multi-device CI imao je dva različita problema: n
 ### Dodatna provjera zatvaranja postavki na API 29
 
 Na malom Pixel 2 emulatoru uspješno su testirani snimanje, dijeljenje, P2P zaslon i odabir svijetle teme, ali se `ModalBottomSheet` nije uvijek zatvarao na Android Back. `dismiss_settings()` prvo koristi standardni Back, a ako je izbornik još otvoren, klikne **stvarnu Androidovu pristupačnu kontrolu „Close sheet”** (scrim), nakon čega provjeri da se zatvorio. Time se testira korisnički dostupan izlaz bez dodavanja novog gumba u dizajn i bez prikrivanja stvarnih kvarova aplikacije.
+
+### Pad emulatorskog UI dumpa na Pixel C (exit 137)
+
+U PR #48 Android 10/15/16 mobilni profili prošli su, ali Pixel C (API 35) bio je prekinut kada je testna naredba `adb shell uiautomator dump` završila s kodom 137 pri ulasku u P2P zaslon. Snimanje, pauza, reprodukcija i zaustavljanje bili su uspješni prije prekida. Nema dokaza da se proces VOJS-a srušio. Novi `nodes()` ponavlja **isključivo** privremeni exit 137 ili nepotpunu XML hijerarhiju, najviše tri pokušaja, te i dalje prijavljuje neuspjeh ako stvarni Android UI nije dohvatljiv. Emulirani Pixel C sada koristi 4 GiB RAM-a umjesto 3 GiB; mobilni profili ostaju na 3 GiB. `test_ui_locator.py` provjerava i oporavak i konačni neuspjeh, bez zamjene stvarnih kontrola lažnima.
