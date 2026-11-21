@@ -63,3 +63,7 @@ Sada se snima i stvarna `12-privacy-offline.png` snimka iz Android Compose prika
 Nakon spajanja PR #47, `main` multi-device CI imao je dva različita problema: na Pixel 6 Android 15 emulatoru sistemski Quickstep nije reagirao prije otvaranja VOJS-a; na Pixel 2 s povećanim fontom Compose je izvozio oznaku `Svijetla tema`, ali s nedostupnim granicama jer redak još nije bio u vidljivom dijelu postavki.
 
 `verify_responsive.py` sada oporavlja **isključivo** prepoznat sistemski launcher ANR, ne VOJS-ov ANR; pri svježoj instalaciji na izoliranom emulatoru zatvara launcher prije testiranja. Na malim uređajima test nalazi stvarni pomični prikaz postavki i pomiče ga sve dok kontrola nema pozitivne granice za dodir; ne izmišlja koordinate ni preskače provjeru. Regresijski test `test_ui_locator.py` potvrđuje obje situacije. Produkcijski zasloni i aplikacijske dozvole ostaju nepromijenjeni. Potvrda uspjeha zahtijeva ponovno izvršavanje sva četiri stvarna emulatorska profila.
+
+### Dodatna provjera zatvaranja postavki na API 29
+
+Na malom Pixel 2 emulatoru uspješno su testirani snimanje, dijeljenje, P2P zaslon i odabir svijetle teme, ali se `ModalBottomSheet` nije uvijek zatvarao na Android Back. `dismiss_settings()` prvo koristi standardni Back, a ako je izbornik još otvoren, klikne **stvarnu Androidovu pristupačnu kontrolu „Close sheet”** (scrim), nakon čega provjeri da se zatvorio. Time se testira korisnički dostupan izlaz bez dodavanja novog gumba u dizajn i bez prikrivanja stvarnih kvarova aplikacije.

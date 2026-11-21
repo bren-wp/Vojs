@@ -84,3 +84,34 @@ with _patch.object(module.time, "sleep", return_value=None):
     ]) is False, "Application ANRs must not be hidden"
 assert ("am", "start", "-n", module.ACTIVITY) in _scroll_actions
 print("PASS launcher-only recovery; VOJS failures remain visible")
+
+# API 29 may consume Back without dismissing the Compose sheet.
+# The test must use its real accessibility scrim, not skip the assertion.
+def _simulate_settings_close(back_closes):
+    actions = []
+    state = {"open": True}
+    def snapshot():
+        if not state["open"]:
+            return [{"text": "Snimi novu poruku", "content-desc": "",
+                     "bounds": "[20,350][240,440]"}]
+        return [
+            {"text": "Postavke", "content-desc": "", "bounds": "[20,250][220,320]"},
+            {"text": "", "content-desc": "Close sheet", "clickable": "true",
+             "bounds": "[0,0][400,220]"},
+        ]
+    def fake_shell(*args):
+        actions.append(args)
+        if args[:3] == ("input", "keyevent", "4") and back_closes:
+            state["open"] = False
+        if args[:2] == ("input", "tap"):
+            state["open"] = False
+        return ""
+    module.nodes = snapshot
+    module.shell = fake_shell
+    with _patch.object(module.time, "sleep", return_value=None):
+        module.dismiss_settings()
+    assert state["open"] is False
+    assert (("input", "tap") in [action[:2] for action in actions]) is (not back_closes)
+_simulate_settings_close(False)
+_simulate_settings_close(True)
+print("PASS native Back or accessibility scrim dismisses settings without losing state")

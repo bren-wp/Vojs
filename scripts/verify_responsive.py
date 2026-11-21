@@ -152,6 +152,22 @@ def tap(label, seconds=28):
           "coordinates:", (x, y), flush=True)
     shell("input", "tap", str(x), str(y))
 
+def dismiss_settings():
+    """Exercise normal Back, then the real modal scrim if Back is ignored.
+
+    On some API 29 emulator windows Android Back is consumed while a
+    Compose sheet remains open. The accessible Close sheet scrim is the
+    real user dismissal action, not an invented UI coordinate.
+    """
+    shell("input", "keyevent", "4")
+    time.sleep(.7)
+    if locate("Postavke") is not None:
+        tap("Close sheet")
+        time.sleep(.7)
+    if locate("Postavke") is not None:
+        raise AssertionError("Settings modal remained open after dismissal")
+
+
 def shot(folder, filename):
     data = adb("exec-out", "screencap", "-p").stdout
     if not data.startswith(b"\x89PNG\r\n\x1a\n"):
@@ -270,8 +286,7 @@ def main():
         tap("Svijetla tema")
         capture("07-settings-light.png")
         verified("select light theme")
-        shell("input", "keyevent", "4")
-        time.sleep(.8)
+        dismiss_settings()
         tap("Snimi novu poruku")
         wait("Nova poruka")
         capture("08-light-home.png")
@@ -286,7 +301,7 @@ def main():
         tap("Postavke aplikacije")
         scroll_to_visible("Tamna tema (zadana)")
         tap("Tamna tema (zadana)")
-        shell("input", "keyevent", "4")
+        dismiss_settings()
         verified("dark theme can be restored")
         check_crash()
         verified("no app fatal exception")
