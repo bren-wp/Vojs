@@ -5,7 +5,7 @@ import json
 import time
 from pathlib import Path
 
-from verify_responsive import PACKAGE, ACTIVITY, shell, wait, tap, shot, check_crash
+from verify_responsive import PACKAGE, ACTIVITY, shell, locate, wait, tap, shot, check_crash
 
 OUT = Path("docs/offline-qa")
 OUT.mkdir(parents=True, exist_ok=True)
@@ -55,8 +55,16 @@ def run():
         wait("Pravila privatnosti")
         tap("Pravila privatnosti")
         wait("Snimanje i reprodukcija")
-        wait("Kontakt i puna pravila")
         shot(OUT,"04-offline-privacy.png")
+        # Verify the entire scrollable policy, not just its title.
+        # The final paragraph is below the fold on compact screens.
+        for _ in range(5):
+            if locate("Kontakt i puna pravila"):
+                break
+            shell("input","swipe","540","1800","540","700","430")
+            time.sleep(.4)
+        wait("Kontakt i puna pravila")
+        shot(OUT,"05-offline-privacy-end.png")
         checked("privacy information accessible without website")
         shell("input","keyevent","4")
         time.sleep(.8)

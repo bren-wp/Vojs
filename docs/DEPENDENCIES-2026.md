@@ -24,3 +24,7 @@ Sources:
 Službeni Android Gradle Plugin dokument navodi **9.5.1** kao dostupnu stabilnu verziju i potvrđuje da AGP 9.5 zahtijeva najmanje Gradle 9.6, koji već koristimo. Kotlin 2.4.21 najnovija je objavljena stabilna verzija (2.5.0-RC nije stabilna). Activity 1.13.0 ostaje stabilan, Core 1.19.1 stabilan (1.20.0-alpha01 nije za produkciju), a Compose BOM 2026.09.00 zadnji je stabilni BOM prema službenoj dokumentaciji. Ne nadograđivati na alfa/RC samo radi brojke.
 
 Izvori: https://developer.android.com/build/releases/agp-9-5-0-release-notes ; https://developer.android.com/build/releases/about-agp ; https://kotlinlang.org/docs/releases.html ; https://developer.android.com/jetpack/androidx/releases/activity ; https://developer.android.com/jetpack/androidx/releases/core ; https://developer.android.com/develop/ui/compose/bom .
+
+### Uklonjena nepotrebna KTX ovisnost
+
+Od AndroidX Core 1.19.0 Kotlin KTX API-ji nalaze se u glavnom artefaktu `androidx.core:core`, a `core-ktx` je prazan artefakt radi kompatibilnosti. VOJS zato izravno ovisi o stabilnom `androidx.core:core:1.19.1`, bez nepotrebnog praznog KTX sloja. Izvor: https://developer.android.com/jetpack/androidx/releases/core .
