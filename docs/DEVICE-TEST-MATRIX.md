@@ -57,3 +57,9 @@ P2P Activity je eksplicitno postavljen na `Theme.Vojs` (ne naslijeđeni SplashSc
 ## Izvorna offline privatnost — 13. stvarni zaslon
 
 Sada se snima i stvarna `12-privacy-offline.png` snimka iz Android Compose prikaza privatnosti. Audit obuhvaća **13 stvarnih Android stanja** (uključujući dva originalna splash ekrana) te privatnost označava kao `no_exact_offline_privacy_design_reference` dok ne postoji odgovarajuća originalna dizajnerska referenca istog stanja i dimenzija. Prethodne splash 0% provjere nisu promijenjene. Zrakoplovni način rada dodatno se provjerava u zasebnom stvarnom ADB testu.
+
+## Post-merge QA: emulator launcher ANR i mali zasloni (22. studenoga 2026.)
+
+Nakon spajanja PR #47, `main` multi-device CI imao je dva različita problema: na Pixel 6 Android 15 emulatoru sistemski Quickstep nije reagirao prije otvaranja VOJS-a; na Pixel 2 s povećanim fontom Compose je izvozio oznaku `Svijetla tema`, ali s nedostupnim granicama jer redak još nije bio u vidljivom dijelu postavki.
+
+`verify_responsive.py` sada oporavlja **isključivo** prepoznat sistemski launcher ANR, ne VOJS-ov ANR; pri svježoj instalaciji na izoliranom emulatoru zatvara launcher prije testiranja. Na malim uređajima test nalazi stvarni pomični prikaz postavki i pomiče ga sve dok kontrola nema pozitivne granice za dodir; ne izmišlja koordinate ni preskače provjeru. Regresijski test `test_ui_locator.py` potvrđuje obje situacije. Produkcijski zasloni i aplikacijske dozvole ostaju nepromijenjeni. Potvrda uspjeha zahtijeva ponovno izvršavanje sva četiri stvarna emulatorska profila.

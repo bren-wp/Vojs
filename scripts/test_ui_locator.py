@@ -45,3 +45,42 @@ exec(compile(_ast.fix_missing_locations(_ast.Module(body=[_fn], type_ignores=[])
 assert _globals["bounds_of"]("Tamna tema") == (130,80), "Must pick radio option"
 assert _globals["bounds_of"]("Preslušaj") == (130,195), "Must pick playback button"
 print("PASS screenshot-capture locator ignores informational text")
+
+# Real controls can be present but clipped to zero bounds on compact phones.
+from unittest.mock import patch as _patch
+_scroll_actions = []
+_scrolled = {"value": False}
+def _settings_nodes():
+    light_bounds = "[20,300][180,360]" if _scrolled["value"] else "[0,0][0,0]"
+    return [
+        {"text": "Svijetla tema", "content-desc": "", "bounds": light_bounds,
+         "clickable": "false"},
+        {"text": "", "content-desc": "", "class": "android.widget.ScrollView",
+         "scrollable": "true", "bounds": "[0,100][400,850]"},
+    ]
+def _settings_shell(*args):
+    _scroll_actions.append(args)
+    if args[:2] == ("input", "swipe"):
+        _scrolled["value"] = True
+    return ""
+module.nodes = _settings_nodes
+module.shell = _settings_shell
+with _patch.object(module.time, "sleep", return_value=None):
+    assert module.scroll_to_visible("Svijetla tema")["text"] == "Svijetla tema"
+assert any(action[:2] == ("input", "swipe") for action in _scroll_actions)
+print("PASS offscreen settings row revealed through actual ScrollView swipe")
+
+_anr_nodes = [
+    {"text": "Quickstep isn't responding", "content-desc": "",
+     "bounds": "[0,0][300,100]"},
+    {"text": "Close app", "content-desc": "", "bounds": "[30,100][300,180]"},
+]
+_scroll_actions.clear()
+with _patch.object(module.time, "sleep", return_value=None):
+    assert module.recover_launcher_anr(_anr_nodes) is True
+    assert module.recover_launcher_anr([
+        {"text": "VOJS isn't responding", "content-desc": "",
+         "bounds": "[0,0][300,100]"}
+    ]) is False, "Application ANRs must not be hidden"
+assert ("am", "start", "-n", module.ACTIVITY) in _scroll_actions
+print("PASS launcher-only recovery; VOJS failures remain visible")
