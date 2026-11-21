@@ -1,0 +1,90 @@
+{
+  "created_from": "genuine emulator screenshots and original VOJS branding",
+  "no_manipulated_ui": true,
+  "no_synthetic_image_generation": true,
+  "full_screenshot_aspect_ratio": 2.22222,
+  "promotion_9_16_recommendation_met": false,
+  "notes": "Play accepts ratios <=2.3; 9:16 recommended for promotional eligibility.",
+  "assets": [
+    {
+      "file": "app-icon-512.png",
+      "original": "branding/google-play/ikona-512.png",
+      "width": 512,
+      "height": 512,
+      "channel_mode": "RGBA",
+      "bytes": 13073,
+      "sha256": "b13b5e08b536a4b767abdef2b4f7666f9491b11eae314185c66b61873d8db4e4",
+      "pixel_source": "unaltered genuine original"
+    },
+    {
+      "file": "feature-1024x500.png",
+      "original": "branding/google-play/grafika-istaknuto-1024x500.png",
+      "width": 1024,
+      "height": 500,
+      "channel_mode": "RGB",
+      "bytes": 43504,
+      "sha256": "6a12970b01f8d38c88281e08fc335dc0eafa9b5177666596d8432e2208ad68ac",
+      "pixel_source": "unaltered genuine original"
+    },
+    {
+      "file": "screenshots/01-home.png",
+      "original": "docs/screenshots/01-home.png",
+      "width": 1080,
+      "height": 2400,
+      "channel_mode": "RGB",
+      "bytes": 86497,
+      "sha256": "835fef78cb1dc84d42bc24b788bcda379672fc2ea081a5a2c6b6a5cd4c327e2a",
+      "pixel_source": "unaltered genuine original"
+    },
+    {
+      "file": "screenshots/02-recording.png",
+      "original": "docs/screenshots/02-recording.png",
+      "width": 1080,
+      "height": 2400,
+      "channel_mode": "RGB",
+      "bytes": 81604,
+      "sha256": "7be81990375394e5ab69281adb96ef9e19d1f04e5243ba4121b1fda2675e4e9e",
+      "pixel_source": "unaltered genuine original"
+    },
+    {
+      "file": "screenshots/06-paused.png",
+      "original": "docs/screenshots/06-paused.png",
+      "width": 1080,
+      "height": 2400,
+      "channel_mode": "RGB",
+      "bytes": 88749,
+      "sha256": "398cc0c8cbe4b8349a5df8b2fc44cedc89c53c788f2e9f9bf8165ed8aedb5d5e",
+      "pixel_source": "unaltered genuine original"
+    },
+    {
+      "file": "screenshots/03-ready.png",
+      "original": "docs/screenshots/03-ready.png",
+      "width": 1080,
+      "height": 2400,
+      "channel_mode": "RGB",
+      "bytes": 133124,
+      "sha256": "5b54b660e1c27851e05aa2554edd09a5e9047a8cf018f8a3b98da07f2bb850b0",
+      "pixel_source": "unaltered genuine original"
+    },
+    {
+      "file": "screenshots/08-dark-ready.png",
+      "original": "docs/screenshots/08-dark-ready.png",
+      "width": 1080,
+      "height": 2400,
+      "channel_mode": "RGB",
+      "bytes": 136743,
+      "sha256": "bd3e6e67b3f92ee536e6465973d0e6988bd1f7adb422e0bb9c3fdecb5c3222ca",
+      "pixel_source": "unaltered genuine original"
+    },
+    {
+      "file": "screenshots/07-settings-dark.png",
+      "original": "docs/screenshots/07-settings-dark.png",
+      "width": 1080,
+      "height": 2400,
+      "channel_mode": "RGB",
+      "bytes": 145450,
+      "sha256": "8f5a540c7aea351e6b2b6114521cb280d96c3e4e29ca87669e430de0c5655175",
+      "pixel_source": "unaltered genuine original"
+    }
+  ]
+}
