@@ -15,3 +15,9 @@ Trenutačne provjere: API 36, minSdk 24, RECORD_AUDIO/INTERNET, uređajne kopije
 - Originalni splash: pixel-podudarnost mjerena samo u definiranoj ROI regiji, bez statusne i navigacijske trake. Za ostale zaslone nedostaju ekvivalentne referentne slike.
 
 Objava izdanja na GitHubu sama po sebi ne objavljuje ili potpisuje aplikaciju za Play Store i ne postavlja `website/` na produkcijsku domenu.
+
+## Android bez interneta i bez VOJS web-stranice
+
+Snimanje mikrofonom, pauziranje, preslušavanje i Androidovo izvorno dijeljenje M4A datoteke ne kontaktiraju VOJS poslužitelj. Korisnik ne mora imati račun, mrežu ili dostupnu web-stranicu. Pravila privatnosti čitaju se izravno u ugrađenoj Compose stranici. Samo opcionalni gumb **Stvori poveznicu (internet)** uključuje internetsku uslugu i traži povezanost oba uređaja.
+
+`test_offline_mode.py` na stvarnom emulatoru uključuje zrakoplovni način **prije prvog pokretanja**, snima pravi M4A, otvara Android Sharesheet, čita lokalna pravila privatnosti, provjerava povratak na snimku i vraća mrežne postavke. Nema simuliranja rezultata niti preskakanja testa ako mreža nije isključena.

@@ -113,3 +113,7 @@ Android se kompilira protiv API-ja 37 uz cilj API 36 za Google Play. Odabrane su
 ## Službeni materijali za Play Store
 
 Izvorni brending sadrži [ikonu 512×512](branding/google-play/ikona-512.png) i [istaknutu grafiku 1024×500](branding/google-play/grafika-istaknuto-1024x500.png). Stvarne ADB slike za Play pripremaju se automatizirano, uz **nepromijenjen svaki RGB piksel** i odgovarajući format PNG-a (ikona 32-bit, snimke 24-bit): [docs/play-store-assets](docs/play-store-assets/). Ako mapa još nije prisutna, screenshot workflow mora uspješno izraditi i objaviti te datoteke. Te slike nisu zamjena za vizualnu 1:1 potvrdu svih zaslona.
+
+## Samostalan offline rad Android aplikacije
+
+VOJS snima i preslušava poruke bez interneta i bez `vojs.com.hr`. Svoju M4A datoteku možeš podijeliti preko izbornika aplikacija na uređaju; odabrana aplikacija može sama zahtijevati internet. Pravila privatnosti nalaze se u Android postavkama i dostupna su offline. Poveznice su neobavezne i zahtijevaju internet za oba uređaja. Zasebna [offline provjera](scripts/test_offline_mode.py) koristi stvarni Android emulator u zrakoplovnom načinu rada. U korisničkom sučelju uklonjeni su razvojni nazivi protokola i tehnički tekstovi.
