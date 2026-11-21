@@ -43,7 +43,12 @@ internal fun VojsSettingsSheet(
         ) {
             Text("Postavke", style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold)
-            Spacer(Modifier.height(14.dp))
+            Spacer(Modifier.height(8.dp))
+            // Keep privacy visible without scrolling even on short phones.
+            TextButton(onClick = onPrivacy, modifier = Modifier.fillMaxWidth()) {
+                Text("Pravila privatnosti", color = Violet)
+            }
+            Spacer(Modifier.height(8.dp))
             Text("Izgled aplikacije", color = secondary)
             Text("Zadano: tamna tema. Tvoj izbor ostaje spremljen.",
                 color = secondary, fontSize = 12.sp)
@@ -76,10 +81,7 @@ internal fun VojsSettingsSheet(
                 "Za izradu i otvaranje poveznice potreban je internet.",
                 color = secondary, fontSize = 13.sp, lineHeight = 19.sp
             )
-            Spacer(Modifier.height(12.dp))
-            TextButton(onClick = onPrivacy) {
-                Text("Pravila privatnosti", color = Violet)
-            }
+
         }
     }
 }
