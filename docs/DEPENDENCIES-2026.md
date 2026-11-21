@@ -8,6 +8,8 @@
 - Core SplashScreen **1.2.0**, the stable version.
 - \`compileSdk=36.1\`, \`targetSdk=36\`, \`minSdk=24\` for existing device support and current Google Play phone rules.
 
+Compose 2026.09.00 requires compile API 37 or newer via AndroidX AAR metadata; this does not change runtime targetSdk 36. The GitHub CI installs `platforms;android-37.0` to make resolution deterministic.
+
 The source code contains **no direct Firebase, advertising analytics or paid SDK dependencies**. All version changes must pass Gradle release APK/AAB, Android Lint, 16 KiB native ELF/ZIP checks, 3 device profiles and exact original splash artwork QA. Moving to a new major build tool does **not** itself prove readiness for Google Play.
 
 Sources:

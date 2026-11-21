@@ -4,10 +4,9 @@ plugins {
 }
 android {
     namespace = "com.brendigo.vojs"
-    // Android 16 QPR2 (36.1), supported by AGP 8.13.2 and AndroidX Core 1.18.
-    compileSdk {
-        version = release(36) { minorApiLevel = 1 }
-    }
+    // Compose BOM 2026.09.00 requires API 37 at compile time.
+    // targetSdk remains 36 for Google Play behavior compatibility.
+    compileSdk = 37
     defaultConfig {
         applicationId = "com.brendigo.vojs"
         minSdk = 24

@@ -4,7 +4,7 @@
 
 ## Automatski provjerljivo
 
-- ID \`com.brendigo.vojs\`, cilj API 36, minimum API 24. Android 16 i 16 KiB stranice pokrivene su build i ELF/ZIP kontrolama; za potpuno jamstvo potrebni su stvarni uređaji.
+- ID \`com.brendigo.vojs\`, cilj API 36, minimum API 24, kompilacija protiv Android API 37 (noviji stabilni Compose zahtjev). Android 16 i 16 KiB stranice pokrivene su build i ELF/ZIP kontrolama; za potpuno jamstvo potrebni su stvarni uređaji.
 - Jedina Android dopuštenja: \`RECORD_AUDIO\` (pokreće korisnik radi snimanja) i \`INTERNET\` (dobrovoljno P2P dijeljenje).
 - Nema Google/Firebase analitičkog SDK-a ni reklamnih biblioteka u izravnim ovisnostima; tranzitivne ovisnosti treba provjeriti izvještajem.
 - \`allowBackup=false\` i eksplicitni \`data-extraction-rules\` isključuju cloud i device-to-device prijenos lokalnih podataka; ne koristiti sistemski backup za glasovne poruke.

@@ -25,7 +25,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '9.6.0'
-      - name: Install Android SDK 36
+      - name: Install Android 17 compile SDK (target remains Android 16)
         shell: bash
         run: |
           set -euo pipefail
@@ -33,7 +33,7 @@ jobs:
           if [ ! -x "$SDKMANAGER" ]; then
             SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -Vr | head -1)"
           fi
-          "$SDKMANAGER" --install "platforms;android-36.1" "build-tools;35.0.0"
+          "$SDKMANAGER" --install "platforms;android-37.0" "build-tools;35.0.0"
       - name: Build Android APK and AAB
         run: gradle --no-daemon --stacktrace :app:assembleDebug :app:assembleRelease :app:bundleRelease :app:lintDebug :app:lintRelease
       - name: Verify release permissions and 16 KB native-library constraints

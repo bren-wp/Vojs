@@ -26,7 +26,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '9.6.0'
-      - name: Prepare Android SDK 36
+      - name: Prepare Android 17 compile SDK
         shell: bash
         run: |
           set -euo pipefail
@@ -37,7 +37,7 @@ jobs:
             SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -Vr | head -1)"
           fi
           test -x "$SDKMANAGER"
-          "$SDKMANAGER" --install "platforms;android-36.1" "build-tools;35.0.0"
+          "$SDKMANAGER" --install "platforms;android-37.0" "build-tools;35.0.0"
       - name: Prepare optional production key
         env:
           VOJS_KEYSTORE_BASE64: ${{ secrets.VOJS_KEYSTORE_BASE64 }}
