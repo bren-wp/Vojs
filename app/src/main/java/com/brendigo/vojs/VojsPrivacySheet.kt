@@ -5,6 +5,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
@@ -29,16 +30,27 @@ internal fun VojsPrivacySheet(
         containerColor = if (dark) Night else Paper,
         contentColor = if (dark) Paper else Ink
     ) {
-        Column(
-            Modifier.fillMaxWidth()
-                .heightIn(max = maxHeight)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 24.dp)
-                .padding(bottom = 36.dp)
-        ) {
-            Text("Pravila privatnosti", style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold)
-            Spacer(Modifier.height(8.dp))
+        Column(Modifier.fillMaxWidth().heightIn(max = maxHeight)) {
+            // The dismissal control remains visible even after reading the
+            // last paragraph on compact displays or at larger font scale.
+            Row(
+                Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Pravila privatnosti", style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+                TextButton(onClick = onDismiss) {
+                    Text("Zatvori", color = Violet, fontWeight = FontWeight.SemiBold)
+                }
+            }
+            Column(
+                Modifier.fillMaxWidth()
+                    .weight(1f, fill = false)
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 24.dp)
+                    .padding(bottom = 36.dp)
+            ) {
             Text("VOJS • 21. studenoga 2026.", color = secondary, fontSize = 12.sp)
             Spacer(Modifier.height(20.dp))
 
@@ -84,8 +96,6 @@ internal fun VojsPrivacySheet(
                 "ovo objašnjenje možeš pročitati i bez njega.", secondary)
 
             Spacer(Modifier.height(10.dp))
-            TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) {
-                Text("Zatvori", color = Violet, fontWeight = FontWeight.SemiBold)
             }
         }
     }

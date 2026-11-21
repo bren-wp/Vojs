@@ -262,8 +262,8 @@ if tap("Započni snimanje") and wait_ui("Završi snimanje", 12):
             if not tap("Pravila privatnosti") or not wait_ui("Snimanje i reprodukcija", 15):
                 fail("Offline in-app privacy screen unavailable")
             screenshot("12-privacy-offline.png", "Real in-app privacy policy, dark theme")
-            adb("shell", "input", "keyevent", "4")
-            time.sleep(2)
+            if not tap("Zatvori"):
+                fail("Privacy close control must remain available")
             if not wait_ui("Poruka je spremna", 12):
                 fail("Privacy panel did not return to the recording")
             screenshot("08-dark-ready.png", "Native dark theme ready screen")

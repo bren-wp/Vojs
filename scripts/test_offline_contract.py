@@ -12,6 +12,9 @@ sender=Path("app/src/main/assets/p2p-android-sender.html").read_text("utf-8")
 assert "showPrivacy = true" in main and "VojsPrivacySheet(" in main
 assert "android.content.Intent.ACTION_VIEW" not in main
 assert "Snimanje i reprodukcija" in privacy
+assert "TextButton(onClick = onDismiss)" in privacy
+assert "weight(1f, fill = false)" in privacy
+assert 'tap("Zatvori")' in Path("scripts/test_offline_mode.py").read_text("utf-8")
 assert "Snimanje i preslušavanje rade bez interneta" in settings
 assert "Stvori poveznicu (internet)" in screen
 assert "onClick = recorder::share" in screen
