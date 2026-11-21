@@ -1,6 +1,16 @@
 name: Capture real Android screenshots
 
 on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'app/**'
+      - 'scripts/audit_splash_pixels.py'
+      - 'scripts/audit_reference_pixels.py'
+      - 'scripts/audit_all_screens.py'
+      - 'scripts/prepare_play_assets.py'
+      - 'scripts/test_play_assets.py'
+      - '.github/workflows/screenshots.yml'
   push:
     branches: [main]
     paths:
@@ -79,6 +89,7 @@ jobs:
             docs/play-store-assets/
           if-no-files-found: warn
       - name: Commit genuine captures for README and Google Play review
+        if: github.event_name == 'push'
         shell: bash
         run: |
           set -euo pipefail
