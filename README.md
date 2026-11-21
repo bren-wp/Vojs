@@ -117,3 +117,5 @@ Izvorni brending sadrži [ikonu 512×512](branding/google-play/ikona-512.png) i 
 ## Samostalan offline rad Android aplikacije
 
 VOJS snima i preslušava poruke bez interneta i bez `vojs.com.hr`. Svoju M4A datoteku možeš podijeliti preko izbornika aplikacija na uređaju; odabrana aplikacija može sama zahtijevati internet. Pravila privatnosti nalaze se u Android postavkama i dostupna su offline. Poveznice su neobavezne i zahtijevaju internet za oba uređaja. Zasebna [offline provjera](scripts/test_offline_mode.py) koristi stvarni Android emulator u zrakoplovnom načinu rada. U korisničkom sučelju uklonjeni su razvojni nazivi protokola i tehnički tekstovi.
+
+Vizualni CI sada snima i **13. stanje: pravila privatnosti dostupna offline**; za taj novi zaslon ne izmišljaju se referentne slike ni rezultati 1:1.

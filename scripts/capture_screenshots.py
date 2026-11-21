@@ -259,8 +259,13 @@ if tap("Započni snimanje") and wait_ui("Završi snimanje", 12):
             if not tap("Tamna tema (zadana)"):
                 fail("Dark theme option failed")
             screenshot("07-settings-dark.png", "Native dark theme settings")
+            if not tap("Pravila privatnosti") or not wait_ui("Snimanje i reprodukcija", 15):
+                fail("Offline in-app privacy screen unavailable")
+            screenshot("12-privacy-offline.png", "Real in-app privacy policy, dark theme")
             adb("shell", "input", "keyevent", "4")
             time.sleep(2)
+            if not wait_ui("Poruka je spremna", 12):
+                fail("Privacy panel did not return to the recording")
             screenshot("08-dark-ready.png", "Native dark theme ready screen")
             if not tap("Snimi novu poruku"):
                 fail("Start new message failed")
@@ -283,5 +288,5 @@ if re.search(r"FATAL EXCEPTION[\s\S]{0,800}Process: com\.brendigo\.vojs", crashe
     "captured_at_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
     "screenshots": saved
 },ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
-if len(saved) < 12:
-    fail(f"Expected 10 functional captures and both splash themes, captured {len(saved)}")
+if len(saved) < 13:
+    fail(f"Expected 11 functional captures and both splash themes, captured {len(saved)}")

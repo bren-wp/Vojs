@@ -15,7 +15,8 @@ NAMES = (
     "00-splash-light.png", "01-home.png", "02-recording.png",
     "03-ready.png", "04-android-share.png", "05-settings.png",
     "06-paused.png", "07-settings-dark.png", "08-dark-ready.png",
-    "09-dark-home.png", "10-splash-dark.png", "11-p2p-sender.png"
+    "09-dark-home.png", "10-splash-dark.png", "11-p2p-sender.png",
+    "12-privacy-offline.png"
 )
 REGIONS = {
     "header": (0, .05, 1, .18),
@@ -90,6 +91,9 @@ def main():
                 "roi": {name: difference(scaled, phone, roi(phone.size, bounds))
                         for name, bounds in REGIONS.items()},
             }
+        elif filename == "12-privacy-offline.png":
+            entry["reference_type"] = "real_device_only"
+            entry["reference_status"] = "no_exact_offline_privacy_design_reference"
         elif filename == "11-p2p-sender.png":
             # Legacy hosted-audio marketing link is NOT a P2P sender reference.
             entry["reference_type"] = "real_device_only"

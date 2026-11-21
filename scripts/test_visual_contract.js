@@ -20,6 +20,8 @@ assert(screen.includes(".height(if (compact) 170.dp else 228.dp)"),"Measured ref
 assert(capture.includes('screenshot("11-p2p-sender.png"'),"Real P2P capture missing");
 assert(capture.includes('wait_ui("Poruka je spremna", 15)'),"Back navigation must preserve ready audio");
 assert(audit.includes('"11-p2p-sender.png"'),"Full visual audit must include P2P");
+assert(audit.includes('"12-privacy-offline.png"'),"Full visual audit must include privacy");
+assert(capture.includes('screenshot("12-privacy-offline.png"'),"Capture real local privacy screen");
 assert(sender.includes('id="create"') && sender.includes('id="end"'));
 assert(sender.includes('id="link"') && sender.includes('id="result" hidden'));
 assert(sender.includes('id="accept"'),"User consent must be required");
