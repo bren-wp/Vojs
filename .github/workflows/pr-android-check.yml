@@ -20,6 +20,14 @@ jobs:
           python3 scripts/test_ui_locator.py
           python3 scripts/test_play_readiness.py
           python3 scripts/test_play_assets.py
+      - name: Generate and validate Play media without altering original pixels
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/vojs-play-qa"
+          "$RUNNER_TEMP/vojs-play-qa/bin/python" -m pip install --disable-pip-version-check "Pillow>=11,<13"
+          "$RUNNER_TEMP/vojs-play-qa/bin/python" scripts/prepare_play_assets.py
+          python3 scripts/test_play_assets.py
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
