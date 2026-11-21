@@ -1,7 +1,7 @@
 {
   "source": "Android emulator; real adb screencap screenshots",
   "device": "Pixel 6 profile, Android API 35 emulator",
-  "captured_at_utc": "2026-11-21T22:37:00.805728+00:00",
+  "captured_at_utc": "2026-11-21T23:35:35.825694+00:00",
   "screenshots": [
     {
       "file": "10-splash-dark.png",
@@ -42,6 +42,10 @@
     {
       "file": "07-settings-dark.png",
       "screen": "Native dark theme settings"
+    },
+    {
+      "file": "12-privacy-offline.png",
+      "screen": "Real in-app privacy policy, dark theme"
     },
     {
       "file": "08-dark-ready.png",
