@@ -105,3 +105,7 @@ Automatski browser workflow snima svih **14 stranica u 4 veličine zaslona i 2 t
 ## Sinkronizirani Android i web prijenos
 
 Dijeljenje koristi zajednički protokol `vojs-p2p-v1`. WebRTC skripta zapakirana u Android APK bajtno je identična web klijentu, a oba provjeravaju kompatibilnost privatnog PHP JSON API-ja prije povezivanja. Nema SQL-a, crona, računa ni spremanja zvuka na server. Obje platforme pokazuju istek poveznice nakon 15 minuta. Testni Chromium stvara pravi snimljeni audio, šalje ga drugom Chromium klijentu i uspoređuje duljinu, MIME i SHA-256. Uspješan lokalni test nije potvrda da je produkcijska web stranica ažurirana. [Dokumentacija provjere](docs/P2P-TESTING.md).
+
+## Google Play 2026 i aktualne ovisnosti
+
+Android se kompilira protiv API-ja 37 uz cilj API 36 za Google Play. Odabrane su stabilne ovisnosti: [detalji i verzije](docs/DEPENDENCIES-2026.md). Novi [Play Console kontrolni popis](docs/PLAY-CONSOLE-SUBMISSION.md) obuhvaća istinita pravila privatnosti, Data safety, zabranu cloud/D2D prijenosa snimki, provjeru potpisa i 16 KiB uređaje. Ni CI ni GitHub izdanje ne jamče Google Play odobrenje. Originalni splash ima strogi pixel gate samo u području koje nije prekriveno Androidovim sistemskim trakama; za ostale zaslone potrebne su usporedive originalne reference.

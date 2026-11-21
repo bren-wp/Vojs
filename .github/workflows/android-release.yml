@@ -56,6 +56,8 @@ jobs:
           else
             echo "SIGNING_READY=false" >> "$GITHUB_ENV"
           fi
+      - name: Verify Google Play privacy and backup rules
+        run: python3 scripts/test_play_readiness.py
       - name: Build debug APK, release APK and release AAB
         run: |
           gradle --no-daemon --stacktrace :app:assembleDebug :app:assembleRelease :app:bundleRelease :app:lintRelease \
