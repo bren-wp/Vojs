@@ -20,7 +20,7 @@ P2P veza koristi javni STUN poslužitelj za pronalazak mrežnih putanja; STUN po
 
 ## IP adrese i server logovi
 
-Poslužitelj obrađuje IP adresu radi ograničavanja anonimnih sesija i privremeno pohranjuje pseudonimizirani HMAC identifikator i broj pokušaja tijekom razdoblja do 24 sata. Hosting pružatelj može imati dodatne pristupne i sigurnosne logove, čija se stvarna konfiguracija mora provjeriti prije javnog pokretanja. Nema ugrađenih oglasnih ili analitičkih SDK-ova.
+Poslužitelj obrađuje IP adresu radi ograničavanja anonimnih sesija. Pseudonimizirani HMAC identifikator i broj pokušaja koriste se u 24-satnom obračunskom prozoru. Datoteke brojača predviđene su za uklanjanje najranije nakon 48 sati, pri sljedećem pokretanju oportunističkog čišćenja; bez prometa mogu ostati na disku dulje. Hosting pružatelj može imati dodatne pristupne i sigurnosne logove, čija se stvarna konfiguracija mora provjeriti prije javnog pokretanja. Nema ugrađenih oglasnih ili analitičkih SDK-ova.
 
 ## Uklanjanje i prijava
 
