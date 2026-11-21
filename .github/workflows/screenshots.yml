@@ -26,6 +26,12 @@ on:
 permissions:
   contents: write
 
+# Only the most recent screenshot run for each PR/branch is relevant.
+# Prevent parallel Gradle artifact resolution and redundant emulator jobs.
+concurrency:
+  group: vojs-screens-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   screenshots:
     runs-on: ubuntu-24.04
@@ -50,7 +56,19 @@ jobs:
             SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -Vr | head -1)"
           fi
           "$SDKMANAGER" --install "platforms;android-37.0" "build-tools;35.0.0"
-          gradle --no-daemon :app:assembleDebug
+          # Maven Central occasionally returns HTTP 429 during simultaneous CI
+          # workflows. Retry only a bounded number of times; never mark a
+          # failed compilation as successful.
+          for attempt in 1 2 3; do
+            if gradle --no-daemon --stacktrace :app:assembleDebug; then
+              break
+            fi
+            if [[ "$attempt" -eq 3 ]]; then
+              echo "::error::Android APK build failed after three attempts."
+              exit 1
+            fi
+            sleep $((attempt * 20))
+          done
       - name: Enable KVM
         run: |
           if [[ -e /dev/kvm ]]; then sudo chmod 666 /dev/kvm; fi
