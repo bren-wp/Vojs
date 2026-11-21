@@ -70,11 +70,23 @@ class PeerSenderActivity : ComponentActivity() {
                         Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        OutlinedButton(onClick = { finish() }) { Text("Natrag") }
-                        Button(onClick = { withLink { VoiceLinkService.copy(this@PeerSenderActivity, it) } },
-                            enabled = browserReady) { Text("Kopiraj link") }
-                        Button(onClick = { withLink { VoiceLinkService.share(this@PeerSenderActivity, it) } },
-                            enabled = browserReady) { Text("Podijeli") }
+                        OutlinedButton(
+                            onClick = { finish() },
+                            modifier = Modifier.weight(1f),
+                            contentPadding = PaddingValues(horizontal = 4.dp)
+                        ) { Text("Natrag", maxLines = 1) }
+                        Button(
+                            onClick = { withLink { VoiceLinkService.copy(this@PeerSenderActivity, it) } },
+                            enabled = browserReady,
+                            modifier = Modifier.weight(1f),
+                            contentPadding = PaddingValues(horizontal = 4.dp)
+                        ) { Text("Kopiraj", maxLines = 1) }
+                        Button(
+                            onClick = { withLink { VoiceLinkService.share(this@PeerSenderActivity, it) } },
+                            enabled = browserReady,
+                            modifier = Modifier.weight(1f),
+                            contentPadding = PaddingValues(horizontal = 4.dp)
+                        ) { Text("Podijeli", maxLines = 1) }
                     }
                     AndroidView(
                         modifier = Modifier.fillMaxSize(),
