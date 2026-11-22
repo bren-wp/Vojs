@@ -1,121 +1,88 @@
 <div align="center">
-<img src="branding/logotip/logotip-svijetla-podloga.png" alt="VOJS" width="245">
+  <img src="docs/play-store-assets/app-icon-512.png" width="96" height="96" alt="VOJS – ikona aplikacije">
 
-# VOJS
-### Neke stvari bolje zvuče.
-**Snimi glas. Preslušaj. Podijeli trenutak.**
+  # VOJS
 
-**Android + Web • Zadana tamna tema • Bez računa • Offline snimanje • P2P bez pohrane zvuka na serveru**
+  ### Neke stvari bolje zvuče.
 
-[🌐 VOJS web](https://vojs.com.hr) · [📱 Najnoviji Android APK/AAB](https://github.com/bren-wp/Vojs/releases/latest) · [💜 BRENDIGO](https://brendigo.com)
+  **Snimi glas. Preslušaj. Podijeli trenutak.**
+
+  Glasovne poruke bez prijave, bez nepotrebnih koraka i bez obvezne internetske veze.
+
+  [**Preuzmi VOJS za Android**](https://github.com/bren-wp/Vojs/releases/latest) · [**Otvori web aplikaciju**](https://vojs.com.hr) · [**Pravila privatnosti**](https://vojs.com.hr/privatnost/)
+
+  <img src="docs/play-store-assets/feature-1024x500.png" width="850" alt="VOJS – službena istaknuta grafika">
 </div>
 
 ---
 
-## Glasovne poruke jednostavno, bez prijave
+## Glas koji ostaje tvoj
 
-VOJS omogućuje snimanje glasovnih poruka do pet minuta, pauziranje, preslušavanje i dijeljenje. Privatnost je dio dizajna: **za lokalno snimanje ne treba internet**, a server **ne prima audio datoteke**.
+VOJS pretvara kratku misao, čestitku ili poruku u snimku koju možeš preslušati i podijeliti. Snimaj do **5 minuta**, pauziraj, nastavi i spremi zvuk na uređaju. Nema obveznog korisničkog računa.
 
-| 📱 Android | 🌐 VOJS web |
-| --- | --- |
-| Nativni Kotlin + Jetpack Compose | Responzivni web snimač s osnovnom PWA offline podrškom |
-| Snimanje i M4A preslušavanje bez interneta | Snimanje u pregledniku i lokalno preuzimanje |
-| Android Sharesheet za slanje datoteke | Web Share API kada je podržan |
-| Izravni WebRTC prijenos iz Android aplikacije | P2P primanje u pregledniku bez instalacije |
-| Bez obveznog računa, oglasa i VOJS clouda | Bez SQL baze, bez crona, bez pohrane zvuka na serveru |
+| 🎙️ Snimi i preslušaj | 📱 Podijeli bez web-stranice | 🔗 Pošalji poveznicu |
+| --- | --- | --- |
+| Snimaj, pauziraj i nastavi u aplikaciji. | Pošalji M4A datoteku putem izbornika za dijeljenje na uređaju. | Kada imaš internet, stvori privatnu vremenski ograničenu poveznicu. |
+| **Radi bez interneta.** | **VOJS server nije potreban.** | **Oba uređaja moraju biti online.** |
 
-## Kako radi P2P poveznica?
+### Stvarni zasloni Android aplikacije
 
-1. Snimi poruku na Androidu ili webu.
-2. Odaberi **Podijeli izravno (P2P)**. VOJS izradi nepredvidljivu poveznicu s kratkotrajnom WebRTC signalizacijom.
-3. Pošalji poveznicu i **ostani na zaslonu za dijeljenje**.
-4. Primatelj otvori poveznicu dok si online. Zvuk se prenosi kroz šifrirani WebRTC DataChannel i može se preslušati ili spremiti na primateljevu uređaju.
-
-**Nema pohrane audio snimki na VOJS poslužitelju.** PHP pohranjuje samo privremenu JSON signalizaciju (SDP, rok isteka i hash tokena), u direktorij izvan javnog web korijena. Sesija istječe za najviše 15 minuta; stare JSON datoteke čiste se prilikom stvaranja novih sesija, bez cron posla.
-
-**Važna ograničenja:** oba uređaja moraju istodobno biti online. Poveznica nije trajni cloud snimak. Neke mobilne mreže i strogi NAT zahtijevaju TURN poslužitelj, koji u ovom izdanju nije konfiguriran. P2P tada može zakazati; kao pouzdanu alternativu koristi dijeljenje M4A datoteke.
-
-## Stvarne Android snimke zaslona
-
-Navedene slike snimljene su na Android emulatoru. Nisu generirani mockupovi i ne predstavljaju još neprovjerene nove P2P zaslone.
+Slike su izravne snimke VOJS aplikacije na Android emulatoru, bez umjetno nacrtanih zaslona. Prikazuju stvarne kontrole, tamnu temu i tijek snimanja.
 
 <table>
-<tr>
-<td><img src="docs/screenshots/01-home.png" alt="VOJS početni zaslon" width="230"></td>
-<td><img src="docs/screenshots/02-recording.png" alt="VOJS snimanje" width="230"></td>
-<td><img src="docs/screenshots/03-ready.png" alt="VOJS završena snimka" width="230"></td>
-</tr>
-<tr><td><strong>Početak</strong></td><td><strong>Snimanje</strong></td><td><strong>Preslušavanje</strong></td></tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/09-dark-home.png" width="205" alt="VOJS – početni zaslon u tamnoj temi"><br><strong>Nova poruka</strong></td>
+    <td align="center"><img src="docs/screenshots/02-recording.png" width="205" alt="VOJS – snimanje glasovne poruke"><br><strong>Snimanje</strong></td>
+    <td align="center"><img src="docs/screenshots/06-paused.png" width="205" alt="VOJS – pauzirano snimanje"><br><strong>Pauza i nastavak</strong></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/08-dark-ready.png" width="205" alt="VOJS – snimka spremna za preslušavanje"><br><strong>Preslušavanje</strong></td>
+    <td align="center"><img src="docs/screenshots/04-android-share.png" width="205" alt="VOJS – izvorno Android dijeljenje snimke"><br><strong>Dijeljenje datoteke</strong></td>
+    <td align="center"><img src="docs/screenshots/07-settings-dark.png" width="205" alt="VOJS – postavke i odabir izgleda"><br><strong>Postavke</strong></td>
+  </tr>
 </table>
 
-[Svi stvarni prikazi](docs/screenshots/) · [Android testovi](https://github.com/bren-wp/Vojs/actions) · [Vizualna kvaliteta](docs/VISUAL-QA.md)
+### Pošalji glas, ne račun
 
-## Privatnost i sigurnost
+<details>
+<summary><strong>Kako funkcionira dijeljenje poveznicom?</strong></summary>
 
-- **Mikrofon:** dopuštenje se traži samo za snimanje; nema prikrivenog snimanja u pozadini.
-- **Lokalne datoteke:** Android privremeno drži M4A snimke u svom privatnom cacheu radi reprodukcije i dijeljenja. Cache se čisti lokalno; primatelj može zadržati vlastitu kopiju.
-- **Server:** nema baze podataka, snimki, javnog imenika audija niti scheduled cron joba. Postojeći legacy upload/audio/delete API vraćaju HTTP 410.
-- **JSON signalizacija:** do 15 minuta s nasumičnim ID-om; sadrži SDP koji može uključivati mrežne informacije. Server privremeno obrađuje IP adrese za zaštitu od zloupotrebe.
-- **WebRTC:** šifrirani DTLS prijenos između krajnjih uređaja; Googleov STUN poslužitelj može vidjeti mrežne podatke. TURN relay nije konfiguriran.
-- **Pristup bez računa:** povezivanje se provodi putem teško pogodive poveznice; svatko tko je dobije može pokušati primiti prijenos dok je pošiljatelj online.
-- **Nema aplikacijske analitike ni oglasa.** Za stvarni hosting još je potrebno uskladiti pristupne logove i javno objavljenu politiku privatnosti.
+Nakon snimanja odaberi **Stvori poveznicu (internet)**. Pošalji je primatelju i ostani u aplikaciji dok primatelj ne preuzme poruku. Poveznica vrijedi najviše **15 minuta**.
 
-[Pravila privatnosti](docs/PRIVACY-POLICY.md) · [WebRTC arhitektura](docs/P2P-ARCHITECTURE.md) · [Hosting upute](docs/SHARING-DEPLOYMENT.md)
+Zvuk se prenosi izravno između uređaja putem šifrirane veze. VOJS poslužitelj ne sprema audio datoteke; za uspostavu veze privremeno obrađuje mrežne i signalizacijske podatke. Povezivanje može zakazati na nekim mrežama, pa je dijeljenje M4A datoteke uvijek dostupna alternativa.
 
-## Organizacija koda
+</details>
 
-| Dio | Datoteke |
+<img src="docs/screenshots/11-p2p-sender.png" width="250" alt="VOJS – stvarni zaslon izravnog dijeljenja na Androidu">
+
+## Tvoj izgled. Tvoj izbor.
+
+- **Tamna tema** uključena je pri prvom otvaranju.
+- **Svijetla tema** dostupna je u postavkama, uz opciju praćenja izgleda uređaja.
+- **Bez obvezne prijave, oglasa i ugrađene analitike.**
+- **Bez interneta:** snimaj, pauziraj, preslušavaj, koristi izbornik za dijeljenje datoteke i čitaj pravila privatnosti unutar aplikacije.
+
+## Privatnost je važna
+
+Snimke ostaju lokalno dok ih sam ne podijeliš. Za izravno dijeljenje poveznicom web usluga obrađuje kratkotrajne podatke o povezivanju, a STUN poslužitelj može vidjeti mrežne informacije. Primatelj može zadržati primljenu kopiju.
+
+[Pravila privatnosti](https://vojs.com.hr/privatnost/) · [Uvjeti korištenja](https://vojs.com.hr/uvjeti/) · [Prijava sadržaja](https://vojs.com.hr/prijava-sadrzaja/)
+
+## VOJS za Android i web
+
+| Android aplikacija | Web aplikacija |
 | --- | --- |
-| Android UI / lokalno snimanje | MainActivity.kt, VoiceScreen.kt, VoiceWaveform.kt, VoiceRecorder.kt |
-| Android ↔ Web P2P | PeerSenderActivity.kt, VoiceLinkService.kt, app/src/main/assets/p2p-android-sender.html |
-| Web snimač i prijem | website/snimi/, website/recorder.js, website/poruka/, website/message.js |
-| WebRTC peer-to-peer | website/p2p.js |
-| PHP JSON signalizacija | website/api/_signal.php, website/api/signal.php, website/api/status.php |
-| Web offline podrška | website/sw.js |
-| Testovi | scripts/test_web_link_api.sh, .github/workflows/ |
+| Lokalno snimanje, preslušavanje i M4A dijeljenje bez VOJS web-stranice. | Snimanje u pregledniku, preuzimanje i dijeljenje kada preglednik to podržava. |
+| Izravno dijeljenje poveznicom samo kada ga korisnik odabere. | Primanje snimke izravno od pošiljatelja dok je povezan. |
 
-## Google Play
-
-Aplikacija ima applicationId com.brendigo.vojs, minSdk 24 i targetSdk 36. Dopuštenja su RECORD_AUDIO i INTERNET; nema obveznih računa i nema VOJS audio servera.
-
-Android release workflow izrađuje debug APK, nepotpisani release APK/AAB i, samo uz valjane signing secrets, potpisane release pakete. **Nepotpisani AAB nije spreman za Play.** Službena Play spremnost zahtijeva još provjeru produkcijskog HTTPS-a, Data safety dokumentacije, privatnosti, pre-launch reporta, WebRTC prijenosa i stvarnih uređaja.
-
-[Provjere za Google Play](docs/GOOGLE-PLAY-READY.md) · [Izdanja](https://github.com/bren-wp/Vojs/releases)
-
-## Postavljanje na hosting
-
-Za web je dovoljan HTTPS shared hosting s PHP 8.1+ i zapisivim privatnim direktorijem za **JSON signalizaciju**. Nisu potrebni SQL, cron, Firebase ili pohrana zvuka. [Upute za instalaciju](docs/SHARING-DEPLOYMENT.md).
-
-> Promjene iz repozitorija ne postavljaju se automatski na živu domenu vojs.com.hr. Živi P2P prijenos Android ↔ Web nije potvrđen dok se nova web verzija ne instalira i testira. Potpuna 1:1 vizualna podudarnost svih novih zaslona također nije izmjerena.
+**Android izdanja:** [GitHub Releases](https://github.com/bren-wp/Vojs/releases). Za Google Play potreban je zasebno verificiran i potpisan produkcijski paket; testna i nepotpisana izdanja nisu paketi za objavu na Play Storeu.
 
 ---
 
-<div align="center">**VOJS by BRENDIGO** · [brendigo.com](https://brendigo.com)</div>
+<div align="center">
+  <img src="branding/logotip/logotip-svijetla-podloga.png" width="178" alt="VOJS logotip">
 
-## Tamna tema i responzivnost
+  **VOJS by BRENDIGO**
 
-VOJS na novoj instalaciji otvara **tamnu temu** na Androidu i na svim javnim web stranicama. Svijetla tema može se ručno uključiti; Android također nudi praćenje sistemske teme. Izbor se sprema samo lokalno. Web raspored prilagođen je mobilnim uređajima i velikim zaslonima, a nativni Compose sadržaj na tabletima ograničen je na čitljivu širinu kako se kontrole ne bi nepotrebno rastezale.
-
-Stvarne slike zaslona i pixel ROI audit dostupni su u `docs/screenshots/`, a CI provjerava prepoznatljivost kontrola, otvoreni P2P ekran, snimanje, reprodukciju, dijeljenje, odabir teme i rad na tri Android profila. **1:1 identičnost svih zaslona s marketinškim referencama nije potvrđena** jer su referentne slike na dijelu mjesta kompozicije s okvirima uređaja. Usporedbe i ograničenja opisani su u `docs/DEVICE-TEST-MATRIX.md`.
-
-## Pixel-by-pixel pregled svih web stranica
-
-Automatski browser workflow snima svih **14 stranica u 4 veličine zaslona i 2 teme (112 stvarnih Chromium snimki)**, provjerava mobile overflow i funkcionalnost teme te izrađuje usporedbu s izvornim referencama kad su one dostupne. Nema tvrdnje o 0% odstupanja za nepotvrđene zaslone. Više: [WEB-VISUAL-QA](docs/WEB-VISUAL-QA.md).
-
-## Sinkronizirani Android i web prijenos
-
-Dijeljenje koristi zajednički protokol `vojs-p2p-v1`. WebRTC skripta zapakirana u Android APK bajtno je identična web klijentu, a oba provjeravaju kompatibilnost privatnog PHP JSON API-ja prije povezivanja. Nema SQL-a, crona, računa ni spremanja zvuka na server. Obje platforme pokazuju istek poveznice nakon 15 minuta. Testni Chromium stvara pravi snimljeni audio, šalje ga drugom Chromium klijentu i uspoređuje duljinu, MIME i SHA-256. Uspješan lokalni test nije potvrda da je produkcijska web stranica ažurirana. [Dokumentacija provjere](docs/P2P-TESTING.md).
-
-## Google Play 2026 i aktualne ovisnosti
-
-Android se kompilira protiv API-ja 37 uz cilj API 36 za Google Play. Odabrane su stabilne ovisnosti: [detalji i verzije](docs/DEPENDENCIES-2026.md). Novi [Play Console kontrolni popis](docs/PLAY-CONSOLE-SUBMISSION.md) obuhvaća istinita pravila privatnosti, Data safety, zabranu cloud/D2D prijenosa snimki, provjeru potpisa i 16 KiB uređaje. Ni CI ni GitHub izdanje ne jamče Google Play odobrenje. Originalni splash ima strogi pixel gate samo u području koje nije prekriveno Androidovim sistemskim trakama; za ostale zaslone potrebne su usporedive originalne reference.
-
-## Službeni materijali za Play Store
-
-Izvorni brending sadrži [ikonu 512×512](branding/google-play/ikona-512.png) i [istaknutu grafiku 1024×500](branding/google-play/grafika-istaknuto-1024x500.png). Stvarne ADB slike za Play pripremaju se automatizirano, uz **nepromijenjen svaki RGB piksel** i odgovarajući format PNG-a (ikona 32-bit, snimke 24-bit): [docs/play-store-assets](docs/play-store-assets/). Ako mapa još nije prisutna, screenshot workflow mora uspješno izraditi i objaviti te datoteke. Te slike nisu zamjena za vizualnu 1:1 potvrdu svih zaslona.
-
-## Samostalan offline rad Android aplikacije
-
-VOJS snima i preslušava poruke bez interneta i bez `vojs.com.hr`. Svoju M4A datoteku možeš podijeliti preko izbornika aplikacija na uređaju; odabrana aplikacija može sama zahtijevati internet. Pravila privatnosti nalaze se u Android postavkama i dostupna su offline. Poveznice su neobavezne i zahtijevaju internet za oba uređaja. Zasebna [offline provjera](scripts/test_offline_mode.py) koristi stvarni Android emulator u zrakoplovnom načinu rada. U korisničkom sučelju uklonjeni su razvojni nazivi protokola i tehnički tekstovi.
-
-Vizualni CI sada snima i **13. stanje: pravila privatnosti dostupna offline**; za taj novi zaslon ne izmišljaju se referentne slike ni rezultati 1:1.
+  [Web](https://vojs.com.hr) · [Izdanja](https://github.com/bren-wp/Vojs/releases) · [Kontakt](https://vojs.com.hr/kontakt/) · [Tehnička dokumentacija](docs/GOOGLE-PLAY-READY.md)
+</div>
