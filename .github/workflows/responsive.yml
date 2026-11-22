@@ -38,7 +38,7 @@ jobs:
             android_api: 35
             font_scale: "1.0"
           - profile_name: android16-api36
-            emulator_memory: 3072
+            emulator_memory: 4096
             avd_profile: pixel_6
             android_api: 36
             font_scale: "1.0"
