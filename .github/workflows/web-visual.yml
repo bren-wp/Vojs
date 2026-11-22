@@ -9,6 +9,9 @@ on:
       - 'scripts/audit_web_visual.py'
       - 'scripts/test_p2p_browser.mjs'
       - '.github/workflows/web-visual.yml'
+      - '.github/workflows/android-release.yml'
+      - 'scripts/publish_verified_release.sh'
+      - 'scripts/test_release_artifact_policy.py'
   push:
     branches: [main]
     paths:
@@ -16,6 +19,9 @@ on:
       - 'scripts/capture_web_screenshots.mjs'
       - 'scripts/audit_web_visual.py'
       - '.github/workflows/web-visual.yml'
+      - '.github/workflows/android-release.yml'
+      - 'scripts/publish_verified_release.sh'
+      - 'scripts/test_release_artifact_policy.py'
   workflow_dispatch:
 
 permissions:
