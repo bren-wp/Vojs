@@ -33,6 +33,16 @@ try {
   const senderErrors=[],receiverErrors=[];
   sender.on("pageerror",e=>senderErrors.push(e.message));
   receiver.on("pageerror",e=>receiverErrors.push(e.message));
+  // Count actual delivered files; duplicate end markers must never trigger
+  // duplicate downloads/overwritten object URLs on the receiver.
+  await receiver.addInitScript(() => {
+    window.__vojsReceivedUrls = 0;
+    const createObjectURL = URL.createObjectURL.bind(URL);
+    URL.createObjectURL = (...args) => {
+      window.__vojsReceivedUrls++;
+      return createObjectURL(...args);
+    };
+  });
   try {
     const response=await sender.goto(origin+"/snimi/",{waitUntil:"domcontentloaded"});
     assert.equal(response?.status(),200);
@@ -90,6 +100,15 @@ try {
     await sender.evaluate(()=>{delete navigator.mediaDevices.getUserMedia;});
     console.log("PASS denied replacement leaves previous recorded audio intact");
 
+    // Exercise a real WebRTC protocol replay: a sender delivers the final
+    // packet twice before the first asynchronous SHA-256 check completes.
+    await sender.evaluate(() => {
+      const originalSend = RTCDataChannel.prototype.send;
+      RTCDataChannel.prototype.send = function (data) {
+        originalSend.call(this, data);
+        if (data === JSON.stringify({ kind: "end" })) originalSend.call(this, data);
+      };
+    });
     await sender.locator("#accept-terms").check();
     await sender.locator("#upload").click();
     await sender.locator("#link-result").waitFor({state:"visible",timeout:60000});
@@ -122,6 +141,11 @@ try {
     assert.equal(result.sha256,original.sha256,"Real encoded recording SHA mismatch");
     assert.equal(result.mime,original.mime,"Sender/receiver MIME mismatch");
     assert(result.downloadShown);
+    await receiver.waitForTimeout(500);
+    assert.equal(await receiver.evaluate(() => window.__vojsReceivedUrls), 1,
+      "Duplicate end markers must result in exactly one receiver audio file");
+    assert.match(await receiver.locator("#message-status").textContent(), /Snimka je preuzeta/,
+      "Duplicate end markers must not change the successful transfer status");
     await receiver.screenshot({
       path:path.join(output,"functional","p2p-received-dark.png"),
       fullPage:true,animations:"disabled"
@@ -141,6 +165,7 @@ try {
     assert.deepEqual(receiverErrors,[],"Receiver JS errors");
     console.log("PASS actual browser microphone recording, pause/resume, WebRTC binary transfer");
     console.log("PASS bytes",result.length,"SHA256",result.sha256,"mime",result.mime);
+    console.log("PASS duplicated P2P final packet ignored; receiver publishes exactly one verified blob");
     console.log("PASS shared Android/Web protocol, blocking, revocation, no JS exceptions");
   } finally {
     await sender.close();await receiver.close();await context.close();

@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: write
+  actions: read
 
 concurrency:
   group: vojs-release-${{ github.ref }}
@@ -20,6 +21,8 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -57,8 +60,13 @@ jobs:
           else
             echo "SIGNING_READY=false" >> "$GITHUB_ENV"
           fi
-      - name: Verify Google Play privacy and backup rules
-        run: python3 scripts/test_play_readiness.py
+      - name: Verify Play privacy, offline recording, actual store media and marketing copy
+        run: |
+          set -euo pipefail
+          python3 scripts/test_play_readiness.py
+          python3 scripts/test_offline_contract.py
+          python3 scripts/test_play_assets.py
+          python3 scripts/test_marketing_readme.py
       - name: Build debug APK, release APK and release AAB
         run: |
           gradle --no-daemon --stacktrace :app:assembleDebug :app:assembleRelease :app:bundleRelease :app:lintRelease \
@@ -98,7 +106,62 @@ jobs:
             app/build/outputs/apk/release/*.apk
             app/build/outputs/bundle/release/*.aab
           if-no-files-found: error
-      - name: Publish versioned GitHub Release
+      - name: Report missing Play upload signing
+        if: env.SIGNING_READY != 'true'
+        shell: bash
+        run: |
+          echo "::warning::No production signing secrets. Only CI test artifacts were created. No GitHub production release will be published."
+          echo "### Production release not published" >> "$GITHUB_STEP_SUMMARY"
+          echo "Add the private VOJS upload signing secrets, then run the release workflow after passing all quality gates. Unsigned builds are **not** Play Store releases." >> "$GITHUB_STEP_SUMMARY"
+      - name: Wait for successful post-merge screenshot, emulator and web QA
+        if: env.SIGNING_READY == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          QA_SHA="$GITHUB_SHA"
+          # The screenshot workflow may append a media-only [skip ci] commit
+          # after the verified merge. Manual dispatch from that commit should
+          # check its tested source parent, never bypass the quality gates.
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            last_message="$(git log -1 --format=%B)"
+            changed_files="$(git diff-tree --no-commit-id --name-only -r HEAD)"
+            other_changes="$(printf '%s\n' "$changed_files" | grep -Ev '^(docs/screenshots/|docs/play-store-assets/)' || true)"
+            if [[ "$last_message" == *"[skip ci]"* && -z "$other_changes" ]]; then
+              QA_SHA="$(git rev-parse HEAD^)"
+            fi
+          fi
+          echo "Checking post-merge workflows for source commit $QA_SHA"
+          for workflow in "VOJS multi-device Android smoke" "Capture real Android screenshots" "VOJS full web visual matrix"; do
+            passed=false
+            for attempt in $(seq 1 60); do
+              result=$(gh run list --workflow "$workflow" --commit "$QA_SHA" --limit 10 --json status,conclusion --jq '
+                if length == 0 then "missing"
+                elif any(.[]; .conclusion == "failure" or .conclusion == "cancelled" or .conclusion == "timed_out") then "failed"
+                elif all(.[]; .status == "completed" and .conclusion == "success") then "success"
+                else "pending" end
+              ')
+              if [[ "$result" == success ]]; then
+                passed=true
+                break
+              fi
+              if [[ "$result" == failed ]]; then
+                echo "::error::$workflow failed on $QA_SHA. Not publishing."
+                exit 1
+              fi
+              # A new push can schedule the main workflows after this job starts.
+              # A missing run is not proof of success: keep waiting, then fail.
+              sleep 30
+            done
+            if [[ "$passed" != true ]]; then
+              echo "::error::$workflow did not pass within 30 minutes. Not publishing."
+              exit 1
+            fi
+            echo "PASS: $workflow for $QA_SHA"
+          done
+      - name: Publish signed and verified GitHub Release
+        if: env.SIGNING_READY == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -106,21 +169,14 @@ jobs:
           set -euo pipefail
           TAG="v1.0.${{ github.run_number }}"
           DEBUG="app/build/outputs/apk/debug/app-debug.apk"
-          if [[ "$SIGNING_READY" == "true" ]]; then
-            APK="app/build/outputs/apk/release/app-release.apk"
-            APK_NAME="VOJS-$TAG-release.apk"
-            AAB_NAME="VOJS-$TAG-release.aab"
-            NOTE="Production signing secrets provided. APK/AAB are signed; verify release certificates and Play requirements before publishing."
-          else
-            APK="app/build/outputs/apk/release/app-release-unsigned.apk"
-            APK_NAME="VOJS-$TAG-unsigned.apk"
-            AAB_NAME="VOJS-$TAG-unsigned.aab"
-            NOTE="Debug APK is installable for testing. Release APK and AAB are UNSIGNED and NOT ready for Google Play. Configure VOJS_* signing secrets for production."
-          fi
+          APK="app/build/outputs/apk/release/app-release.apk"
           AAB="app/build/outputs/bundle/release/app-release.aab"
           test -s "$DEBUG" && test -s "$APK" && test -s "$AAB"
           mkdir -p dist
           cp "$DEBUG" "dist/VOJS-$TAG-debug.apk"
-          cp "$APK" "dist/$APK_NAME"
-          cp "$AAB" "dist/$AAB_NAME"
-          gh release create "$TAG" "dist/VOJS-$TAG-debug.apk" "dist/$APK_NAME" "dist/$AAB_NAME" --title "VOJS $TAG" --notes "$NOTE" --target "${{ github.sha }}"
+          cp "$APK" "dist/VOJS-$TAG-release.apk"
+          cp "$AAB" "dist/VOJS-$TAG-release.aab"
+          gh release create "$TAG" "dist/VOJS-$TAG-debug.apk" "dist/VOJS-$TAG-release.apk" "dist/VOJS-$TAG-release.aab" \
+            --title "VOJS $TAG" --target "${{ github.sha }}" \
+            --notes "Verified Android release with signed APK/AAB, Android lint, genuine-screen emulator and offline smoke, and WebRTC browser checks. Google Play Console approval and Data safety submission are separate publisher steps. See docs/PLAY-CONSOLE-SUBMISSION.md."
+          echo "Published signed $TAG after required post-merge checks" >> "$GITHUB_STEP_SUMMARY"

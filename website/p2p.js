@@ -196,10 +196,18 @@ window.VojsPeer = (() => {
     active = current;
     monitor(peer, onStatus);
     let info = null, blocks = [], received = 0;
+    let audioChannel = null;
     peer.addEventListener("datachannel", ({ channel }) => {
-      if (channel.label !== "vojs-audio") { channel.close(); return; }
+      // A room accepts only one audio stream. Extra data channels must not
+      // race the shared receiver state or inject competing audio payloads.
+      if (channel.label !== "vojs-audio" || audioChannel !== null) { channel.close(); return; }
+      audioChannel = channel;
+      let finalizing = false, completed = false;
       channel.binaryType = "arraybuffer";
       channel.onmessage = async event => {
+        // SHA-256 verification yields to the event loop. Do not process
+        // duplicate end markers, late chunks, or callbacks after revocation.
+        if (finalizing || completed || current.closed) return;
         if (typeof event.data === "string") {
           let packet;
           try { packet = JSON.parse(event.data); } catch { channel.close(); return; }
@@ -212,14 +220,30 @@ window.VojsPeer = (() => {
             info = packet;
             onStatus("Primam zvuk izravno od pošiljatelja…");
           } else if (packet.kind === "end" && info) {
-            if (received !== info.size) { onStatus("Snimka nije potpuna."); channel.close(); return; }
+            finalizing = true; // Synchronous guard before the first await.
+            if (received !== info.size) {
+              onStatus("Snimka nije potpuna."); channel.close();
+              blocks = []; completed = true; return;
+            }
             const blob = new Blob(blocks, { type: info.mime });
-            const hash = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", await blob.arrayBuffer())), b => b.toString(16).padStart(2, "0")).join("");
-            if (hash !== info.sha256) { onStatus("Provjera snimke nije uspjela."); channel.close(); return; }
-            blocks = [];
-            onAudio(blob);
-            onStatus("Snimka je preuzeta. Sada je možeš preslušati bez mreže.");
-            channel.send("received");
+            try {
+              const hash = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", await blob.arrayBuffer())), b => b.toString(16).padStart(2, "0")).join("");
+              if (hash !== info.sha256) {
+                onStatus("Provjera snimke nije uspjela."); channel.close(); return;
+              }
+              if (current.closed || channel.readyState !== "open") return;
+              completed = true;
+              onAudio(blob);
+              onStatus("Snimka je preuzeta. Sada je možeš preslušati bez mreže.");
+              channel.send("received");
+            } catch {
+              if (!current.closed) onStatus("Provjera snimke nije uspjela.");
+              channel.close();
+            } finally {
+              blocks = [];
+              finalizing = false;
+              completed = true;
+            }
           }
         } else if (info && event.data instanceof ArrayBuffer) {
           received += event.data.byteLength;
