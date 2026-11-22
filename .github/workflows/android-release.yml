@@ -107,13 +107,14 @@ jobs:
             app/build/outputs/apk/release/*.apk
             app/build/outputs/bundle/release/*.aab
           if-no-files-found: error
-      - name: Report missing Play upload signing
-        if: env.SIGNING_READY != 'true'
+      - name: Report test-only signing mode
         shell: bash
         run: |
-          echo "::warning::No production upload key. Only a clearly marked test prerelease can be published after all post-merge QA checks."
-          echo "### Test-only release mode" >> "$GITHUB_STEP_SUMMARY"
-          echo "Unsigned release APK/AAB must NOT be uploaded to Google Play. The debug APK is for testing only." >> "$GITHUB_STEP_SUMMARY"
+          if [[ "${SIGNING_READY:-false}" != true ]]; then
+            echo "::warning::No production upload key. Only a clearly marked test prerelease can be published after all post-merge QA checks."
+            echo "### Test-only release mode" >> "$GITHUB_STEP_SUMMARY"
+            echo "Unsigned release APK/AAB must NOT be uploaded to Google Play. The debug APK is for testing only." >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: Wait for successful post-merge screenshot, emulator and web QA
         env:
           GH_TOKEN: ${{ github.token }}
@@ -164,8 +165,12 @@ jobs:
       - name: Publish verified signed release or labeled test prerelease
         env:
           GH_TOKEN: ${{ github.token }}
-          VOJS_SIGNING_READY: ${{ env.SIGNING_READY }}
           VOJS_VERSION: 1.0.${{ github.run_number }}
           VOJS_RELEASE_TARGET: ${{ github.sha }}
         shell: bash
-        run: bash scripts/publish_verified_release.sh
+        run: |
+          set -euo pipefail
+          # GITHUB_ENV values are available at runtime, not guaranteed in
+          # expression-time ${{ env }} context.
+          export VOJS_SIGNING_READY="${SIGNING_READY:?}"
+          bash scripts/publish_verified_release.sh
