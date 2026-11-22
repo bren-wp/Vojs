@@ -80,14 +80,24 @@ def locate(label, snapshot=None):
     ))
     return candidates[0]
 
-def recover_launcher_anr(snapshot):
-    """Recover a known *system launcher* ANR; never dismiss an app ANR."""
+def recover_launcher_anr(snapshot, allow_system_ui=False):
+    """Recover only known emulator OS ANRs, never a VOJS application ANR.
+
+    Android 16 emulators may show 'System UI isn't responding' after a fresh
+    boot. System UI recovery is enabled ONLY for dedicated fresh-install CI
+    startup, not during a recording or on a physical-device smoke test.
+    """
     launcher_names = ("Quickstep", "Pixel Launcher", "Launcher3")
-    prompts = [
+    launcher_prompts = [
         node.get("text", "") for node in snapshot
         if any(name in node.get("text", "") for name in launcher_names)
         and "isn't responding" in node.get("text", "")
     ]
+    system_ui_prompts = [
+        node.get("text", "") for node in snapshot
+        if node.get("text", "") == "System UI isn't responding"
+    ] if allow_system_ui else []
+    prompts = launcher_prompts + system_ui_prompts
     if not prompts:
         return False
     close = next((
@@ -95,11 +105,12 @@ def recover_launcher_anr(snapshot):
         and center(node) is not None
     ), None)
     if close is None:
-        raise AssertionError("Launcher ANR detected but safe dismissal unavailable")
+        raise AssertionError("Emulator system ANR detected but dismissal unavailable")
     x, y = center(close)
-    print("Recovering emulator launcher ANR (not VOJS):", prompts, flush=True)
+    print("Recovering emulator OS ANR (not VOJS):", prompts, flush=True)
     shell("input", "tap", str(x), str(y))
-    time.sleep(1)
+    # The emulator restarts its own System UI / launcher process.
+    time.sleep(2)
     shell("am", "start", "-n", ACTIVITY)
     time.sleep(2)
     return True
@@ -145,12 +156,28 @@ def scroll_to_visible(label, max_swipes=5):
     raise AssertionError("Scrollable settings control not visible: " + label)
 
 
-def wait(label, seconds=28):
+def wait(label, seconds=28, recover_ci_system_ui=False):
     end = time.monotonic() + seconds
+    recoveries = 0
     while time.monotonic() < end:
         snapshot = nodes()
-        if label == "Nova poruka" and recover_launcher_anr(snapshot):
-            continue
+        if label == "Nova poruka":
+            launcher_prompt = any(
+                "isn't responding" in node.get("text", "")
+                and any(name in node.get("text", "")
+                        for name in ("Quickstep", "Pixel Launcher", "Launcher3"))
+                for node in snapshot
+            )
+            system_prompt = recover_ci_system_ui and any(
+                node.get("text", "") == "System UI isn't responding"
+                for node in snapshot
+            )
+            if launcher_prompt or system_prompt:
+                if recoveries >= 2:
+                    raise AssertionError("Repeated emulator OS ANR during cold boot")
+                if recover_launcher_anr(snapshot, allow_system_ui=recover_ci_system_ui):
+                    recoveries += 1
+                    continue
         found = locate(label, snapshot)
         if found:
             return found
@@ -248,7 +275,7 @@ def main():
         shell("am", "force-stop", PACKAGE)
         shell("am", "start", "-n", ACTIVITY)
         time.sleep(4)
-        wait("Nova poruka")
+        wait("Nova poruka", recover_ci_system_ui=args.fresh_install)
         wait("Započni snimanje")
         capture("01-dark-home.png")
         if args.fresh_install:

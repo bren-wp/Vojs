@@ -59,6 +59,37 @@ try {
     });
     assert(original.length>64 && original.length<=8*1024*1024);
     assert.match(original.mime,/^audio\/(mp4|webm|ogg)$/);
+
+    // Regression: replacing a recorded message must be transactional.
+    // Reject microphone access and verify that the existing blob and all
+    // offline save controls remain available, with identical audio bytes.
+    const beforeDeniedStart=await sender.locator("#preview").getAttribute("src");
+    await sender.evaluate(()=>{
+      Object.defineProperty(navigator.mediaDevices,"getUserMedia",{
+        configurable:true,
+        value:()=>Promise.reject(new DOMException("Permission denied by E2E test","NotAllowedError"))
+      });
+    });
+    await sender.locator("#start").click();
+    await sender.waitForFunction(()=>!document.getElementById("start").disabled);
+    assert.equal(await sender.locator("#finished").isVisible(),true,
+      "Microphone denial must preserve the ready recording");
+    assert.equal(await sender.locator("#preview").getAttribute("src"),beforeDeniedStart,
+      "A failed replacement must not revoke the original audio");
+    const afterDeniedStart=await sender.evaluate(async()=>{
+      const bytes=await (await fetch(document.getElementById("preview").src)).arrayBuffer();
+      const digest=await crypto.subtle.digest("SHA-256",bytes);
+      return { length:bytes.byteLength,
+        sha256:Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,"0")).join("") };
+    });
+    assert.equal(afterDeniedStart.length,original.length);
+    assert.equal(afterDeniedStart.sha256,original.sha256,
+      "Microphone denial changed the previous recording");
+    assert.equal(await sender.locator("#download").isDisabled(),false);
+    assert.match(await sender.locator("#error").textContent(),/mikrofon/i);
+    await sender.evaluate(()=>{delete navigator.mediaDevices.getUserMedia;});
+    console.log("PASS denied replacement leaves previous recorded audio intact");
+
     await sender.locator("#accept-terms").check();
     await sender.locator("#upload").click();
     await sender.locator("#link-result").waitFor({state:"visible",timeout:60000});

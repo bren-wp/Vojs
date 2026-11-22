@@ -71,3 +71,13 @@ Na malom Pixel 2 emulatoru uspješno su testirani snimanje, dijeljenje, P2P zasl
 ### Pad emulatorskog UI dumpa na Pixel C (exit 137)
 
 U PR #48 Android 10/15/16 mobilni profili prošli su, ali Pixel C (API 35) bio je prekinut kada je testna naredba `adb shell uiautomator dump` završila s kodom 137 pri ulasku u P2P zaslon. Snimanje, pauza, reprodukcija i zaustavljanje bili su uspješni prije prekida. Nema dokaza da se proces VOJS-a srušio. Novi `nodes()` ponavlja **isključivo** privremeni exit 137 ili nepotpunu XML hijerarhiju, najviše tri pokušaja, te i dalje prijavljuje neuspjeh ako stvarni Android UI nije dohvatljiv. Emulirani Pixel C sada koristi 4 GiB RAM-a umjesto 3 GiB; mobilni profili ostaju na 3 GiB. `test_ui_locator.py` provjerava i oporavak i konačni neuspjeh, bez zamjene stvarnih kontrola lažnima.
+
+## Sigurno ponovno snimanje bez gubitka prethodne poruke
+
+Web snimač sada zadržava gotovu snimku (lokalni `blob:` URL, preslušavanje i preuzimanje) dok novo snimanje **doista ne započne**. Odbijeno dopuštenje mikrofona, zauzet uređaj ili neuspješna inicijalizacija snimača više ne brišu prethodnu poruku. Izvorna snimka i eventualna izravna poveznica uklanjaju se tek nakon uspješnog `MediaRecorder.start()`. Stvarni Chromium E2E test prisilno odbija mikrofon nakon prve uspješne snimke, uspoređuje SHA-256 i duljinu snimke te zatim nastavlja pravi P2P transfer iste datoteke.
+
+Androidov `VoiceRecorder.start()` također priprema novi snimač prije nego što oslobađa prethodnu READY snimku. Neuspjeli pokušaj ostavlja stanje i lokalnu datoteku netaknutima. Dijeljene M4A datoteke zadržavaju postojeće kratkotrajno ponašanje zbog primatelja. Korisnički izgled i splash nisu mijenjani. Ovaj ugovor štiti unutarnji Android API; izričita korisnička radnja **„Snimi novu poruku”** i dalje znači namjerno odbacivanje prethodne snimke.
+
+## Android 16 – System UI ANR prije prvog otvaranja aplikacije
+
+GitHub Actions [44966292411](https://github.com/bren-wp/Vojs/actions/runs/44966292411) potvrdio je prolaz Androida 10, 15 i Pixel C tableta te izdvojeni pad API 36: odmah nakon svježe instalacije pojavio se **sistemski** dijalog `System UI isn't responding`; test nije mogao pronaći `Nova poruka`. Nema potvrđenog `AndroidRuntime` pada procesa VOJS. `verify_responsive.py` sada može oporaviti **isključivo** točno prepoznat Androidov sistemski dijalog u izoliranom CI emulatoru tijekom prvog pokretanja, uz najviše dva oporavka. VOJS ANR i kasniji kvarovi tijekom rada aplikacije **nisu** potisnuti. Za Android 16 emulirani RAM povećan je s 3 GiB na 4 GiB, dok ostali profili ostaju isti. Regresijski test potvrđuje da se sistemski dijalog ne zatvara izvan eksplicitnog CI načina i da se VOJS dijalog ne zatvara ni kada je taj način uključen.

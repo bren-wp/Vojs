@@ -148,3 +148,27 @@ with _patch.object(_real_module, "adb", side_effect=_permanent_dump_error), \
     except _real_module.subprocess.CalledProcessError as err:
         assert err.returncode == 137
 print("PASS emulator UI dump recovery, bounded retries and fail-closed behavior")
+
+# Android 16: the emulator OS may ANR before VOJS is ever visible.
+# Only a designated fresh-install CI startup may dismiss the exact
+# "System UI isn't responding" dialog. Never dismiss a VOJS app ANR.
+_os_anr = [
+    {"text": "System UI isn't responding", "content-desc": "",
+     "bounds": "[10,10][300,80]"},
+    {"text": "Close app", "content-desc": "",
+     "bounds": "[20,100][280,170]"}
+]
+_os_actions = []
+module.shell = lambda *args: (_os_actions.append(args), "")[1]
+with _patch.object(module.time, "sleep", return_value=None):
+    assert module.recover_launcher_anr(_os_anr) is False, (
+        "System UI recovery must be opt-in for fresh CI emulators")
+    assert not _os_actions, "No OS process can be dismissed by default"
+    assert module.recover_launcher_anr(_os_anr, allow_system_ui=True) is True
+    assert ("am", "start", "-n", module.ACTIVITY) in _os_actions
+    assert module.recover_launcher_anr([
+        {"text": "VOJS isn't responding", "content-desc": "",
+         "bounds": "[10,10][300,80]"},
+        _os_anr[1]
+    ], allow_system_ui=True) is False, "Never suppress VOJS ANRs"
+print("PASS Android 16 System UI recovery is CI-only and never hides VOJS failures")

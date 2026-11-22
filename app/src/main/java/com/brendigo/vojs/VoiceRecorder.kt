@@ -77,17 +77,19 @@ internal class VoiceRecorder(private val context: Context) {
     @Suppress("DEPRECATION")
     fun start(): Boolean {
         if (stage == RecordingStage.RECORDING) return false
-        discardCurrent()
+        // Do not discard a READY recording before MediaRecorder.prepare/start
+        // succeeds. Low storage, a busy mic or recorder failure must not erase it.
         val audio = try {
             File(directory(), "vojs-${UUID.randomUUID()}.m4a")
         } catch (_: Exception) {
             error = "Nije moguće pristupiti privremenoj pohrani uređaja."
             return false
         }
+        var candidate: MediaRecorder? = null
         try {
-            val candidate = if (Build.VERSION.SDK_INT >= 31) MediaRecorder(context) else MediaRecorder()
-            recorder = candidate
-            candidate.apply {
+            val nextRecorder = if (Build.VERSION.SDK_INT >= 31) MediaRecorder(context) else MediaRecorder()
+            candidate = nextRecorder
+            nextRecorder.apply {
                 setAudioSource(MediaRecorder.AudioSource.MIC)
                 setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
                 setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
@@ -111,6 +113,11 @@ internal class VoiceRecorder(private val context: Context) {
                 prepare()
                 start()
             }
+            // Commit replacement only after a real microphone session starts.
+            // Retain copies already offered to Android Sharesheet recipients.
+            stopPlayback()
+            if (!shared) workingFile?.delete()
+            recorder = nextRecorder
             workingFile = audio
             shared = false
             accumulatedMs = 0L
@@ -124,12 +131,10 @@ internal class VoiceRecorder(private val context: Context) {
             error = null
             return true
         } catch (_: Exception) {
-            recorder?.runCatching { reset() }
-            recorder?.runCatching { release() }
-            recorder = null
+            candidate?.runCatching { reset() }
+            candidate?.runCatching { release() }
             audio.delete()
-            workingFile = null
-            stage = RecordingStage.IDLE
+            // Leave READY / workingFile / shared unchanged on failure.
             error = "Snimanje nije uspjelo. Provjeri mikrofon i pokušaj ponovno."
             return false
         }

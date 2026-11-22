@@ -73,7 +73,9 @@
     if (starting || processing || (recorder && recorder.state !== "inactive")) return;
     starting = true;
     el("start").disabled = true;
-    resetFile();
+    // Keep the previous message and any active link until the replacement
+    // microphone session has actually started. Permission denial or a busy
+    // device must never discard an existing recording.
     try {
       stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       // A second click while permission was pending cannot open a second microphone.
@@ -106,6 +108,8 @@
         message("Snimka je spremna za dijeljenje.");
       };
       recorder.start(250);
+      // This is the commit point for replacing the previous recording.
+      resetFile();
       startedAt = Date.now(); pausedAt = 0; pausedTotal = 0;
       timerHandle = setInterval(updateTimer, 250);
       starting = false;
