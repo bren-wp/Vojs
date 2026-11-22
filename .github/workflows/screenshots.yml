@@ -13,6 +13,9 @@ on:
       - 'scripts/prepare_play_assets.py'
       - 'scripts/test_play_assets.py'
       - '.github/workflows/screenshots.yml'
+      - '.github/workflows/android-release.yml'
+      - 'scripts/publish_verified_release.sh'
+      - 'scripts/test_release_artifact_policy.py'
   push:
     branches: [main]
     paths:
@@ -22,6 +25,9 @@ on:
       - 'scripts/audit_reference_pixels.py'
       - 'scripts/audit_all_screens.py'
       - '.github/workflows/screenshots.yml'
+      - '.github/workflows/android-release.yml'
+      - 'scripts/publish_verified_release.sh'
+      - 'scripts/test_release_artifact_policy.py'
   workflow_dispatch:
 
 permissions:
