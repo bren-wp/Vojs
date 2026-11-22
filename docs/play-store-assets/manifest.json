@@ -32,8 +32,8 @@
       "width": 1080,
       "height": 2400,
       "channel_mode": "RGB",
-      "bytes": 42530,
-      "sha256": "2ed18bafcee97338b5213619f18269b675ed5669ba24cf9dc2b8c095bd05ad8c",
+      "bytes": 40963,
+      "sha256": "25ddc4a6eaa2bbbbbf135da9928466c239909293aad0238fc20b31028b118425",
       "pixel_source": "unaltered genuine original"
     },
     {
@@ -42,8 +42,8 @@
       "width": 1080,
       "height": 2400,
       "channel_mode": "RGB",
-      "bytes": 80706,
-      "sha256": "6066151b8becef10a7b7dc0a81552804c029c39ff63527f47341eafb3d852418",
+      "bytes": 78557,
+      "sha256": "a8b9dcf03a0afdd5cdefd82bf102b8d227b1fd795ba7f416cae97dcdee741320",
       "pixel_source": "unaltered genuine original"
     },
     {
@@ -52,8 +52,8 @@
       "width": 1080,
       "height": 2400,
       "channel_mode": "RGB",
-      "bytes": 87750,
-      "sha256": "a542563219c04fb11ae308d8b14c90272ad18a8dc0bc8d447cec91d440b673d5",
+      "bytes": 86054,
+      "sha256": "13773748fa841942480430ac6ffc9b018a0fc343170461ae72d8037cbabffccd",
       "pixel_source": "unaltered genuine original"
     },
     {
@@ -62,8 +62,8 @@
       "width": 1080,
       "height": 2400,
       "channel_mode": "RGB",
-      "bytes": 127183,
-      "sha256": "9a90fa0ebc3415d752a8c8203e1f4d7390fb60170256d069e1ae531989922f2e",
+      "bytes": 125696,
+      "sha256": "511a1f645096c44db3b30974a7dd1ebef0ee31e39b7c37e7ac189157eafb3248",
       "pixel_source": "unaltered genuine original"
     },
     {
@@ -72,8 +72,8 @@
       "width": 1080,
       "height": 2400,
       "channel_mode": "RGB",
-      "bytes": 130642,
-      "sha256": "3de9d7b4cbc619b333bd86b56f99e2dacf46da77570a325fdf1476326c483a2a",
+      "bytes": 128959,
+      "sha256": "2d52f20b7748e7e4f41b407ea3cf5f6b7a051625205f03f76e861545697a1fcc",
       "pixel_source": "unaltered genuine original"
     },
     {
@@ -82,8 +82,8 @@
       "width": 1080,
       "height": 2400,
       "channel_mode": "RGB",
-      "bytes": 130868,
-      "sha256": "d8b8225bab469a266a910ead61a4e74eb830adad497759b52615616fcfd0f945",
+      "bytes": 129665,
+      "sha256": "131d29daf66db3e49f9d6b7b5d1d78357073d3101b733fb33df3c63e9cf5f2fc",
       "pixel_source": "unaltered genuine original"
     }
   ]

@@ -38,16 +38,16 @@
       "zones": {},
       "previous_run_drift": {
         "header": {
-          "changed_pixels_over_8_pct": 99.931,
-          "mean_absolute_rgb_error": 17.538
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
         },
         "content": {
-          "changed_pixels_over_8_pct": 98.789,
-          "mean_absolute_rgb_error": 24.585
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
         },
         "controls": {
-          "changed_pixels_over_8_pct": 99.974,
-          "mean_absolute_rgb_error": 18.167
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
         }
       }
     },
@@ -106,12 +106,12 @@
           "mean_absolute_rgb_error": 0.0
         },
         "content": {
-          "changed_pixels_over_8_pct": 3.969,
-          "mean_absolute_rgb_error": 3.222
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
         },
         "controls": {
-          "changed_pixels_over_8_pct": 0.994,
-          "mean_absolute_rgb_error": 0.711
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
         }
       },
       "marketing_reference": {
@@ -143,16 +143,16 @@
       "zones": {},
       "previous_run_drift": {
         "header": {
-          "changed_pixels_over_8_pct": 100.0,
-          "mean_absolute_rgb_error": 169.765
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
         },
         "content": {
-          "changed_pixels_over_8_pct": 100.0,
-          "mean_absolute_rgb_error": 175.26
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
         },
         "controls": {
-          "changed_pixels_over_8_pct": 100.0,
-          "mean_absolute_rgb_error": 157.911
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
         }
       }
     },
@@ -170,12 +170,12 @@
           "mean_absolute_rgb_error": 0.0
         },
         "content": {
-          "changed_pixels_over_8_pct": 3.707,
-          "mean_absolute_rgb_error": 2.814
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
         },
         "controls": {
-          "changed_pixels_over_8_pct": 6.426,
-          "mean_absolute_rgb_error": 9.074
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
         }
       }
     },
@@ -216,12 +216,12 @@
           "mean_absolute_rgb_error": 0.0
         },
         "content": {
-          "changed_pixels_over_8_pct": 3.751,
-          "mean_absolute_rgb_error": 3.154
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
         },
         "controls": {
-          "changed_pixels_over_8_pct": 6.52,
-          "mean_absolute_rgb_error": 9.514
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
         }
       }
     },
@@ -239,12 +239,12 @@
           "mean_absolute_rgb_error": 0.0
         },
         "content": {
-          "changed_pixels_over_8_pct": 3.998,
-          "mean_absolute_rgb_error": 3.375
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
         },
         "controls": {
-          "changed_pixels_over_8_pct": 0.998,
-          "mean_absolute_rgb_error": 0.883
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
         }
       }
     },
@@ -304,12 +304,12 @@
       "zones": {},
       "previous_run_drift": {
         "header": {
-          "changed_pixels_over_8_pct": 14.278,
-          "mean_absolute_rgb_error": 15.483
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
         },
         "content": {
-          "changed_pixels_over_8_pct": 0.64,
-          "mean_absolute_rgb_error": 0.405
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
         },
         "controls": {
           "changed_pixels_over_8_pct": 0.0,
@@ -326,7 +326,20 @@
       ],
       "reference_type": "real_device_only",
       "zones": {},
-      "previous_run_drift": "unavailable",
+      "previous_run_drift": {
+        "header": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        },
+        "content": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        },
+        "controls": {
+          "changed_pixels_over_8_pct": 0.0,
+          "mean_absolute_rgb_error": 0.0
+        }
+      },
       "reference_status": "no_exact_offline_privacy_design_reference"
     }
   ],
