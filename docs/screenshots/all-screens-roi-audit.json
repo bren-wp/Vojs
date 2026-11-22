@@ -147,12 +147,12 @@
           "mean_absolute_rgb_error": 0.0
         },
         "content": {
-          "changed_pixels_over_8_pct": 27.853,
-          "mean_absolute_rgb_error": 43.805
+          "changed_pixels_over_8_pct": 0.808,
+          "mean_absolute_rgb_error": 1.202
         },
         "controls": {
-          "changed_pixels_over_8_pct": 97.846,
-          "mean_absolute_rgb_error": 168.046
+          "changed_pixels_over_8_pct": 5.01,
+          "mean_absolute_rgb_error": 0.47
         }
       }
     },
