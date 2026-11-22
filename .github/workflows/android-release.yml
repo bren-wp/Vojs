@@ -131,10 +131,12 @@ jobs:
                 passed=true
                 break
               fi
-              if [[ "$result" == failed || "$result" == missing ]]; then
-                echo "::error::$workflow: $result for ${{ github.sha }}. Not publishing."
+              if [[ "$result" == failed ]]; then
+                echo "::error::$workflow failed on ${{ github.sha }}. Not publishing."
                 exit 1
               fi
+              # A new push can schedule the main workflows after this job starts.
+              # A missing run is not proof of success: keep waiting, then fail.
               sleep 30
             done
             if [[ "$passed" != true ]]; then
