@@ -21,8 +21,8 @@
         652,
         240
       ],
-      "changed_pixels_over_8_percent": 9.512,
-      "mean_absolute_rgb_error": 14.739
+      "changed_pixels_over_8_percent": 9.526,
+      "mean_absolute_rgb_error": 14.758
     },
     "waveform": {
       "roi": [
