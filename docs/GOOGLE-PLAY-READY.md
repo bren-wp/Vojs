@@ -20,13 +20,13 @@ VOJS je **pripremljen za tehničku provjeru**, ali potpisani AAB, produkcijski h
 
 ## Distribucija i sigurnost izdanja
 
-Workflow `android-release.yml` radi Gradle build, lint i provjere privatnosti/medija. **Ako nema produkcijskog upload ključa, izrađuje samo CI testne artefakte i ne objavljuje novi GitHub Release.** Ako su signing secrets dostupni, provjerava potpis APK/AAB te čeka uspjeh sva tri post-merge CI tijeka:
+Workflow `android-release.yml` radi Gradle build, lint i provjere privatnosti/medija. **Ako nema produkcijskog upload ključa, nakon uspjeha svih post-merge provjera može objaviti samo GitHub TEST pre-release** (`-test`) s debug APK-om te jasno označenim nepotpisanim release APK/AAB datotekama. Ti nepotpisani paketi **nisu spremni za Google Play**. Ako su signing secrets dostupni, provjerava potpis APK/AAB te čeka uspjeh ista tri post-merge CI tijeka:
 
 1. VOJS multi-device Android smoke
 2. Capture real Android screenshots
 3. VOJS full web visual matrix
 
-Tek zatim dopušta novo verzionirano GitHub izdanje s potpisanim APK i AAB paketima. GitHub Release nije automatska objava u Play Consoleu.
+Tek nakon uspjeha svih provjera dopušta novo verzionirano izdanje: **potpisano izdanje** s APK/AAB paketima ako ključ postoji, odnosno eksplicitno označeni **testni pre-release** bez produkcijskog potpisa ako ključ ne postoji. Objavljuju se i SHA-256 kontrolne sume. GitHub Release nije automatska objava u Play Consoleu. Regresijski test za obje grane: `scripts/test_release_artifact_policy.py`.
 
 **Potrebni tajni podaci** (pohraniti isključivo kao GitHub Actions secrets): `VOJS_KEYSTORE_BASE64`, `VOJS_STORE_PASSWORD`, `VOJS_KEY_ALIAS`, `VOJS_KEY_PASSWORD`. Potpisni ključ ne smije biti u repozitoriju niti u dokumentaciji. Provjeriti certifikat u odnosu na postojeći Play upload key, Play App Signing i rastući versionCode. Trenutačno objavljena v1.0.48 sadrži nepotpisani release APK/AAB; nije Play-ready.
 
