@@ -67,6 +67,7 @@ jobs:
           python3 scripts/test_offline_contract.py
           python3 scripts/test_play_assets.py
           python3 scripts/test_marketing_readme.py
+          python3 scripts/test_release_artifact_policy.py
       - name: Build debug APK, release APK and release AAB
         run: |
           gradle --no-daemon --stacktrace :app:assembleDebug :app:assembleRelease :app:bundleRelease :app:lintRelease \
@@ -110,11 +111,10 @@ jobs:
         if: env.SIGNING_READY != 'true'
         shell: bash
         run: |
-          echo "::warning::No production signing secrets. Only CI test artifacts were created. No GitHub production release will be published."
-          echo "### Production release not published" >> "$GITHUB_STEP_SUMMARY"
-          echo "Add the private VOJS upload signing secrets, then run the release workflow after passing all quality gates. Unsigned builds are **not** Play Store releases." >> "$GITHUB_STEP_SUMMARY"
+          echo "::warning::No production upload key. Only a clearly marked test prerelease can be published after all post-merge QA checks."
+          echo "### Test-only release mode" >> "$GITHUB_STEP_SUMMARY"
+          echo "Unsigned release APK/AAB must NOT be uploaded to Google Play. The debug APK is for testing only." >> "$GITHUB_STEP_SUMMARY"
       - name: Wait for successful post-merge screenshot, emulator and web QA
-        if: env.SIGNING_READY == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -160,23 +160,12 @@ jobs:
             fi
             echo "PASS: $workflow for $QA_SHA"
           done
-      - name: Publish signed and verified GitHub Release
-        if: env.SIGNING_READY == 'true'
+          echo "VOJS_QA_GATE_PASSED=true" >> "$GITHUB_ENV"
+      - name: Publish verified signed release or labeled test prerelease
         env:
           GH_TOKEN: ${{ github.token }}
+          VOJS_SIGNING_READY: ${{ env.SIGNING_READY }}
+          VOJS_VERSION: 1.0.${{ github.run_number }}
+          VOJS_RELEASE_TARGET: ${{ github.sha }}
         shell: bash
-        run: |
-          set -euo pipefail
-          TAG="v1.0.${{ github.run_number }}"
-          DEBUG="app/build/outputs/apk/debug/app-debug.apk"
-          APK="app/build/outputs/apk/release/app-release.apk"
-          AAB="app/build/outputs/bundle/release/app-release.aab"
-          test -s "$DEBUG" && test -s "$APK" && test -s "$AAB"
-          mkdir -p dist
-          cp "$DEBUG" "dist/VOJS-$TAG-debug.apk"
-          cp "$APK" "dist/VOJS-$TAG-release.apk"
-          cp "$AAB" "dist/VOJS-$TAG-release.aab"
-          gh release create "$TAG" "dist/VOJS-$TAG-debug.apk" "dist/VOJS-$TAG-release.apk" "dist/VOJS-$TAG-release.aab" \
-            --title "VOJS $TAG" --target "${{ github.sha }}" \
-            --notes "Verified Android release with signed APK/AAB, Android lint, genuine-screen emulator and offline smoke, and WebRTC browser checks. Google Play Console approval and Data safety submission are separate publisher steps. See docs/PLAY-CONSOLE-SUBMISSION.md."
-          echo "Published signed $TAG after required post-merge checks" >> "$GITHUB_STEP_SUMMARY"
+        run: bash scripts/publish_verified_release.sh
