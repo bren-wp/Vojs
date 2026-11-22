@@ -7,6 +7,9 @@ on:
       - 'app/**'
       - 'scripts/verify_responsive.py'
       - '.github/workflows/responsive.yml'
+      - '.github/workflows/android-release.yml'
+      - 'scripts/publish_verified_release.sh'
+      - 'scripts/test_release_artifact_policy.py'
   pull_request:
     branches: [main]
     paths:
@@ -14,6 +17,9 @@ on:
       - 'scripts/verify_responsive.py'
       - 'scripts/test_ui_locator.py'
       - '.github/workflows/responsive.yml'
+      - '.github/workflows/android-release.yml'
+      - 'scripts/publish_verified_release.sh'
+      - 'scripts/test_release_artifact_policy.py'
   workflow_dispatch:
 
 permissions:
