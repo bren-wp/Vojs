@@ -23,6 +23,15 @@ assert "FileProvider.getUriForFile" in recorder
 assert "VOJS P2P poveznica" not in read("VoiceLinkService.kt")
 assert "contentDescription = \"VOJS\"" in read("VojsBrandedSplash.kt")
 assert "MediaRecorder" in recorder and "MediaPlayer" in recorder
+# A failed microphone restart cannot delete a previously completed recording.
+record_start=recorder.split("fun start(): Boolean {",1)[1].split("\n    fun tick()",1)[0]
+assert "discardCurrent()" not in record_start
+assert record_start.index("                prepare()") < record_start.index("                start()")
+assert record_start.index("                start()") < record_start.index("if (!shared) workingFile?.delete()")
+assert record_start.index("if (!shared) workingFile?.delete()") < record_start.index("workingFile = audio")
+assert "candidate?.runCatching { release() }" in record_start
+assert "workingFile = null" not in record_start
+assert "stage = RecordingStage.IDLE" not in record_start
 assert "context.startActivity(chooser)" in recorder
 assert not any(x in screen+settings for x in ["P2P","WebRTC","JSON","TURN","DEBUG","Lorem ipsum"])
 assert not any(x in sender for x in ["PRIVATNA P2P PORUKA","Stvori P2P poveznicu",
