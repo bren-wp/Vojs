@@ -129,6 +129,8 @@ jobs:
         run: node scripts/test_web_theme.js
       - name: Verify Android and P2P pixel-UI contract
         run: node scripts/test_visual_contract.js
+      - name: Verify marketing README, real Android captures and clean customer UI
+        run: python3 scripts/test_marketing_readme.py
       - name: Integration test for JSON signaling and no audio storage
         run: bash scripts/test_web_link_api.sh
       - name: Fail if server accepts audio storage
