@@ -131,6 +131,8 @@ jobs:
         run: node scripts/test_visual_contract.js
       - name: Verify marketing README, real Android captures and clean customer UI
         run: python3 scripts/test_marketing_readme.py
+      - name: Exercise signed, test-only and blocked release policies
+        run: python3 scripts/test_release_artifact_policy.py
       - name: Integration test for JSON signaling and no audio storage
         run: bash scripts/test_web_link_api.sh
       - name: Fail if server accepts audio storage
